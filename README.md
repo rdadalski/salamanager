@@ -1,4 +1,4 @@
-*** React native app ***
+# *** React native app ***
 - pnpm install
 - pnpm run start
 - launch android device (emulator)
