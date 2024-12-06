@@ -1,4 +1,6 @@
 *** React native app ***
 - pnpm install
 - pnpm run start
-- xd 
+- launch android device (emulator)
+- Press 'a' in terminal to launch android app
+  
