@@ -1,23 +1,16 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Pressable,
-  StyleSheet,
-} from "react-native";
+import { View, Text, Pressable } from "react-native";
 
-interface CategoriesGridTileProps {
+interface ICategoriesGridTileProps {
   title: string;
   color: string;
   onPress: () => void;
 }
 
-const CategoriesGridTile: React.FC<CategoriesGridTileProps> = ({
-  title,
-  color,
-  onPress,
-}) => {
+const CategoriesGridTile: React.FC<ICategoriesGridTileProps> = ({ title, color, onPress }) => {
+  const navigation = useNavigation();
+
   return (
     <View
       style={{ backgroundColor: color }}
@@ -27,6 +20,7 @@ const CategoriesGridTile: React.FC<CategoriesGridTileProps> = ({
         onPress={onPress}
         android_ripple={{ color: "#fff" }}
         className="flex-1"
+        style={({ pressed }) => (pressed ? { opacity: 0.5 } : null)}
       >
         <View className="flex-1 rounded-lg justify-center items-center">
           <Text className="font-bold">{title}</Text>
