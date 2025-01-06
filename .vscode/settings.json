@@ -1,0 +1,6 @@
+{
+  "editor.wordWrapColumn": 120,
+  "prettier.singleAttributePerLine": true,
+  "prettier.bracketSameLine": false,
+  "prettier.printWidth": 100
+}
