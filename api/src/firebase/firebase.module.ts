@@ -13,23 +13,26 @@ export class FirebaseModule {
   static forRoot(): DynamicModule {
     return {
       module: FirebaseModule,
-      providers: [
-        {
-          provide: 'FIREBASE_ADMIN',
-          useFactory: async (configService: ConfigService) => {
-            const app = admin.initializeApp({
-              credential: admin.credential.cert(
-                credentials as admin.ServiceAccount,
-              ),
-              databaseURL: `https://${credentials.project_id}.firebaseio.com`,
-              storageBucket: `${credentials.project_id}.appspot.com`,
-            });
-            return app;
-          },
-          inject: [ConfigService],
-        },
-      ],
+      providers: [this.createFirebaseAdminProvider()],
       exports: ['FIREBASE_ADMIN'],
     };
+  }
+
+  private static createFirebaseAdminProvider() {
+    return {
+      provide: 'FIREBASE_ADMIN',
+      useFactory: async (configService: ConfigService) => {
+        return this.initializeFirebaseAdmin();
+      },
+      inject: [ConfigService],
+    };
+  }
+
+  private static initializeFirebaseAdmin(): admin.app.App {
+    return admin.initializeApp({
+      credential: admin.credential.cert(credentials as admin.ServiceAccount),
+      databaseURL: `https://${credentials.project_id}.firebaseio.com`,
+      storageBucket: `${credentials.project_id}.appspot.com`,
+    });
   }
 }

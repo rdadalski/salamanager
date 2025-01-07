@@ -1,12 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { FirebaseService } from '@app/firebase/firebase.service'; // Create this service
+import { Controller } from '@nestjs/common';
 
-@Controller('firestore')
-export class FirestoreController {
-  constructor(private readonly firestoreService: FirebaseService) {}
-
-  @Post('add-item')
-  async addItem(@Body() data: any) {
-    return this.firestoreService.addItem(data);
-  }
-}
+@Controller('firebase')
+export class FirebaseController {}

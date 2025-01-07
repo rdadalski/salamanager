@@ -4,14 +4,17 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { FirebaseModule } from './firebase/firebase.module';
 import { FirebaseService } from './firebase/firebase.service';
-import { FirestoreController } from './firebase/firebase.controller';
+import { FirebaseController } from './firebase/firebase.controller';
+import { TestGenericModule } from './test-generic/test-generic.module';
+import { TestGenericController } from './test-generic/test-generic.controller';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: ['config/.env'] }),
     FirebaseModule.forRoot(),
+    TestGenericModule,
   ],
-  controllers: [AppController, FirestoreController],
+  controllers: [AppController, FirebaseController],
   providers: [AppService, FirebaseService],
 })
 export class AppModule {}
