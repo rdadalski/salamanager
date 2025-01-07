@@ -7,8 +7,6 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { TestGenericService } from './test-generic.service';
-import { CreateTestGenericDto } from './dto/create-test-generic.dto';
 import { UpdateTestGenericDto } from './dto/update-test-generic.dto';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 
@@ -16,7 +14,6 @@ interface ITestCrudCollection {
   date: string;
   number: number;
   text: string;
-  collectionName: 'TestGenericCrud';
 }
 
 @Controller('test-generic')
@@ -32,6 +29,7 @@ export class TestGenericController {
 
   @Get()
   findAll() {
+    console.log('findAll');
     return this.genericFirestore.findAll();
   }
 

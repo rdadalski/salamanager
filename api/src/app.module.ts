@@ -6,7 +6,7 @@ import { FirebaseModule } from './firebase/firebase.module';
 import { FirebaseService } from './firebase/firebase.service';
 import { FirebaseController } from './firebase/firebase.controller';
 import { TestGenericModule } from './test-generic/test-generic.module';
-import { GenericFirestoreService } from './firebase/generic-firestore.service';
+import { TestGenericController } from './test-generic/test-generic.controller';
 
 @Module({
   imports: [
@@ -15,6 +15,6 @@ import { GenericFirestoreService } from './firebase/generic-firestore.service';
     TestGenericModule,
   ],
   controllers: [AppController, FirebaseController],
-  providers: [AppService, FirebaseService, GenericFirestoreService],
+  providers: [AppService, FirebaseService],
 })
 export class AppModule {}
