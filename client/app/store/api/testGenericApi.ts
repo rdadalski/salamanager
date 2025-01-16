@@ -8,13 +8,21 @@ const testGenericApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       transformResponse: (response: any) => {
-        console.log(response);
         // Handle and transform the response if needed
         return response;
       },
     }),
+    postGeneric: builder.mutation<any, { text: string }>({
+      query: (values: any) => ({
+        url: `/test-generic`,
+        method: "POST",
+        body: values,
+      }),
+      invalidatesTags: [],
+    }),
   }),
 });
 
-export const { useGetTestGenericQuery, useLazyGetTestGenericQuery } = testGenericApi;
+export const { useGetTestGenericQuery, useLazyGetTestGenericQuery, usePostGenericMutation } =
+  testGenericApi;
 export default testGenericApi;
