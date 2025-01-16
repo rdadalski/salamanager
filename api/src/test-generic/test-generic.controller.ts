@@ -24,6 +24,8 @@ export class TestGenericController {
 
   @Post()
   create(@Body() createTestGenericDto: ITestCrudCollection) {
+    console.log('Post to test-generic');
+    console.log(createTestGenericDto);
     return this.genericFirestore.create(createTestGenericDto);
   }
 

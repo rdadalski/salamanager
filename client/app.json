@@ -8,12 +8,12 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "scheme": "your-app-scheme",
-    "backgroundColor": "#24180F",
+    "backgroundColor": "#ccc",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "contain"
     },
-    "ios": { 
+    "ios": {
       "supportsTablet": true
     },
     "android": {}
