@@ -1,12 +1,11 @@
 import React from "react";
-import CatetoriesScreen from "./Screens/CategoriesScreen";
 
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import MealsOverviewScreen from "./Screens/MealsOverviewScreen";
 import { Provider } from "react-redux";
 import { store } from "./store";
+import HomeScreen from "./Screens/HomeScreen";
 
 export type RootStackParamList = {
   Home: undefined;
@@ -24,25 +23,17 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator
             screenOptions={{
-              headerStyle: { backgroundColor: "#351401" },
+              headerStyle: { backgroundColor: "#000" },
               headerTintColor: "#fff",
-              contentStyle: { backgroundColor: "#3f2f25" },
+              contentStyle: { backgroundColor: "#FFF" },
             }}
           >
             <Stack.Screen
-              name="MealsCategories"
-              component={CatetoriesScreen}
+              name="Home"
+              component={HomeScreen}
               options={{
-                title: "All Categories",
+                title: "Home",
               }}
-            />
-            <Stack.Screen
-              name="MealsOverview"
-              component={MealsOverviewScreen}
-              options={{
-                title: "Meals",
-              }}
-              initialParams={{}}
             />
           </Stack.Navigator>
         </NavigationContainer>
