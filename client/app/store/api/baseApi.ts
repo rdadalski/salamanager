@@ -1,15 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { Platform } from "react-native";
 
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "YOUR_API_URL",
-    prepareHeaders: (headers) => {
-      // Add auth token if needed
-      const token = localStorage.getItem("token");
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
-      }
+    baseUrl: Platform.select({
+      ios: "http://localhost:3000",
+      android: "http://10.0.2.2:3000",
+    }),
+    prepareHeaders: (headers, endpoint) => {
       return headers;
     },
   }),
