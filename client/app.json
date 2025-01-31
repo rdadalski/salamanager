@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ReactNativeCourse_UDEMY",
-    "slug": "ReactNativeCourse_UDEMY",
+    "name": "SalaManager",
+    "slug": "SalaManager",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,9 +13,19 @@
       "image": "./assets/splash.png",
       "resizeMode": "contain"
     },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {}
+    "plugins": [
+      "expo-notifications",
+      {
+        "color": "#ffffff",
+        "androidMode": "default",
+        "androidCollapsedTitle": "Updates from SalaManager",
+        "iosDisplayInForeground": true
+      }
+    ],
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#ffffff",
+      "iosDisplayInForeground": true
+    }
   }
 }
