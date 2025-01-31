@@ -9,6 +9,12 @@ export const NotificationTest = () => {
   const [token, setToken] = useState<string | null>(null);
   const [status, setStatus] = useState<string>("");
 
+  // useGetTestConnectionQuery,
+  //  useLazyGetTestConnectionQuery,
+  //  useGetUserTokenMutation,
+  //  useSendNotificationMutation,
+  //  useSendTokenMutation,
+
   const [sendToken, {isLoading: tokenIsLoading}] = useSendTokenMutation();
   const [testConnection, {isLoading: testConnectionLoading}] = useLazyGetTestConnectionQuery();
 
