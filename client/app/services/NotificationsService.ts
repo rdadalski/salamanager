@@ -17,7 +17,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-class NotificationService {
+export const NotificationService = {
   async registerForPushNotificationsAsync() {
     let token;
 
@@ -61,18 +61,14 @@ class NotificationService {
     }
 
     try {
-      token = (
-        await Notifications.getExpoPushTokenAsync({
-          projectId: "your-project-id", // Get this from app.json or app.config.js
-        })
-      ).data;
+      token = (await Notifications.getDevicePushTokenAsync()).data;
     } catch (error) {
       console.error("Error getting push token:", error);
       return;
     }
 
     return token;
-  }
+  },
 
   async storeToken(token: string): Promise<NotificationToken> {
     const deviceId = Device.deviceName ?? "unknown";
@@ -89,7 +85,7 @@ class NotificationService {
       console.error("Error storing push token:", error);
       throw error;
     }
-  }
+  },
 
   async setupNotificationListeners() {
     // Handle notifications when app is in foreground
@@ -111,7 +107,7 @@ class NotificationService {
       foregroundSubscription.remove();
       responseSubscription.remove();
     };
-  }
+  },
 
   // Method to handle background notifications
   async setupBackgroundNotifications() {
@@ -120,7 +116,5 @@ class NotificationService {
       // Handle background notification interaction
       console.log("Background notification response:", data);
     });
-  }
-}
-
-export const notificationService = new NotificationService();
+  },
+};

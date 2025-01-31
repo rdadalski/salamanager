@@ -5,7 +5,7 @@ export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: Platform.select({
-      ios: "http://localhost:3000",
+      ios: "http://localhost:3000", // TODO this is only for development, we will move that later to env
       android: "http://10.0.2.2:3000",
     }),
     prepareHeaders: (headers, endpoint) => {
@@ -13,5 +13,5 @@ export const baseApi = createApi({
     },
   }),
   endpoints: () => ({}),
-  tagTypes: ["User", "Post", "Comment"], // Add your entity types
+  tagTypes: [], // Add your entity types
 });

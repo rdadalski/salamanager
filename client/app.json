@@ -13,18 +13,10 @@
       "image": "./assets/splash.png",
       "resizeMode": "contain"
     },
-    "plugins": [
-      "expo-notifications",
-      {
-        "color": "#ffffff",
-        "androidMode": "default",
-        "androidCollapsedTitle": "Updates from SalaManager",
-        "iosDisplayInForeground": true
-      }
-    ],
+
+
     "notification": {
       "icon": "./assets/notification-icon.png",
-      "color": "#ffffff",
       "iosDisplayInForeground": true
     }
   }

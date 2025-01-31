@@ -7,6 +7,7 @@ export class NotificationsService {
 
   constructor(@Inject('FIREBASE_ADMIN') private firebaseAdmin: admin.app.App) {}
 
+  // this will probably change since we will be storing native device token
   async saveExpoToken(userId: string, expoToken: string, deviceInfo: any) {
     try {
       await this.firebaseAdmin
@@ -26,6 +27,26 @@ export class NotificationsService {
       return true;
     } catch (error) {
       this.logger.error(`Error saving Expo token for user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  async testFirebaseConnection() {
+    try {
+      const testRef = this.firebaseAdmin
+        .firestore()
+        .collection('test')
+        .doc('connection-test');
+
+      await testRef.set({
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        test: 'Connection successful',
+      });
+
+      const doc = await testRef.get();
+      return doc.data();
+    } catch (error) {
+      console.error('Firebase connection test failed:', error);
       throw error;
     }
   }

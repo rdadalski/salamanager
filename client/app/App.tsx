@@ -6,9 +6,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import HomeScreen from "./Screens/HomeScreen";
+import {NotificationTest} from "./components/NotificationsTest";
 
 export type RootStackParamList = {
   Home: undefined;
+ NotificationTest: undefined;
   MealsCategories: undefined;
   MealsOverview: { categoryId: string };
 };
@@ -35,6 +37,13 @@ export default function App() {
                 title: "Home",
               }}
             />
+           <Stack.Screen
+            name="NotificationTest"
+            component={NotificationTest}
+            options={{
+             title: "NotificationTest",
+            }}
+           />
           </Stack.Navigator>
         </NavigationContainer>
       </Provider>

@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { baseApi } from "./api/baseApi";
 import testGenericApi from "./api/testGenericApi";
+import notificationsApi from "./api/notifications.api";
 
 export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
     testGenericApi: testGenericApi.reducer,
+    notificationApi: notificationsApi.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
 });
