@@ -1,6 +1,6 @@
 import { Module, DynamicModule } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { ConfigService, ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FirebaseService } from './firebase.service';
 import * as credentials from 'config/firebase.json';
 
@@ -13,8 +13,9 @@ export class FirebaseModule {
   static forRoot(): DynamicModule {
     return {
       module: FirebaseModule,
-      providers: [this.createFirebaseAdminProvider()],
-      exports: ['FIREBASE_ADMIN'],
+      providers: [FirebaseService, this.createFirebaseAdminProvider()],
+      exports: ['FIREBASE_ADMIN', FirebaseService],
+      global: true,
     };
   }
 
