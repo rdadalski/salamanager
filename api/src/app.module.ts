@@ -8,6 +8,7 @@ import { FirebaseController } from './firebase/firebase.controller';
 import { TestGenericModule } from './test-generic/test-generic.module';
 import { TestGenericController } from './test-generic/test-generic.controller';
 import { NotificationsModule } from './firebase/notifications/notifications.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { NotificationsModule } from './firebase/notifications/notifications.modu
     FirebaseModule.forRoot(),
     TestGenericModule,
     NotificationsModule,
+    AuthModule,
   ],
   controllers: [AppController, FirebaseController],
   providers: [AppService, FirebaseService],
