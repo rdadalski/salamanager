@@ -8,13 +8,32 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "scheme": "your-app-scheme",
-    "backgroundColor": "#ccc",
+    "backgroundColor": "#000000",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain"
     },
-
-
+    "android": {
+      "googleServicesFile": "./config/firebase.json",
+      "package": "com.salamanager.myapp"
+    },
+    "ios": {
+      "googleServicesFile": "./firebase.plist",
+      "bundleIdentifier": "com.salamanager.myapp"
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "@react-native-firebase/crashlytics",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ],
     "notification": {
       "icon": "./assets/notification-icon.png",
       "iosDisplayInForeground": true

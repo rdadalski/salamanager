@@ -8,6 +8,10 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-firebase/app": "^21.8.0",
+    "@react-native-firebase/auth": "^21.8.0",
+    "@react-native-firebase/crashlytics": "^21.8.0",
+    "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/native-stack": "^7.2.0",
     "@reduxjs/toolkit": "^2.5.0",
