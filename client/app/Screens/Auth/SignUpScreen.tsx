@@ -14,7 +14,7 @@ const SignUpScreen = () => {
     <View className="flex-1 justify-center p-4">
       <Text className="text-2xl mb-4 text-center">Sign Up</Text>
       <TextInput
-        className="h-10 border border-gray-400 mb-3 px-2"
+        className=" border border-gray-400 mb-3 px-2"
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
@@ -22,7 +22,7 @@ const SignUpScreen = () => {
         autoCapitalize="none"
       />
       <TextInput
-        className="h-10 border border-gray-400 mb-3 px-2"
+        className=" border border-gray-400 mb-3 px-2"
         placeholder="Password"
         value={password}
         onChangeText={setPassword}

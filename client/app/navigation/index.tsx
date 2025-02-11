@@ -11,7 +11,7 @@ export type MainTabParamList = {
   Main: undefined;
 };
 
-export type RootStackParamList = {
+export type HomeStackParamList = {
   Home: undefined;
   NotificationTestScreen: undefined;
 };
@@ -19,14 +19,22 @@ export type RootStackParamList = {
 // Create navigators
 const RootStack = createNativeStackNavigator<MainTabParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
-const MainTab = createBottomTabNavigator<RootStackParamList>();
+const MainTab = createBottomTabNavigator<HomeStackParamList>();
 
 // Auth stack navigator
 function AuthNavigator() {
   return (
     <AuthStack.Navigator>
-      <AuthStack.Screen name="SignIn" component={SignInScreen} />
-      <AuthStack.Screen name="SignUp" component={SignUpScreen} />
+      <AuthStack.Screen
+        options={{ headerShown: false }}
+        name="SignIn"
+        component={SignInScreen}
+      />
+      <AuthStack.Screen
+        options={{ headerShown: false }}
+        name="SignUp"
+        component={SignUpScreen}
+      />
       {/*<AuthStack.Screen*/}
       {/*  name="ForgotPassword"*/}
       {/*  component={ForgotPasswordScreen}*/}
