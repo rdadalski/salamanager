@@ -8,7 +8,10 @@ import MealItem from "../components/MealItem";
 
 type Props = NativeStackScreenProps<RootStackParamList, "MealsOverview">;
 
-const MealsOverviewScreen: FC<Props> = ({ route, navigation }): JSX.Element => {
+const _MealsOverviewScreen: FC<Props> = ({
+  route,
+  navigation,
+}): JSX.Element => {
   const categoryId = route.params.categoryId;
 
   const dispalayedMeals = MEALS.filter((mealItem) => {
@@ -16,14 +19,18 @@ const MealsOverviewScreen: FC<Props> = ({ route, navigation }): JSX.Element => {
   });
 
   useLayoutEffect(() => {
-    const categoryTitle = CATEGORIES.find((category) => category.id === categoryId)?.title;
+    const categoryTitle = CATEGORIES.find(
+      (category) => category.id === categoryId,
+    )?.title;
 
     navigation.setOptions({
       title: categoryTitle,
     });
   }, [categoryId, navigation]);
 
-  const renderMealItem: ListRenderItem<Meal> | null | undefined = (itemData) => {
+  const renderMealItem: ListRenderItem<Meal> | null | undefined = (
+    itemData,
+  ) => {
     const mealItemProps = {
       title: itemData.item.title,
       imageUri: itemData.item.imageUrl,
@@ -46,4 +53,4 @@ const MealsOverviewScreen: FC<Props> = ({ route, navigation }): JSX.Element => {
   );
 };
 
-export default MealsOverviewScreen;
+export default _MealsOverviewScreen;

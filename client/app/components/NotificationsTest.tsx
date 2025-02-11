@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { NotificationService } from "../services";
-import {View, Text, TouchableOpacity, Platform, ActivityIndicator} from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Platform,
+  ActivityIndicator,
+} from "react-native";
 import * as Device from "expo-device";
-import {useLazyGetTestConnectionQuery, useSendTokenMutation} from "../store/api/notifications.api";
-import {useLazyGetTestGenericQuery} from "../store/api/testGenericApi";
+import {
+  useLazyGetTestConnectionQuery,
+  useSendTokenMutation,
+} from "../store/api/notifications.api";
+import { useLazyGetTestGenericQuery } from "../store/api/testGenericApi";
 
 export const NotificationTest = () => {
   const [token, setToken] = useState<string | null>(null);
@@ -15,14 +24,15 @@ export const NotificationTest = () => {
   //  useSendNotificationMutation,
   //  useSendTokenMutation,
 
-  const [sendToken, {isLoading: tokenIsLoading}] = useSendTokenMutation();
-  const [testConnection, {isLoading: testConnectionLoading}] = useLazyGetTestConnectionQuery();
+  const [sendToken, { isLoading: tokenIsLoading }] = useSendTokenMutation();
+  const [testConnection, { isLoading: testConnectionLoading }] =
+    useLazyGetTestConnectionQuery();
 
   const onTestConnection = () => {
     testConnection().then((res) => {
       alert(JSON.stringify(res.data));
-    })
-  }
+    });
+  };
 
   useEffect(() => {
     registerDevice();
@@ -31,7 +41,8 @@ export const NotificationTest = () => {
   const registerDevice = async () => {
     try {
       setStatus("Registering device...");
-      const token = await NotificationService.registerForPushNotificationsAsync();
+      const token =
+        await NotificationService.registerForPushNotificationsAsync();
       setToken(token);
 
       if (token) {
@@ -99,7 +110,9 @@ export const NotificationTest = () => {
     <View className="p-4">
       <Text className="text-lg mb-4">Notification Test</Text>
       <Text className="mb-2">Status: {status}</Text>
-      <Text className="mb-4">Token: {token ? "Available" : "Not available"}</Text>
+      <Text className="mb-4">
+        Token: {token ? "Available" : "Not available"}
+      </Text>
 
       <TouchableOpacity
         className="bg-blue-500 p-3 rounded mb-2"
@@ -116,18 +129,15 @@ export const NotificationTest = () => {
       </TouchableOpacity>
 
       <TouchableOpacity
-       className="bg-green-500 p-3 rounded"
-       onPress={onTestConnection}
+        className="bg-green-500 p-3 rounded"
+        onPress={onTestConnection}
       >
         <Text className="text-white text-center">Test Connection</Text>
       </TouchableOpacity>
 
       <View>
         {testConnectionLoading && (
-         <ActivityIndicator
-          size="large"
-          color="#0000ff"
-         />
+          <ActivityIndicator size="large" color="#0000ff" />
         )}
       </View>
     </View>
