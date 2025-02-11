@@ -1,8 +1,9 @@
 api/config/firebase-service-account.json
 api/config/firebase.json
+client/config/firebase.json
+
 .idea
 .idea/misc.xml
 .idea/caches/deviceStreaming.xml
-.vscode/settings.json
 .vscode/settings.json
 node_modules

@@ -8,6 +8,7 @@ node_modules/
 dist/
 web-build/
 /config/
+/config/firebase.json
 expo-env.d.ts
 
 # Native
