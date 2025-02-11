@@ -10,6 +10,8 @@ import * as credentials from 'config/firebase.json';
   exports: [FirebaseService],
 })
 export class FirebaseModule {
+  private static firebaseApp: admin.app.App;
+
   static forRoot(): DynamicModule {
     return {
       module: FirebaseModule,
@@ -30,10 +32,18 @@ export class FirebaseModule {
   }
 
   private static initializeFirebaseAdmin(): admin.app.App {
-    return admin.initializeApp({
-      credential: admin.credential.cert(credentials as admin.ServiceAccount),
-      databaseURL: `https://${credentials.project_id}.firebaseio.com`,
-      storageBucket: `${credentials.project_id}.appspot.com`,
-    });
+    if (!this.firebaseApp) {
+      console.log('Initializing Firebase app');
+      this.firebaseApp = admin.initializeApp({
+        credential: admin.credential.cert(credentials as admin.ServiceAccount),
+        databaseURL: `https://${credentials.project_id}.firebaseio.com`,
+        storageBucket: `${credentials.project_id}.appspot.com`,
+      });
+    }
+    return this.firebaseApp;
+  }
+
+  static getFirebaseApp(): admin.app.App {
+    return this.firebaseApp;
   }
 }

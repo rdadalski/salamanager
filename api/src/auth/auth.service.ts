@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { app } from 'firebase-admin';
+import { FirebaseAuthError, getAuth, UserRecord } from 'firebase-admin/lib/auth';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(@Inject('FIREBASE_ADMIN') private firebaseAdmin: app.App) {}
+
+  async create(createUserDto: CreateUserDto) {}
 
   findAll() {
     return `This action returns all auth`;

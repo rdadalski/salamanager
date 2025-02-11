@@ -22,3 +22,25 @@ import { AuthModule } from './auth/auth.module';
   providers: [AppService, FirebaseService],
 })
 export class AppModule {}
+
+// TODO Sign Up FLOW - backend
+//  1. Create DTO (Data Transfer Object) for user registration with email, password validation
+//  2. Create auth service method to handle registration
+//  3. Implement email format validation and password strength checks
+//  4. Check if email already exists in Firebase Auth
+//  5. Create user in Firebase Auth using admin SDK
+//  6. Generate custom claims/roles for user access control
+//  7. Create user document in Firestore with additional user data
+//  8. Generate email verification link using Firebase Auth
+//  9. Send verification email to user
+//  10. Return appropriate response (user data without sensitive info)
+//  11. Add error handling for:
+//     - Invalid email format
+//     - Weak password
+//     - Email already in use
+//     - Firebase Auth errors
+//     - Firestore errors
+//  12. Add request rate limiting for security
+//  13. Add request validation pipe
+//  14. Add auth guard for protected routes
+//  15. (Optional) Add logging service for tracking registration attempts
