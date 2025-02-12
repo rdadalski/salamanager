@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button } from "react-native";
+import { useSignUp } from "./hooks";
 
 export const SignUpScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignUp = () => {
+  const { signUp, loading } = useSignUp();
+
+  const handleSignUp = async () => {
     // Handle sign up logic here
-    console.log("Sign Up", { email, password });
+    const result = await signUp(email, password);
+    console.log("Sign Up result: ", result);
   };
 
   return (

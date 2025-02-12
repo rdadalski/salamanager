@@ -23,6 +23,7 @@ export default function App() {
   }
 
   useEffect(() => {
+    console.log("Auth State changed");
     const subscriber = getAuth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);

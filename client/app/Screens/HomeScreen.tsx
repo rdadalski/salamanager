@@ -3,6 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { HomeStackParamList } from "../navigation";
+import { SignOutButton } from "./Auth/components/SignOutButton";
 
 export const HomeScreen: FC = () => {
   const navigation =
