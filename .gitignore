@@ -2,7 +2,7 @@ api/config/firebase-service-account.json
 api/config/firebase.json
 client/config/firebase.json
 
-.idea
+./idea
 .idea/misc.xml
 .idea/caches/deviceStreaming.xml
 .vscode/settings.json
