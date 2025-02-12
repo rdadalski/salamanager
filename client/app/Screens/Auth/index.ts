@@ -1,2 +1,5 @@
-export { default as SignInScreen } from "./SignInScreen";
-export { default as SignUpScreen } from "./SignUpScreen";
+export { SignInScreen } from "./SignInScreen";
+export { SignUpScreen } from "./SignUpScreen";
+
+export * from "./types";
+export * from "./hooks";

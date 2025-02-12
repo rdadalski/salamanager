@@ -2,9 +2,9 @@ import React, { FC, useState } from "react";
 import { Button, Text, TextInput, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "./types/auth.types";
+import { AuthStackParamList } from "./types";
 
-const SignInScreen: FC = () => {
+export const SignInScreen: FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -49,5 +49,3 @@ const SignInScreen: FC = () => {
     </View>
   );
 };
-
-export default SignInScreen;

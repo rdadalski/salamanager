@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button } from "react-native";
 
-const SignUpScreen = () => {
+export const SignUpScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -32,5 +32,3 @@ const SignUpScreen = () => {
     </View>
   );
 };
-
-export default SignUpScreen;
