@@ -10,20 +10,23 @@
     "scheme": "your-app-scheme",
     "backgroundColor": "#000000",
     "splash": {
-      "resizeMode": "contain"
+      "resizeMode": "contain",
+      "image": "./assets/splash.png",
+      "backgroundColor": "#ffffff"
     },
     "android": {
-      "googleServicesFile": "./config/firebase.json",
-      "package": "com.salamanager.myapp"
+      "googleServicesFile": "./config/google-services.json",
+      "package": "com.itrado.salamanager",
+      "ndkVersion": "28.0.13004108"
     },
     "ios": {
-      "googleServicesFile": "./firebase.plist",
-      "bundleIdentifier": "com.salamanager.myapp"
+      "googleServicesFile": "./google-services.plist",
+      "bundleIdentifier": "com.itrado.salamanager"
     },
     "plugins": [
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
-      "@react-native-firebase/crashlytics",
+      "@react-native-firebase/crashlytics"
 
     ],
     "notification": {
