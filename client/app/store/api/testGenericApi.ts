@@ -1,6 +1,6 @@
 import { baseApi } from "./baseApi";
 
-const testGenericApi = baseApi.injectEndpoints({
+export const testGenericApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getTestGeneric: builder.query<any, void>({
       query: () => ({
@@ -23,6 +23,8 @@ const testGenericApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetTestGenericQuery, useLazyGetTestGenericQuery, usePostGenericMutation } =
-  testGenericApi;
-export default testGenericApi;
+export const {
+  useGetTestGenericQuery,
+  useLazyGetTestGenericQuery,
+  usePostGenericMutation,
+} = testGenericApi;

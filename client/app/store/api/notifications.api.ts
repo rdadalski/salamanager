@@ -2,7 +2,7 @@ import { baseApi } from "./baseApi";
 
 const baseUrl = "/notifications";
 
-const notificationsApi = baseApi.injectEndpoints({
+export const notificationsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // @Get('test-connection')
 
@@ -72,4 +72,3 @@ export const {
   useSendNotificationMutation,
   useSendTokenMutation,
 } = notificationsApi;
-export default notificationsApi;
