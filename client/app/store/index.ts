@@ -1,8 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { baseApi } from "./api/baseApi";
-import testGenericApi from "./api/testGenericApi";
-import notificationsApi from "./api/notifications.api";
+import { testGenericApi } from "./api/testGenericApi";
+import { notificationsApi } from "./api/notifications.api";
 
 export const store = configureStore({
   reducer: {
@@ -10,7 +10,8 @@ export const store = configureStore({
     testGenericApi: testGenericApi.reducer,
     notificationApi: notificationsApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(baseApi.middleware),
 });
 
 setupListeners(store.dispatch);

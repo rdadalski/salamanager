@@ -1,2 +1,2 @@
-export { default as HomeScreen } from "./HomeScreen";
-export { default as NotificationTestScreen } from "./NotificationTestScreen";
+export { HomeScreen } from "./HomeScreen";
+export { NotificationTestScreen } from "./NotificationTestScreen";

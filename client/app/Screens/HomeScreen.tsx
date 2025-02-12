@@ -4,7 +4,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { HomeStackParamList } from "../navigation";
 
-const HomeScreen: FC = () => {
+export const HomeScreen: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
 
@@ -26,5 +26,3 @@ const HomeScreen: FC = () => {
     </View>
   );
 };
-
-export default HomeScreen;
