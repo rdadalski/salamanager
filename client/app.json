@@ -10,7 +10,6 @@
     "scheme": "your-app-scheme",
     "backgroundColor": "#000000",
     "splash": {
-      "image": "./assets/splash.png",
       "resizeMode": "contain"
     },
     "android": {
@@ -28,7 +27,6 @@
 
     ],
     "notification": {
-      "icon": "./assets/notification-icon.png",
       "iosDisplayInForeground": true
     }
   }
