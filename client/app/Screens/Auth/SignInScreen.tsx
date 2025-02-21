@@ -1,27 +1,30 @@
-import React, { FC, useState } from "react";
-import { Button, Text, TextInput, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "./types";
-import { useSignIn } from "./hooks";
-import { SignOutButton } from "./components/SignOutButton";
+import { FC, useState } from "react";
+import { Alert, Text, TextInput, View } from "react-native";
+import { useSignIn, useSignUp } from "./hooks";
+import { GoogleSignInButton } from "@app/Screens/Auth/components/GoogleSignInButton";
+import { CustomButton } from "@app/components";
 
 export const SignInScreen: FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { signIn, loading } = useSignIn();
+  const { signIn, loading: signInLoading } = useSignIn();
+  const { signUp, loading: signUpLoading } = useSignUp();
 
-  const navigation =
-    useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
+  const alertResponse = (title: string, message: string) => {
+    Alert.alert(title, message, [
+      { text: "OK", onPress: () => console.log("OK Pressed") },
+    ]);
+  };
 
-  const handleSignUp = () => {
-    navigation.navigate("SignUp");
+  const handleSignUp = async () => {
+    const result = await signUp(email, password);
+    alertResponse("Sign up", result.message);
   };
 
   const handleSignIn = async () => {
     const result = await signIn(email, password);
-    console.log("Sign In result", result);
+    alertResponse("Sign up", result.message);
   };
 
   return (
@@ -42,10 +45,18 @@ export const SignInScreen: FC = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <View className="flex-row w-full gap-2 justify-center">
-        <Button color={"#000"} title="Sign in" onPress={handleSignIn} />
-        <Button color={"#000"} title="Sign up" onPress={handleSignUp} />
-        <SignOutButton></SignOutButton>
+      <View className="flex-row w-full gap-2 justify-center items-center">
+        <CustomButton
+          title={"Sign In"}
+          iconName={"login"}
+          onPress={handleSignIn}
+        />
+        <CustomButton
+          title={"Sign up"}
+          iconName={"logout"}
+          onPress={handleSignUp}
+        />
+        <GoogleSignInButton />
       </View>
     </View>
   );
