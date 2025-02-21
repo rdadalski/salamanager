@@ -1,6 +1,6 @@
 import { Module, DynamicModule } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { ConfigService, ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FirebaseService } from './firebase.service';
 import * as credentials from 'config/firebase.json';
 
@@ -10,11 +10,14 @@ import * as credentials from 'config/firebase.json';
   exports: [FirebaseService],
 })
 export class FirebaseModule {
+  private static firebaseApp: admin.app.App;
+
   static forRoot(): DynamicModule {
     return {
       module: FirebaseModule,
-      providers: [this.createFirebaseAdminProvider()],
-      exports: ['FIREBASE_ADMIN'],
+      providers: [FirebaseService, this.createFirebaseAdminProvider()],
+      exports: ['FIREBASE_ADMIN', FirebaseService],
+      global: true,
     };
   }
 
@@ -29,10 +32,18 @@ export class FirebaseModule {
   }
 
   private static initializeFirebaseAdmin(): admin.app.App {
-    return admin.initializeApp({
-      credential: admin.credential.cert(credentials as admin.ServiceAccount),
-      databaseURL: `https://${credentials.project_id}.firebaseio.com`,
-      storageBucket: `${credentials.project_id}.appspot.com`,
-    });
+    if (!this.firebaseApp) {
+      console.log('Initializing Firebase app');
+      this.firebaseApp = admin.initializeApp({
+        credential: admin.credential.cert(credentials as admin.ServiceAccount),
+        databaseURL: `https://${credentials.project_id}.firebaseio.com`,
+        storageBucket: `${credentials.project_id}.appspot.com`,
+      });
+    }
+    return this.firebaseApp;
+  }
+
+  static getFirebaseApp(): admin.app.App {
+    return this.firebaseApp;
   }
 }
