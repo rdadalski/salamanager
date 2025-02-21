@@ -1,8 +1,0 @@
-{
-  "editor.wordWrapColumn": 120,
-  "prettier.singleAttributePerLine": true,
-  "prettier.bracketSameLine": false,
-  "prettier.printWidth": 100,
-  "react-native-tools.projectRoot": "/client",
-  "tailwindCSS.emmetCompletions": true
-}

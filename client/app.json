@@ -8,15 +8,28 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "scheme": "your-app-scheme",
-    "backgroundColor": "#ccc",
+    "backgroundColor": "#000000",
     "splash": {
+      "resizeMode": "contain",
       "image": "./assets/splash.png",
-      "resizeMode": "contain"
+      "backgroundColor": "#ffffff"
     },
-
-
+    "android": {
+      "googleServicesFile": "./config/google-services.json",
+      "package": "com.itrado.salamanager",
+      "ndkVersion": "28.0.13004108"
+    },
+    "ios": {
+      "googleServicesFile": "./google-services.plist",
+      "bundleIdentifier": "com.itrado.salamanager"
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "@react-native-firebase/crashlytics",
+      "@react-native-google-signin/google-signin"
+    ],
     "notification": {
-      "icon": "./assets/notification-icon.png",
       "iosDisplayInForeground": true
     }
   }
