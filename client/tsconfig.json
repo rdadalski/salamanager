@@ -1,6 +1,12 @@
 {
   "extends": "./node_modules/expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
+    "typeRoots": ["./types"],
+    "strict": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": ["./app/*"]
+    }
   }
 }

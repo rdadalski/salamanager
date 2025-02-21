@@ -1,21 +1,36 @@
 {
   "expo": {
-    "name": "ReactNativeCourse_UDEMY",
-    "slug": "ReactNativeCourse_UDEMY",
+    "name": "SalaManager",
+    "slug": "SalaManager",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "scheme": "your-app-scheme",
-    "backgroundColor": "#ccc",
+    "backgroundColor": "#000000",
     "splash": {
+      "resizeMode": "contain",
       "image": "./assets/splash.png",
-      "resizeMode": "contain"
+      "backgroundColor": "#ffffff"
+    },
+    "android": {
+      "googleServicesFile": "./config/google-services.json",
+      "package": "com.itrado.salamanager",
+      "ndkVersion": "28.0.13004108"
     },
     "ios": {
-      "supportsTablet": true
+      "googleServicesFile": "./google-services.plist",
+      "bundleIdentifier": "com.itrado.salamanager"
     },
-    "android": {}
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "@react-native-firebase/crashlytics",
+      "@react-native-google-signin/google-signin"
+    ],
+    "notification": {
+      "iosDisplayInForeground": true
+    }
   }
 }
