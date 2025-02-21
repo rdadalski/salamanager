@@ -10,7 +10,7 @@ export const HomeScreen: FC = () => {
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
 
   const onPress = () => {
-    navigation.navigate("NotificationTestScreen");
+    navigation.navigate("Notifications");
   };
 
   return (

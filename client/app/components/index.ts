@@ -1,1 +1,1 @@
-export { NotificationTest } from "./NotificationsTest";
+export { CustomButton } from "./CustomButton";
