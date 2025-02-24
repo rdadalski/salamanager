@@ -1,3 +1,3 @@
 export * from "./baseApi";
-export * from "./config";
+export * from "./configApi";
 export * from "./notifications";
