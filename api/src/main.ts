@@ -1,9 +1,30 @@
 import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
+import express from 'express';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+// This function can be called by Firebase Functions
+export async function createNestApp(expressInstance: express.Express) {
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressInstance));
+
+  // Add global middleware, CORS, etc. here if needed
   app.enableCors();
-  await app.listen(3000);
+
+  return app;
 }
-bootstrap();
+
+// This function is used when running the app directly (not through Firebase)
+async function bootstrap() {
+  const server = express();
+  const app = await createNestApp(server);
+  await app.init();
+
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  console.log(`Application is running on: ${await app.getUrl()}`);
+}
+
+// Only call bootstrap when running directly (not when imported by Firebase Functions)
+if (require.main === module) {
+  bootstrap();
+}
