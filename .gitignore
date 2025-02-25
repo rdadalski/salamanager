@@ -7,3 +7,6 @@ client/config/firebase.json
 .idea/caches/deviceStreaming.xml
 .vscode/settings.json
 node_modules
+/.firebase/hosting.YXBpXGRpc3Q.cache
+/api/.firebase/hosting.ZGlzdA.cache
+.firebase
