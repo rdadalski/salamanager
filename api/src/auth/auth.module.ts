@@ -1,11 +1,22 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { FirebaseModule } from '@app/firebase/firebase.module';
+import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
+import { UserToken } from '@app/firebase/notifications/models/user-token.model';
+import { UserService } from '@app/user/user.service';
 
 @Module({
-  imports: [FirebaseModule.forRoot()],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    UserService,
+    {
+      provide: 'USER_FIRESTORE_SERVICE',
+      useFactory: (firebaseAdmin) => {
+        return new GenericFirestoreService<UserToken>(firebaseAdmin, 'users');
+      },
+      inject: ['FIREBASE_ADMIN'],
+    },
+  ],
 })
 export class AuthModule {}
