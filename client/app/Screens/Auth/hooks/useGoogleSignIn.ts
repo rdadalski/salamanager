@@ -1,4 +1,5 @@
 import auth, { getAuth } from "@react-native-firebase/auth";
+import { getApp } from "@react-native-firebase/app";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { ErrorMessage } from "@app/services";
 
