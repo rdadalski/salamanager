@@ -6,8 +6,6 @@ import { FirebaseModule } from '@app/firebase/firebase.module';
 import { defineSecret } from 'firebase-functions/params';
 export const webClientId = defineSecret('WEB_CLIENT_ID');
 
-console.log(webClientId);
-
 @Module({
   imports: [FirebaseModule.forRoot()],
   controllers: [GoogleAuthController],
