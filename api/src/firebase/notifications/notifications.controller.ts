@@ -1,15 +1,15 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
-import {
-  DeviceTokenDto,
-  SendMulticastNotificationDto,
-  SendNotificationDto,
-} from './dto/notifications.dto';
+import { DeviceTokenDto } from './dto/notifications.dto';
+import { UserTokenService } from '@app/firebase/notifications/userToken.service';
 
 @Controller('notifications')
 // @UseGuards(AuthGuard('jwt')) TODO: Add JWT authentication
 export class NotificationsController {
-  constructor(private readonly notificationsService: NotificationsService) {}
+  constructor(
+    private readonly notificationsService: NotificationsService,
+    private readonly userTokenService: UserTokenService
+  ) {}
 
   @Get('test-connection')
   async testConnection() {
@@ -32,47 +32,40 @@ export class NotificationsController {
 
   @Post('send')
   async sendNotification(
-    @Body() body: { token: string; title: string; body: string; data?: any },
+    @Body()
+    payload: {
+      token: string;
+      notification: {
+        title: string;
+        body: string;
+        data: any;
+      };
+    }
   ) {
-    return this.notificationsService.sendPushNotification(body);
+    // if (!payload.token && !payload.tokens) {
+    if (!payload.token) {
+      throw new HttpException('Token or tokens array is required', HttpStatus.BAD_REQUEST);
+    }
+
+    if (!payload.notification) {
+      throw new HttpException('Notification object is required', HttpStatus.BAD_REQUEST);
+    }
+
+    return this.notificationsService.sendToDevice(payload.token, payload.notification);
   }
 
-  @Get('token/:userId')
-  async getUserToken(@Param('userId') userId: string) {
-    return this.notificationsService.getUserDeviceTokens(userId);
+  @Post('register-token')
+  async registerToken(@Body() payload: { userId: string; token: string; deviceInfo?: any }) {
+    if (!payload.userId || !payload.token) {
+      throw new HttpException('UserId and token are required', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      const tokenId = await this.userTokenService.saveUserToken(payload.userId, payload.token, payload.deviceInfo);
+
+      return { success: true, tokenId };
+    } catch (error) {
+      throw new HttpException(`Failed to register token: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
-
-  @Post('token')
-  async saveDeviceToken(@Body() deviceTokenDto: DeviceTokenDto) {
-    console.log(deviceTokenDto);
-    return this.notificationsService.saveExpoToken(
-      deviceTokenDto.userId,
-      deviceTokenDto.token,
-      deviceTokenDto.deviceData,
-    );
-  }
-
-  // @Post('send-multicast')
-  // async sendMulticastNotification(
-  //   @Body() notificationDto: SendMulticastNotificationDto,
-  // ) {
-  //   const allTokens: string[] = [];
-
-  //   // Collect tokens for all users
-  //   for (const userId of notificationDto.userIds) {
-  //     const tokens = await this.notificationsService.getUserTokens(userId);
-  //     allTokens.push(...tokens);
-  //   }
-
-  //   if (allTokens.length === 0) {
-  //     throw new Error('No device tokens found for specified users');
-  //   }
-
-  //   return this.notificationsService.sendBatchNotifications(
-  //     allTokens,
-  //     notificationDto.title,
-  //     notificationDto.body,
-  //     notificationDto.data,
-  //   );
-  // }
 }
