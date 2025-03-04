@@ -22,6 +22,8 @@ export const useSignUp = () => {
 
       await getAuth().signOut();
 
+      setLoading(false);
+
       return {
         success: true,
         message: "Verification email sent. Please check your inbox.",

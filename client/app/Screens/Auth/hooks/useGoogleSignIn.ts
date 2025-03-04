@@ -1,9 +1,11 @@
-import auth, { getAuth } from "@react-native-firebase/auth";
-import { getApp } from "@react-native-firebase/app";
+import { getAuth, firebase } from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { ErrorMessage } from "@app/services";
+import { ErrorMessage, storeToken } from "@app/services";
+import { useCreateUserMutation } from "@app/api/users/usersApi";
 
 export const useGoogleSignIn = () => {
+  const [createUser] = useCreateUserMutation();
+
   const signInWithGoogle = async (webClientId: string) => {
     try {
       await configureGoogle(webClientId);
@@ -15,19 +17,26 @@ export const useGoogleSignIn = () => {
       const signInResult = await GoogleSignin.signIn();
 
       const { accessToken, idToken } = await GoogleSignin.getTokens();
-
-      console.log(accessToken, idToken);
+      await storeToken(idToken);
 
       if (!idToken) {
         throw new Error("No ID token found");
       }
 
-      const credential = auth.GoogleAuthProvider.credential(
+      const credential = firebase.auth.GoogleAuthProvider.credential(
         idToken,
         accessToken,
       );
 
-      return await getAuth().signInWithCredential(credential);
+      const userCredentials = await getAuth().signInWithCredential(credential);
+      const isNewUser = userCredentials.additionalUserInfo?.isNewUser || false;
+
+      if (isNewUser) {
+        await userCredentials.user.sendEmailVerification();
+        const firebaseUser = await createUser(userCredentials.user);
+      }
+
+      return userCredentials;
     } catch (e) {
       const error = e as ErrorMessage;
       console.log(error);
@@ -36,8 +45,6 @@ export const useGoogleSignIn = () => {
   };
 
   const configureGoogle = async (webClientId: string) => {
-    console.log(webClientId);
-
     GoogleSignin.configure({
       webClientId: webClientId as string, // this is crucial
       offlineAccess: true, // include this

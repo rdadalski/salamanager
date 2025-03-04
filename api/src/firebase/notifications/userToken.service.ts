@@ -31,7 +31,6 @@ export class UserTokenService {
    */
   async saveUserToken(userId: string, token: string, deviceInfo?: any): Promise<string> {
     // Check if token already exists
-    console.log(token);
     try {
       const tokens = await this.genericService.findByQuery([
         { field: 'userId', operator: '==', value: userId },
