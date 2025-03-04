@@ -23,6 +23,7 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
   console.log(`Application is running on: ${await app.getUrl()}`);
   console.log(`Network access via: http://192.168.0.5:${port}`);
+
 }
 
 // Only call bootstrap when running directly (not when imported by Firebase Functions)
