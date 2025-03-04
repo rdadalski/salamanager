@@ -6,6 +6,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthNavigator } from "@app/navigation/AuthNavigator";
 import { MainNavigator } from "@app/navigation/MainNavigator";
+import { registerUserForNotifications } from "@app/services/notifications";
+import { deviceType } from "expo-device";
 
 export type MainTabParamList = {
   Auth: undefined;
@@ -15,12 +17,18 @@ export type MainTabParamList = {
 const RootStack = createNativeStackNavigator<MainTabParamList>();
 
 export const RootNavigator: FC = () => {
-  const { isUserSignedIn, user, initializing } = useInitializeApp();
+  const { isUserSignedIn, user, initializing, deviceInfo } = useInitializeApp();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchGoogleConfig());
   }, []);
+
+  useEffect(() => {
+    if (isUserSignedIn && user && deviceInfo) {
+      registerUserForNotifications(user.uid, deviceInfo!);
+    }
+  }, [isUserSignedIn, deviceInfo]);
 
   return (
     <NavigationContainer>

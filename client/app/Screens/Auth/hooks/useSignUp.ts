@@ -1,24 +1,28 @@
 import { useState } from "react";
-import { getAuth, FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { FirebaseAuthTypes, getAuth } from "@react-native-firebase/auth";
 import { FirebaseErrorHandler } from "@app/services";
 import { defaultError } from "@app/services/firebase/error/errorMap";
+import { useCreateUserMutation } from "@app/api/users/usersApi";
 
 export const useSignUp = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [createUser] = useCreateUserMutation();
 
   const signUp = async (email: string, password: string) => {
     setLoading(true);
-
     try {
-      const userCredential = await getAuth().createUserWithEmailAndPassword(
+      const userCredentials = await getAuth().createUserWithEmailAndPassword(
         email,
         password,
       );
 
-      console.log(userCredential);
+      const firebaseUser = await createUser(userCredentials.user);
 
-      await userCredential.user.sendEmailVerification();
+      await userCredentials.user.sendEmailVerification();
+
       await getAuth().signOut();
+
+      setLoading(false);
 
       return {
         success: true,

@@ -1,28 +1,27 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-import { app } from 'firebase-admin';
-import { FirebaseAuthError, getAuth, UserRecord } from 'firebase-admin/lib/auth';
+import { Injectable } from '@nestjs/common';
+import { CreateUserDto } from '@app/user/dto/create-user.dto';
+import { getAuth } from 'firebase-admin/auth';
+import { UserService } from '@app/user/user.service';
 
 @Injectable()
 export class AuthService {
-  constructor(@Inject('FIREBASE_ADMIN') private firebaseAdmin: app.App) {}
+  constructor(private userService: UserService) {}
 
-  async create(createUserDto: CreateUserDto) {}
+  async create(createUserDto: CreateUserDto) {
+    try {
+      const authResponse = await getAuth().createUser({
+        email: createUserDto.email,
+        emailVerified: false,
+        password: createUserDto.password,
+        disabled: false,
+      });
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+      const storedUser = await this.userService.createUser(authResponse);
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+      return authResponse;
+    } catch (e) {
+      const error = e as Error;
+      console.error(error);
+    }
   }
 }

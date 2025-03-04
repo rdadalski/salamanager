@@ -19,9 +19,9 @@ export const fetchGoogleConfig = createAsyncThunk(
       const response = await dispatch(
         configApi.endpoints.getGoogleApiKey.initiate(),
       ).unwrap();
-
       return response;
     } catch (error) {
+      console.log(error);
       throw error;
     }
   },
@@ -41,18 +41,13 @@ const configSlice = createSlice({
     builder
       // Handle initial loading from storage/API
       .addCase(fetchGoogleConfig.pending, (state) => {
-        console.log("loading");
         state.status = LoadingStatus.LOADING;
       })
       .addCase(fetchGoogleConfig.fulfilled, (state, action) => {
-        console.log("success");
-        console.log(action);
         state.status = LoadingStatus.SUCCEEDED;
         state.google = action.payload;
       })
       .addCase(fetchGoogleConfig.rejected, (state, action) => {
-        console.log("error");
-        console.log(action);
         state.status = LoadingStatus.FAILED;
         state.error = action.error.message || "Failed to load config";
       });

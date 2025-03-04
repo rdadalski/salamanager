@@ -9,6 +9,7 @@ import { TestGenericModule } from './test-generic/test-generic.module';
 import { NotificationsModule } from './firebase/notifications/notifications.module';
 import { AuthModule } from './auth/auth.module';
 import { GoogleAuthModule } from './google-auth/google-auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { GoogleAuthModule } from './google-auth/google-auth.module';
     NotificationsModule,
     AuthModule,
     GoogleAuthModule,
+    UserModule,
   ],
   controllers: [AppController, FirebaseController],
   providers: [AppService, FirebaseService],
