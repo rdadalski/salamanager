@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import { UserService } from './user.service';
+import { UserController } from './user.controller';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import { UserToken } from '@app/firebase/notifications/models/user-token.model';
-import { UserService } from '@app/user/user.service';
 
 @Module({
-  controllers: [AuthController],
+  controllers: [UserController],
   providers: [
-    AuthService,
     UserService,
     {
       provide: 'USER_FIRESTORE_SERVICE',
@@ -19,4 +17,4 @@ import { UserService } from '@app/user/user.service';
     },
   ],
 })
-export class AuthModule {}
+export class UserModule {}

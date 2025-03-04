@@ -33,11 +33,18 @@ export class FirebaseModule {
 
   private static initializeFirebaseAdmin(): admin.app.App {
     if (!this.firebaseApp) {
-      console.log('Initializing Firebase app');
+      // Make sure credentials are properly formatted
+      const serviceAccount = {
+        projectId: credentials.project_id,
+        privateKey: credentials.private_key,
+        clientEmail: credentials.client_email,
+      };
+
       this.firebaseApp = admin.initializeApp({
-        credential: admin.credential.cert(credentials as admin.ServiceAccount),
-        databaseURL: `https://${credentials.project_id}.firebaseio.com`,
-        storageBucket: `${credentials.project_id}.appspot.com`,
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: `https://${serviceAccount.projectId}.firebaseio.com`,
+        storageBucket: `${serviceAccount.projectId}.appspot.com`,
+        projectId: serviceAccount.projectId,
       });
     }
     return this.firebaseApp;

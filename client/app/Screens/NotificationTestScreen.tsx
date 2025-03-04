@@ -1,18 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { NotificationService } from "../services";
+import { useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import {
   useLazyGetTestConnectionQuery,
+  useSendNotificationMutation,
   useSendTokenMutation,
 } from "@app/api/notifications";
+import { selectFCMToken } from "@app/store/slices/notificationSlice";
+import { useSelector } from "react-redux";
 
 export const NotificationTestScreen = () => {
   const [token, setToken] = useState<string | null>(null);
   const [status, setStatus] = useState<string>("");
+  const FCMToken = useSelector(selectFCMToken);
 
-  const [sendToken, { isLoading: tokenIsLoading }] = useSendTokenMutation();
   const [testConnection, { isLoading: testConnectionLoading }] =
     useLazyGetTestConnectionQuery();
+
+  const [sendNotification] = useSendNotificationMutation();
 
   const onTestConnection = () => {
     testConnection().then((res) => {
@@ -20,56 +24,15 @@ export const NotificationTestScreen = () => {
     });
   };
 
-  useEffect(() => {
-    registerDevice();
-  }, []);
-
-  const registerDevice = async () => {
-    try {
-      setStatus("Registering device...");
-      const token =
-        await NotificationService.registerForPushNotificationsAsync();
-      setToken(token);
-
-      if (token) {
-        // TODO tutaj trzeba dodać obsługę DTO z backendu
-        await sendToken({});
-
-        setStatus("Device registered successfully");
-      }
-    } catch (error) {
-      console.error("Error registering device:", error);
-      setStatus("Error registering device");
-    }
-  };
-
   const testNotification = async () => {
-    if (!token) {
-      setStatus("No token available");
-      return;
-    }
+    // if (!token) {
+    //   setStatus("No token available");
+    //   return;
+    // }
 
     try {
       setStatus("Sending test notification...");
-
-      // zamiast fetch trzeba zrobić endpoint w storze
-      const response = await fetch("YOUR_API_URL/notifications/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token,
-          title: "Test Notification",
-          body: "This is a test notification from the app",
-          data: {
-            type: "test",
-            timestamp: new Date().toISOString(),
-          },
-        }),
-      });
-
-      const result = await response.json();
+      const result = await sendNotification({});
       setStatus(`Notification sent: ${JSON.stringify(result)}`);
     } catch (error) {
       console.error("Error sending notification:", error);
@@ -82,15 +45,8 @@ export const NotificationTestScreen = () => {
       <Text className="text-lg mb-4">Notification Test</Text>
       <Text className="mb-2">Status: {status}</Text>
       <Text className="mb-4">
-        Token: {token ? "Available" : "Not available"}
+        Token: {FCMToken ? "Available" : "Not available"}
       </Text>
-
-      <TouchableOpacity
-        className="bg-blue-500 p-3 rounded mb-2"
-        onPress={registerDevice}
-      >
-        <Text className="text-white text-center">Register Device</Text>
-      </TouchableOpacity>
 
       <TouchableOpacity
         className="bg-green-500 p-3 rounded mb-2"

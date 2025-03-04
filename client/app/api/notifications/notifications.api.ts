@@ -1,11 +1,14 @@
 import { baseApi } from "../baseApi";
+import {
+  IRegisterToken,
+  IRegisterTokenResponse,
+  ISendNotification,
+} from "@app/api/notifications/models/notification-models";
 
 const baseUrl = "/notifications";
 
 export const notificationsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // @Get('test-connection')
-
     getTestConnection: builder.query<any, void>({
       query: () => ({
         url: `${baseUrl}/test-connection`,
@@ -17,8 +20,14 @@ export const notificationsApi = baseApi.injectEndpoints({
       },
     }),
 
-    //   @Get('token/:userId')
-    //   async getUserToken(@Param('userId') userId: string) {
+    registerToken: builder.mutation<IRegisterTokenResponse, IRegisterToken>({
+      query: (values: IRegisterToken) => ({
+        url: `${baseUrl}/register-token`,
+        method: "POST",
+        body: values,
+      }),
+    }),
+
     // TODO build interface for that later
 
     getUserToken: builder.mutation<any, { text: string }>({
@@ -30,30 +39,12 @@ export const notificationsApi = baseApi.injectEndpoints({
       invalidatesTags: [],
     }),
 
-    //   @Post('send')
-    //   async sendNotification(
-    //     @Body() body: { token: string; title: string; body: string; data?: any },
-    //   ) {
-    //     return this.notificationsService.sendPushNotification(body);
-    //   }
-
     sendNotification: builder.mutation<any, any>({
-      query: (values: any) => ({
+      query: () => ({
         url: `${baseUrl}/send`,
         method: "POST",
-        body: values,
       }),
     }),
-
-    //   @Post('token')
-    //   async saveDeviceToken(@Body() deviceTokenDto: DeviceTokenDto) {
-    //     console.log(deviceTokenDto);
-    //     return this.notificationsService.saveExpoToken(
-    //       deviceTokenDto.userId,
-    //       deviceTokenDto.token,
-    //       deviceTokenDto.deviceData,
-    //     );
-    //   }
 
     sendToken: builder.mutation<any, any>({
       query: (values: any) => ({

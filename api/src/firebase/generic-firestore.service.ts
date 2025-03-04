@@ -4,37 +4,76 @@ import { app } from 'firebase-admin';
 
 @Injectable()
 export class GenericFirestoreService<T> {
-  private collection: CollectionReference;
+  private readonly collection: CollectionReference;
 
   constructor(
     @Inject('FIREBASE_ADMIN') private firebaseAdmin: app.App,
-    private collectionName: string,
+    private collectionName: string
   ) {
-    this.collection = this.firebaseAdmin
-      .firestore()
-      .collection(this.collectionName);
+    this.collection = this.firebaseAdmin.firestore().collection(this.collectionName);
   }
 
   async create(data: T): Promise<string> {
-    const docRef = await this.collection.add(data);
-    return docRef.id;
+    try {
+      const docRef = await this.collection.add(data);
+      return docRef.id;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async findOne(id: string): Promise<T | null> {
-    const doc = await this.collection.doc(id).get();
-    return doc.exists ? (doc.data() as T) : null;
+    try {
+      const doc = await this.collection.doc(id).get();
+      return doc.exists ? (doc.data() as T) : null;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async findAll(): Promise<T[]> {
-    const snapshot = await this.collection.get();
-    return snapshot.docs.map((doc) => doc.data() as T);
+    try {
+      const snapshot = await this.collection.get();
+      return snapshot.docs.map((doc) => doc.data() as T);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async findByQuery(queries: { field: string; operator: FirebaseFirestore.WhereFilterOp; value: any }[]): Promise<T[]> {
+    try {
+      let query: FirebaseFirestore.Query = this.collection;
+
+      queries.forEach((q) => {
+        query = query.where(q.field, q.operator, q.value);
+      });
+
+      const snapshot = await query.get();
+      return snapshot.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data(),
+          }) as T
+      );
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async update(id: string, data: Partial<T>): Promise<void> {
-    await this.collection.doc(id).update(data);
+    try {
+      await this.collection.doc(id).update(data);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async delete(id: string): Promise<void> {
-    await this.collection.doc(id).delete();
+    try {
+      await this.collection.doc(id).delete();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
