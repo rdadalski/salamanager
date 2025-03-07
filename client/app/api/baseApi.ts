@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Platform } from "react-native";
 import * as Device from "expo-device";
+import { getToken } from "@react-native-firebase/messaging";
+import { getAccessToken } from "@app/services";
 
 const getBaseUrl = () => {
   const isDevMode = __DEV__;
@@ -41,7 +43,13 @@ export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: getBaseUrl(),
-    prepareHeaders: (headers, endpoint) => {
+    prepareHeaders: async (headers, { getState }) => {
+      const token = await getAccessToken();
+
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+
       return headers;
     },
   }),
