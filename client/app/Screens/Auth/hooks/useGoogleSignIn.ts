@@ -46,9 +46,9 @@ export const useGoogleSignIn = () => {
 
   const configureGoogle = async (webClientId: string) => {
     GoogleSignin.configure({
-      webClientId: webClientId as string, // this is crucial
-      offlineAccess: true, // include this
-      scopes: ["openid"], // make sure you have this
+      webClientId: webClientId as string,
+      offlineAccess: true,
+      scopes: ["openid"],
     });
   };
 
