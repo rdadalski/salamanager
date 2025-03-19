@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { baseApi } from "@app/api/";
+import { baseApi, calendarApi } from "@app/api/";
 import { notificationsApi } from "@app/api/";
 import { configApi } from "@app/api/";
 import configSlice from "@app/store/slices/configSlice";
@@ -15,11 +15,13 @@ export const store = configureStore({
     notificationApi: notificationsApi.reducer,
     configApi: configApi.reducer,
     authApi: authApi.reducer,
+    calendarApi: calendarApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       baseApi.middleware,
       notificationsApi.middleware,
+      calendarApi.middleware,
       configApi.middleware,
     ),
 });

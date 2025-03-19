@@ -1,14 +1,42 @@
-import { getAuth, firebase } from "@react-native-firebase/auth";
+import {
+  getAuth,
+  firebase,
+  FirebaseAuthTypes,
+} from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { ErrorMessage, storeToken } from "@app/services";
+import {
+  ErrorMessage,
+  storeGoogleAccessToken,
+  storeToken,
+} from "@app/services";
 import { useCreateUserMutation } from "@app/api/users/usersApi";
+import { IFirestoreUserData } from "@app/types";
 
 export const useGoogleSignIn = () => {
   const [createUser] = useCreateUserMutation();
 
-  const signInWithGoogle = async (webClientId: string) => {
+  const getUserRequestData = (
+    user: FirebaseAuthTypes.User,
+  ): IFirestoreUserData => {
+    return {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      emailVerified: user.emailVerified,
+      phoneNumber: user.phoneNumber,
+      metadata: {
+        creationTime: user.metadata.creationTime,
+        lastSignInTime: user.metadata.lastSignInTime,
+      },
+    };
+  };
+
+  // Usage in your function
+
+  const signInWithGoogle = async (webClientId: string, scopes: string[]) => {
     try {
-      await configureGoogle(webClientId);
+      await configureGoogle(webClientId, scopes);
 
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
@@ -16,8 +44,17 @@ export const useGoogleSignIn = () => {
 
       const signInResult = await GoogleSignin.signIn();
 
+      // await GoogleSignin.revokeAccess();
+      // // Then sign out
+      // await GoogleSignin.signOut();
+      //
+      // return null;
+
+      const serverAuthCode = signInResult.data?.serverAuthCode;
+
       const { accessToken, idToken } = await GoogleSignin.getTokens();
-      await storeToken(idToken);
+
+      await storeGoogleAccessToken(accessToken);
 
       if (!idToken) {
         throw new Error("No ID token found");
@@ -29,11 +66,19 @@ export const useGoogleSignIn = () => {
       );
 
       const userCredentials = await getAuth().signInWithCredential(credential);
+      const firebaseAccessToken = await userCredentials.user.getIdToken();
+
+      await storeToken(firebaseAccessToken);
+
       const isNewUser = userCredentials.additionalUserInfo?.isNewUser || false;
 
       if (isNewUser) {
         await userCredentials.user.sendEmailVerification();
-        const firebaseUser = await createUser(userCredentials.user);
+        const createUserRequestData = {
+          ...getUserRequestData(userCredentials.user),
+          serverAuthCode: serverAuthCode as string,
+        };
+        const firebaseUser = await createUser(createUserRequestData);
       }
 
       return userCredentials;
@@ -44,11 +89,11 @@ export const useGoogleSignIn = () => {
     }
   };
 
-  const configureGoogle = async (webClientId: string) => {
+  const configureGoogle = async (webClientId: string, scopes: string[]) => {
     GoogleSignin.configure({
-      webClientId: webClientId as string, // this is crucial
-      offlineAccess: true, // include this
-      scopes: ["openid"], // make sure you have this
+      webClientId: webClientId as string,
+      offlineAccess: true,
+      scopes: scopes,
     });
   };
 

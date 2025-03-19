@@ -1,15 +1,17 @@
-import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import * as admin from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { User } from '@app/user/models/user.model';
-import { CreateUserDto } from '@app/user/dto/create-user.dto';
+import { CreateUserRequestDto } from '@app/user/dto/create-user.dto';
 import { UpdateUserDto } from '@app/user/dto/update-user.dto';
-import { UserRecord } from 'firebase-admin/auth';
+import { google } from 'googleapis';
+import * as process from 'node:process';
 
 @Injectable()
 export class UserService {
   private genericService: GenericFirestoreService<User>;
+  private readonly logger = new Logger(UserService.name);
 
   /**
    * Creates an instance of UserTokenService.
@@ -25,9 +27,8 @@ export class UserService {
    * @param createUserDto Data for the new user
    * @returns The created user with metadata
    */
-  async createUser(createUserDto: CreateUserDto | UserRecord): Promise<User> {
+  async createUser(createUserDto: CreateUserRequestDto): Promise<User> {
     // Check if user already exists
-
     const existingUser = await this.genericService.findOne(createUserDto.uid);
     if (existingUser) {
       throw new ConflictException(`User with ID ${createUserDto.uid} already exists`);
@@ -38,12 +39,37 @@ export class UserService {
     const userData: User = {
       email,
       uid,
+      phoneNumber,
+      photoURL,
+      displayName,
       createdAt: Timestamp.now(),
       lastLogin: Timestamp.now(),
     };
 
-    // Use the UID as document ID
-    await this.genericService.create(userData);
+    // If serverAuthCode exists, exchange it for a refresh token
+    if (createUserDto.serverAuthCode) {
+      try {
+        const oauth2Client = new google.auth.OAuth2(
+          process.env.WEB_CLIENT_ID,
+          process.env.WEB_CLIENT_SECRET,
+          process.env.WEB_CLIENT_REDIRECT_URI
+        );
+
+        const { tokens } = await oauth2Client.getToken(createUserDto.serverAuthCode);
+
+        this.logger.log(tokens);
+
+        if (tokens.refresh_token) {
+          userData.googleRefreshToken = tokens.refresh_token;
+        }
+      } catch (error) {
+        this.logger.error('Error exchanging auth code for refresh token:', error);
+        // You may want to handle this error differently
+      }
+    }
+
+    console.log(userData, uid);
+    await this.genericService.create(userData, uid);
     return userData;
   }
 
