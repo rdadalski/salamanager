@@ -1,6 +1,5 @@
 import { useSignOut } from "@app/Screens/Auth";
 import { HomeScreen, NotificationTestScreen } from "@app/Screens";
-import { Pressable, View, Text } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";

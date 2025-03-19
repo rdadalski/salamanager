@@ -1,8 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Platform } from "react-native";
 import * as Device from "expo-device";
-import { getToken } from "@react-native-firebase/messaging";
-import { getAccessToken, getGoogleAccessToken } from "@app/services";
+import { getAccessToken } from "@app/services";
 
 const getBaseUrl = () => {
   const isDevMode = __DEV__;

@@ -1,5 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, IsOptional, IsIn, IsObject, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsEmail, IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 export class CreateUserRequestDto {
   @IsNotEmpty()
