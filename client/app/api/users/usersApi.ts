@@ -1,31 +1,14 @@
 import { baseApi } from "@app/api";
-import { FirebaseAuthTypes } from "@react-native-firebase/auth";
-
-export interface User {
-  uid: string;
-  email: string;
-  displayName: string | null;
-  photoURL: string | null;
-  authProvider: "password" | "google.com";
-}
-
-export interface CreateUserRequest {
-  email: string;
-  password: string;
-}
-
-export interface UpdateUserRequest {
-  uid: string;
-  email: string;
-  displayName?: string | null;
-  photoURL?: string | null;
-  authProvider: "password" | "google.com";
-}
+import {
+  IFirestoreCreateUserRequest,
+  IFirestoreUserData,
+  UpdateUserRequest,
+} from "@app/types/users";
 
 export const usersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Get all users
-    getUsers: builder.query<User[], void>({
+    getUsers: builder.query<IFirestoreUserData[], void>({
       query: () => ({
         url: `/users`,
         method: "GET",
@@ -34,7 +17,8 @@ export const usersApi = baseApi.injectEndpoints({
     }),
 
     // Get single user by ID
-    getUserById: builder.query<User, string>({
+
+    getUserById: builder.query<IFirestoreUserData, string>({
       query: (id) => ({
         url: `/users/${id}`,
         method: "GET",
@@ -43,7 +27,11 @@ export const usersApi = baseApi.injectEndpoints({
     }),
 
     // Create a new user
-    createUser: builder.mutation<User, FirebaseAuthTypes.User>({
+
+    createUser: builder.mutation<
+      IFirestoreUserData,
+      IFirestoreCreateUserRequest
+    >({
       query: (userData) => ({
         url: `/users`,
         method: "POST",
@@ -53,7 +41,8 @@ export const usersApi = baseApi.injectEndpoints({
     }),
 
     // Update an existing user
-    updateUser: builder.mutation<User, UpdateUserRequest>({
+
+    updateUser: builder.mutation<IFirestoreUserData, UpdateUserRequest>({
       query: (userData) => ({
         url: `/users/${userData.uid}`,
         method: "PUT",

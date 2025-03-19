@@ -1,6 +1,7 @@
 import { baseApi } from "@app/api";
-import { CreateUserRequest, User } from "@app/api/users/usersApi";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { CreateUserRequest } from "@app/types";
+
 
 const baseUrl = "auth";
 

@@ -1,6 +1,8 @@
-import { IsEmail, IsNotEmpty, IsString, IsOptional, IsIn } from 'class-validator';
 
-export class CreateUserDto {
+import { IsEmail, IsNotEmpty, IsString, IsOptional } from 'class-validator';
+
+export class CreateUserRequestDto {
+
   @IsNotEmpty()
   @IsString()
   uid: string;
@@ -24,9 +26,14 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   photoURL: string | null;
+  
+  // @IsNotEmpty()
+  // @IsString()
+  // @IsIn(['password', 'google.com'])
+  // authProvider: 'password' | 'google.com';
 
-  @IsNotEmpty()
   @IsString()
-  @IsIn(['password', 'google.com'])
-  authProvider: 'password' | 'google.com';
+  @IsOptional()
+  serverAuthCode?: string;
+
 }

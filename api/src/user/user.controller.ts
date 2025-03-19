@@ -9,9 +9,10 @@ import {
   UseGuards,
   NotFoundException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserRequestDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { FirebaseAuthGuard } from '../utils/guards/firebase-auth.guard';
@@ -20,16 +21,23 @@ import { FirebaseAuthGuard } from '../utils/guards/firebase-auth.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  private readonly logger = new Logger(UserController.name);
+
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserRequestDto) {
     try {
+      this.logger.warn(createUserDto);
       const user = await this.userService.createUser(createUserDto);
-      return new UserResponseDto(user);
+      return user;
+      // return new UserResponseDto(user);
+
     } catch (error) {
       if (error instanceof ConflictException) {
         throw error;
       }
-      throw new Error('Error creating user');
+
+      throw new Error('Error creating user from UserController');
+
     }
   }
 

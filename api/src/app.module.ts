@@ -10,6 +10,7 @@ import { NotificationsModule } from './firebase/notifications/notifications.modu
 import { AuthModule } from './auth/auth.module';
 import { GoogleAuthModule } from './google-auth/google-auth.module';
 import { UserModule } from './user/user.module';
+import { CalendarModule } from './calendar/calendar.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     GoogleAuthModule,
     UserModule,
+    CalendarModule,
   ],
   controllers: [AppController, FirebaseController],
   providers: [AppService, FirebaseService],
