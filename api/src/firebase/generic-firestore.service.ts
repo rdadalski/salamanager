@@ -1,10 +1,11 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { CollectionReference } from '@google-cloud/firestore';
-import { app } from 'firebase-admin';
+import { app, FirebaseError } from 'firebase-admin';
 
 @Injectable()
 export class GenericFirestoreService<T> {
   private readonly collection: CollectionReference;
+  private readonly logger = new Logger(GenericFirestoreService.name);
 
   constructor(
     @Inject('FIREBASE_ADMIN') private firebaseAdmin: app.App,
@@ -13,12 +14,23 @@ export class GenericFirestoreService<T> {
     this.collection = this.firebaseAdmin.firestore().collection(this.collectionName);
   }
 
-  async create(data: T): Promise<string> {
+  async create(data: T, docId?: string): Promise<string> {
     try {
-      const docRef = await this.collection.add(data);
-      return docRef.id;
+      if (docId) {
+        // Use the provided ID for the document
+        const docRef = this.collection.doc(docId);
+        await docRef.set(data);
+
+        return docId;
+      } else {
+        // Auto-generate ID if none provided
+        const docRef = await this.collection.add(data);
+        return docRef.id;
+      }
     } catch (e) {
-      console.log(e);
+      const error = e as FirebaseError;
+      this.logger.error('Error creating document:', error.message);
+      throw e;
     }
   }
 
