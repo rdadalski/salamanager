@@ -16,6 +16,7 @@ export const store = configureStore({
     configApi: configApi.reducer,
     authApi: authApi.reducer,
     calendarApi: calendarApi.reducer,
+
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(

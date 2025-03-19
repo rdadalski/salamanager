@@ -2,6 +2,7 @@ import { baseApi } from "@app/api";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { CreateUserRequest } from "@app/types";
 
+
 const baseUrl = "auth";
 
 export const authApi = baseApi.injectEndpoints({

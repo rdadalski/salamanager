@@ -17,6 +17,7 @@ export const usersApi = baseApi.injectEndpoints({
     }),
 
     // Get single user by ID
+
     getUserById: builder.query<IFirestoreUserData, string>({
       query: (id) => ({
         url: `/users/${id}`,
@@ -26,6 +27,7 @@ export const usersApi = baseApi.injectEndpoints({
     }),
 
     // Create a new user
+
     createUser: builder.mutation<
       IFirestoreUserData,
       IFirestoreCreateUserRequest
@@ -39,6 +41,7 @@ export const usersApi = baseApi.injectEndpoints({
     }),
 
     // Update an existing user
+
     updateUser: builder.mutation<IFirestoreUserData, UpdateUserRequest>({
       query: (userData) => ({
         url: `/users/${userData.uid}`,

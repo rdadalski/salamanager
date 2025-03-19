@@ -7,12 +7,14 @@ export class GenericFirestoreService<T> {
   private readonly collection: CollectionReference;
   private readonly logger = new Logger(GenericFirestoreService.name);
 
+
   constructor(
     @Inject('FIREBASE_ADMIN') private firebaseAdmin: app.App,
     private collectionName: string
   ) {
     this.collection = this.firebaseAdmin.firestore().collection(this.collectionName);
   }
+
 
   async create(data: T, docId?: string): Promise<string> {
     try {
@@ -31,6 +33,7 @@ export class GenericFirestoreService<T> {
       const error = e as FirebaseError;
       this.logger.error('Error creating document:', error.message);
       throw e;
+
     }
   }
 

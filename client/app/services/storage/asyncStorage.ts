@@ -23,6 +23,7 @@ export async function storeToken(token: string) {
   await storeData(token, "access_token");
 }
 
+
 export async function storeGoogleAccessToken(token: string) {
   await storeData(token, "google_access_token");
 }

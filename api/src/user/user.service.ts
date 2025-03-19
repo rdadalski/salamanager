@@ -1,17 +1,22 @@
+
 import { ConflictException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import * as admin from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { User } from '@app/user/models/user.model';
+
 import { CreateUserRequestDto } from '@app/user/dto/create-user.dto';
 import { UpdateUserDto } from '@app/user/dto/update-user.dto';
 import { google } from 'googleapis';
 import * as process from 'node:process';
 
+
 @Injectable()
 export class UserService {
   private genericService: GenericFirestoreService<User>;
   private readonly logger = new Logger(UserService.name);
+
 
   /**
    * Creates an instance of UserTokenService.
@@ -27,6 +32,7 @@ export class UserService {
    * @param createUserDto Data for the new user
    * @returns The created user with metadata
    */
+
   async createUser(createUserDto: CreateUserRequestDto): Promise<User> {
     // Check if user already exists
     const existingUser = await this.genericService.findOne(createUserDto.uid);
@@ -45,6 +51,7 @@ export class UserService {
       createdAt: Timestamp.now(),
       lastLogin: Timestamp.now(),
     };
+
 
     // If serverAuthCode exists, exchange it for a refresh token
     if (createUserDto.serverAuthCode) {

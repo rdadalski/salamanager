@@ -15,6 +15,7 @@ import { IFirestoreUserData } from "@app/types";
 export const useGoogleSignIn = () => {
   const [createUser] = useCreateUserMutation();
 
+
   const getUserRequestData = (
     user: FirebaseAuthTypes.User,
   ): IFirestoreUserData => {
@@ -56,6 +57,7 @@ export const useGoogleSignIn = () => {
 
       await storeGoogleAccessToken(accessToken);
 
+
       if (!idToken) {
         throw new Error("No ID token found");
       }
@@ -66,6 +68,7 @@ export const useGoogleSignIn = () => {
       );
 
       const userCredentials = await getAuth().signInWithCredential(credential);
+
       const firebaseAccessToken = await userCredentials.user.getIdToken();
 
       await storeToken(firebaseAccessToken);
@@ -74,6 +77,7 @@ export const useGoogleSignIn = () => {
 
       if (isNewUser) {
         await userCredentials.user.sendEmailVerification();
+
         const createUserRequestData = {
           ...getUserRequestData(userCredentials.user),
           serverAuthCode: serverAuthCode as string,
@@ -88,6 +92,7 @@ export const useGoogleSignIn = () => {
       return error.message;
     }
   };
+
 
   const configureGoogle = async (webClientId: string, scopes: string[]) => {
     GoogleSignin.configure({

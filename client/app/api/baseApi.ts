@@ -1,7 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Platform } from "react-native";
 import * as Device from "expo-device";
+
 import { getAccessToken } from "@app/services";
+
 
 const getBaseUrl = () => {
   const isDevMode = __DEV__;
@@ -13,6 +15,7 @@ const getBaseUrl = () => {
   // Check if this is a real device (not an emulator/simulator)
   const isRealDevice = Device.isDevice;
 
+
   let apiUrl = "";
 
   // For simulators/emulators in development
@@ -23,8 +26,6 @@ const getBaseUrl = () => {
       default: "http://localhost:3000",
     });
   }
-
-  console.log("test");
 
   // For physical devices in development
   if (isDevMode && isRealDevice) {
@@ -53,7 +54,6 @@ export const baseApi = createApi({
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
-
       return headers;
     },
   }),

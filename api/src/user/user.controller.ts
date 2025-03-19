@@ -20,6 +20,7 @@ import { FirebaseAuthGuard } from '../utils/guards/firebase-auth.guard';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
   private readonly logger = new Logger(UserController.name);
 
   @Post()
@@ -29,11 +30,14 @@ export class UserController {
       const user = await this.userService.createUser(createUserDto);
       return user;
       // return new UserResponseDto(user);
+
     } catch (error) {
       if (error instanceof ConflictException) {
         throw error;
       }
+
       throw new Error('Error creating user from UserController');
+
     }
   }
 
