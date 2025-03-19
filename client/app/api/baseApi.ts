@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Platform } from "react-native";
 import * as Device from "expo-device";
 import { getToken } from "@react-native-firebase/messaging";
-import { getAccessToken } from "@app/services";
+import { getAccessToken, getGoogleAccessToken } from "@app/services";
 
 const getBaseUrl = () => {
   const isDevMode = __DEV__;
@@ -14,19 +14,25 @@ const getBaseUrl = () => {
   // Check if this is a real device (not an emulator/simulator)
   const isRealDevice = Device.isDevice;
 
+  let apiUrl = "";
+
   // For simulators/emulators in development
   if (isDevMode && !isRealDevice) {
-    return Platform.select({
+    apiUrl = Platform.select({
       ios: "http://localhost:3000",
       android: "http://10.0.2.2:3000",
       default: "http://localhost:3000",
     });
   }
 
+  console.log("test");
+
   // For physical devices in development
   if (isDevMode && isRealDevice) {
-    return "http://192.168.0.5:3000"; // Your local network IP
+    apiUrl = "http://192.168.0.11:3000"; // Your local network IP
   }
+  console.log(apiUrl);
+  return apiUrl;
 
   // For production or staging environments
   // switch (releaseChannel) {
@@ -45,7 +51,6 @@ export const baseApi = createApi({
     baseUrl: getBaseUrl(),
     prepareHeaders: async (headers, { getState }) => {
       const token = await getAccessToken();
-
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
