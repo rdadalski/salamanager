@@ -1,5 +1,6 @@
 import { ICalendarEvent } from "@app/types/calendar";
 import { baseApi } from "@app/api";
+import { BaseQueryArg } from "@reduxjs/toolkit/query";
 
 interface ListEventsParams {
   timeMin?: string;
@@ -15,17 +16,19 @@ export const calendarApi = baseApi.injectEndpoints({
         params: { timeMin, timeMax, maxResults },
         method: "GET",
       }),
-
-      async onQueryStarted(arg, { queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          console.log("API call success:", data);
-        } catch (error) {
-          console.error("API call error:", error);
-        }
-      },
+    }),
+    addEvent: builder.mutation<any, any>({
+      query: ({ data }) => ({
+        url: "/calendar/events",
+        method: "POST",
+        body: data,
+      }),
     }),
   }),
 });
 
 export const { useListEventsQuery, useLazyListEventsQuery } = calendarApi;
+
+// addEvent
+// updateEvent
+// deleteEvent

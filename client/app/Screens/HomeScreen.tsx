@@ -1,8 +1,13 @@
 import { FC } from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { HomeStackParamList } from "../navigation";
+import {
+  CalendarBody,
+  CalendarContainer,
+  CalendarHeader,
+} from "@howljs/calendar-kit";
 
 export const HomeScreen: FC = () => {
   const navigation =
@@ -33,7 +38,6 @@ export const HomeScreen: FC = () => {
           </Text>
         </View>
       </Pressable>
-      {/*<Text className="font-mono text-sm text-gray-800 bg-gray-200 p-2 rounded">{Response}</Text>*/}
     </View>
   );
 };
