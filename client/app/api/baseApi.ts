@@ -4,17 +4,12 @@ import * as Device from "expo-device";
 
 import { getAccessToken } from "@app/services";
 
-
 const getBaseUrl = () => {
   const isDevMode = __DEV__;
-
-  // Get device type using expo-device
-  // DeviceType: 0: unknown, 1: phone, 2: tablet, 3: desktop, 4: tv
   const deviceType = Device.deviceType;
 
   // Check if this is a real device (not an emulator/simulator)
   const isRealDevice = Device.isDevice;
-
 
   let apiUrl = "";
 
@@ -29,9 +24,9 @@ const getBaseUrl = () => {
 
   // For physical devices in development
   if (isDevMode && isRealDevice) {
-    apiUrl = "http://192.168.0.11:3000"; // Your local network IP
+    apiUrl = "http://192.168.0.4:3000"; // Your local network IP
   }
-  console.log(apiUrl);
+
   return apiUrl;
 
   // For production or staging environments

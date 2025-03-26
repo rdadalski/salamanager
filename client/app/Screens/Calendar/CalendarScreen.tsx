@@ -3,6 +3,8 @@ import { View, Text, FlatList, ActivityIndicator } from "react-native";
 import { useLazyListEventsQuery } from "@app/api/calendarApi/";
 import { CustomButton } from "@app/components";
 import { Calendar } from "react-native-calendars";
+import { WeeklyCalendar } from "@app/Screens/Calendar/components/WeeklyCalendar";
+import { addDays, format, startOfWeek } from "date-fns";
 
 export const CalendarEvents = () => {
   const [selected, setSelected] = useState("");
@@ -11,11 +13,20 @@ export const CalendarEvents = () => {
     useLazyListEventsQuery();
 
   const handleCalendar = async () => {
-    const response = await getCalendar({
-      timeMin: "2023-01-01T00:00:00Z",
-      timeMax: Date.now().toString(),
-      maxResults: 10,
-    });
+    const response = await getCalendar(
+      {
+        timeMin: format(
+          startOfWeek(new Date(), { weekStartsOn: 1 }),
+          "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        ),
+        timeMax: format(
+          addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), 6),
+          "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        ),
+        maxResults: 10,
+      },
+      false,
+    );
   };
 
   const showError = () => {
@@ -34,32 +45,12 @@ export const CalendarEvents = () => {
             iconName={"calendar"}
             onPress={handleCalendar}
           />
-          {isSuccess && (
-            <FlatList
-              data={events}
-              keyExtractor={(item) => item?.id!}
-              renderItem={({ item }) => (
-                <View>
-                  <Text>{item.summary}</Text>
-                </View>
-              )}
-            />
-          )}
+
           {isError && showError()}
         </>
       )}
-      <Calendar
-        onDayPress={(day: any) => {
-          setSelected(day.dateString);
-        }}
-        markedDates={{
-          [selected]: {
-            selected: true,
-            disableTouchEvent: true,
-            selectedDotColor: "orange",
-          },
-        }}
-      />
+
+      {isSuccess && <WeeklyCalendar events={events}></WeeklyCalendar>}
     </>
   );
 };

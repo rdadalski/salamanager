@@ -1,9 +1,6 @@
-import { Controller, Post, Body, ConflictException } from '@nestjs/common';
-import { AuthService } from './auth.service';
 import { CreateUserRequestDto } from '@app/user/dto/create-user.dto';
 import { Controller, Post, Body, Patch, Param, Delete, ConflictException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '@app/user/dto/create-user.dto';
 import { UserResponseDto } from '@app/user/dto/user-response.dto';
 
 @Controller('auth')
@@ -12,7 +9,6 @@ export class AuthController {
 
   @Post('register')
   async create(@Body() createUserDto: CreateUserRequestDto) {
-
     try {
       return await this.authService.create(createUserDto);
     } catch (error) {
