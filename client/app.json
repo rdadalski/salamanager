@@ -20,7 +20,7 @@
       "ndkVersion": "28.0.13004108"
     },
     "ios": {
-      "googleServicesFile": "./google-services.plist",
+      "googleServicesFile": "./config/GoogleService-Info.plist",
       "bundleIdentifier": "com.itrado.salamanager",
       "infoPlist": {
         "UIBackgroundModes": ["remote-notification"]
