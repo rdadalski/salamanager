@@ -22,8 +22,6 @@ export class CalendarService {
       const decodedToken = await getAuth().verifyIdToken(idToken);
       const uid = decodedToken.uid;
 
-      const usersSnapshot = await this.db.collection('users').doc(uid).get();
-
       // Get the user from Firestore to retrieve their Google access token
       const userDoc = await getFirestore().collection('users').doc(uid).get();
 
@@ -69,8 +67,7 @@ export class CalendarService {
     }
   }
 
-  // Get user's calendar events
-  async listEvents(
+  public async listEvents(
     idToken: string,
     params: {
       timeMin?: string;
@@ -92,6 +89,59 @@ export class CalendarService {
       return response.data.items as ICalendarEvent[];
     } catch (error) {
       this.logger.error(`Failed to list events: ${error.message}`);
+      throw error;
+    }
+  }
+
+  public async createEvent(idToken: string, eventData: calendar_v3.Schema$Event): Promise<calendar_v3.Schema$Event> {
+    try {
+      const calendar = await this.getCalendarClient(idToken);
+
+      const response = await calendar.events.insert({
+        calendarId: 'primary',
+        requestBody: eventData,
+      });
+
+      return response.data;
+    } catch (error) {
+      this.logger.error(`Failed to create event: ${error.message}`);
+      throw error;
+    }
+  }
+
+  public async updateEvent(
+    idToken: string,
+    eventId: string,
+    eventData: calendar_v3.Schema$Event
+  ): Promise<calendar_v3.Schema$Event> {
+    try {
+      const calendar = await this.getCalendarClient(idToken);
+
+      const response = await calendar.events.update({
+        calendarId: 'primary',
+        eventId: eventId,
+        requestBody: eventData,
+      });
+
+      return response.data;
+    } catch (error) {
+      this.logger.error(`Failed to update event ${eventId}: ${error.message}`);
+      throw error;
+    }
+  }
+
+  public async deleteEvent(idToken: string, eventId: string): Promise<boolean> {
+    try {
+      const calendar = await this.getCalendarClient(idToken);
+
+      await calendar.events.delete({
+        calendarId: 'primary',
+        eventId: eventId,
+      });
+
+      return true;
+    } catch (error) {
+      this.logger.error(`Failed to delete event ${eventId}: ${error.message}`);
       throw error;
     }
   }

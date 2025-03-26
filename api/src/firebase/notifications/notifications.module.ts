@@ -4,7 +4,7 @@ import { FirebaseModule } from '@app/firebase/firebase.module';
 import { NotificationsController } from './notifications.controller';
 import { UserTokenService } from '@app/firebase/notifications/userToken.service';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
-import { UserToken } from '@app/firebase/notifications/models/user-token.model';
+import { UserToken } from '@app/firebase/notifications/interfaces/user-token.model';
 
 @Module({
   imports: [FirebaseModule.forRoot()],

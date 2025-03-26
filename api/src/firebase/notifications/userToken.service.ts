@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
-import { UserToken } from '@app/firebase/notifications/models/user-token.model';
+import { UserToken } from '@app/firebase/notifications/interfaces/user-token.model';
 
 /**
  * UserTokenService is a service for managing user tokens in Firestore.

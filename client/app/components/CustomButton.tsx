@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 
 interface ICustomButton {
@@ -14,11 +14,11 @@ export const CustomButton: FC<ICustomButton> = ({
   onPress,
 }) => {
   return (
-    <Pressable onPress={onPress}>
+    <TouchableOpacity onPress={onPress}>
       <View className="px-4 flex-row justify-center items-center bg-blue-700">
         <Text className="font-bold text-white p-2">{title.toUpperCase()}</Text>
         <AntDesign color={"#fff"} size={16} name={iconName} />
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
