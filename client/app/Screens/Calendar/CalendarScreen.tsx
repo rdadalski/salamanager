@@ -1,62 +1,24 @@
-import { useState } from "react";
-import { View, Text, FlatList, ActivityIndicator } from "react-native";
-import { useLazyListEventsQuery } from "@app/api/calendarApi/";
+import { FC } from "react";
+import { useListCalendarsQuery } from "@app/api";
+import { View } from "react-native";
 import { CustomButton } from "@app/components";
-import { Calendar } from "react-native-calendars";
-import { WeeklyCalendar } from "@app/Screens/Calendar/components/WeeklyCalendar";
-import { addDays, format, startOfWeek } from "date-fns";
 
-export const CalendarEvents = () => {
-  const [selected, setSelected] = useState("");
+export const CalendarScreen: FC = () => {
+  const {
+    data: calendarList,
+    isLoading: listIsLoading,
+    refetch,
+  } = useListCalendarsQuery();
 
-  const [getCalendar, { data: events, error, isSuccess, isError, isLoading }] =
-    useLazyListEventsQuery();
-
-  const handleCalendar = async () => {
-    const response = await getCalendar(
-      {
-        timeMin: format(
-          startOfWeek(new Date(), { weekStartsOn: 1 }),
-          "yyyy-MM-dd'T'HH:mm:ss'Z'",
-        ),
-        timeMax: format(
-          addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), 6),
-          "yyyy-MM-dd'T'HH:mm:ss'Z'",
-        ),
-        maxResults: 10,
-      },
-      false,
-    );
-  };
-
-  const showError = () => {
-    const errorMessage = error as Error;
-    return <Text>Error: {errorMessage.message}</Text>;
+  const handleRefetch = () => {
+    refetch();
   };
 
   return (
-    <>
-      {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <>
-          <CustomButton
-            title={"get Calendar"}
-            iconName={"calendar"}
-            onPress={handleCalendar}
-          />
+    <View className="flex w-full">
+      <CustomButton title={"Refetch"} iconName={""} onPress={handleRefetch} />
 
-          {isError && showError()}
-        </>
-      )}
-
-      {isSuccess && <WeeklyCalendar events={events}></WeeklyCalendar>}
-    </>
+      {/*<TilesList onTilePress={handleTilePress} items={calendarList} />*/}
+    </View>
   );
 };
-
-// TODO
-//  1. refresh firebase token
-//  2. Events - transform data from backend so it is easily consumed by frontend
-//  3. EVENTS CRUD !
-//  4. Events handling - frontend

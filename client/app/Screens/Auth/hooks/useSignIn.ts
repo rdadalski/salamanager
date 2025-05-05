@@ -2,13 +2,13 @@ import { useState } from "react";
 import { FirebaseAuthTypes, getAuth } from "@react-native-firebase/auth";
 import { FirebaseErrorHandler } from "@app/services";
 import { defaultError } from "@app/services/firebase/error/errorMap";
-import { getAccessToken, storeToken } from "@app/services/storage/asyncStorage";
+import { storeToken } from "@app/services/storage/asyncStorage";
 
 export const useSignIn = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const getTokenId = async (user: FirebaseAuthTypes.User) => {
-    const userToken = await user.getIdToken();
+    const userToken = await user.getIdToken(true);
     await storeToken(userToken);
   };
 

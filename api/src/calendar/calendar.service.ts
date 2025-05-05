@@ -70,6 +70,7 @@ export class CalendarService {
   public async listEvents(
     idToken: string,
     params: {
+      id?: string;
       timeMin?: string;
       timeMax?: string;
       maxResults?: number;
@@ -85,6 +86,20 @@ export class CalendarService {
         singleEvents: true,
         orderBy: 'startTime',
       });
+
+      return response.data.items as ICalendarEvent[];
+    } catch (error) {
+      this.logger.error(`Failed to list events: ${error.message}`);
+      throw error;
+    }
+  }
+
+  public async getCalendarList(idToken: string) {
+    try {
+      const calendar = await this.getCalendarClient(idToken);
+      const response = await calendar.calendarList.list();
+
+      this.logger.log(response);
 
       return response.data.items as ICalendarEvent[];
     } catch (error) {
@@ -109,6 +124,10 @@ export class CalendarService {
     }
   }
 
+  // TODO
+  //  1. get user Id
+  //  2. send notification on success update
+
   public async updateEvent(
     idToken: string,
     eventId: string,
@@ -116,6 +135,7 @@ export class CalendarService {
   ): Promise<calendar_v3.Schema$Event> {
     try {
       const calendar = await this.getCalendarClient(idToken);
+      this.logger.log(eventData);
 
       const response = await calendar.events.update({
         calendarId: 'primary',

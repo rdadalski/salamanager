@@ -27,16 +27,34 @@ export class CalendarController {
   @ApiQuery({ name: 'maxResults', required: false, description: 'Maximum number of events to return' })
   async listEvents(
     @Headers('Authorization') authorization: string,
+    @Query('id') id?: string,
     @Query('timeMin') timeMin?: string,
     @Query('timeMax') timeMax?: string,
     @Query('maxResults') maxResults?: number
   ): Promise<ICalendarEvent[]> {
     const idToken = authorization.split('Bearer ')[1];
     return this.calendarService.listEvents(idToken, {
+      id,
       timeMin,
       timeMax,
       maxResults: maxResults ? parseInt(maxResults.toString(), 10) : undefined,
     });
+  }
+
+  @Get('list')
+  @ApiOperation({
+    summary: 'Get calendar list',
+    description: 'Retrieves the list of calendars for the authenticated user',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of calendars retrieved successfully',
+    type: [Object], // Ideally, create a response DTO that matches the calendar list structure
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async calendarList(@Headers('Authorization') authorization: string): Promise<calendar_v3.Schema$CalendarListEntry[]> {
+    const idToken = authorization.split('Bearer ')[1];
+    return this.calendarService.getCalendarList(idToken);
   }
 
   @Post('events')
@@ -59,9 +77,7 @@ export class CalendarController {
     if (!authorization) {
       throw new BadRequestException('Authorization header is required');
     }
-
     const idToken = authorization.replace('Bearer ', '');
-
     return this.calendarService.createEvent(idToken, createEventDto);
   }
 
