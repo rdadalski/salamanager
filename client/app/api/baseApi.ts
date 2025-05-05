@@ -24,7 +24,7 @@ const getBaseUrl = () => {
 
   // For physical devices in development
   if (isDevMode && isRealDevice) {
-    apiUrl = "http://192.168.0.4:3000"; // Your local network IP
+    apiUrl = "http://192.168.0.7:3000"; // Your local network IP
   }
 
   return apiUrl;

@@ -4,8 +4,17 @@ import { store } from "./store/store";
 import { RootNavigator } from "./navigation";
 import { useEffect } from "react";
 import { initializeNotifications } from "@app/services/notifications";
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from "react-native-reanimated";
 
 export default function App() {
+  configureReanimatedLogger({
+    level: ReanimatedLogLevel.warn,
+    strict: false, // Disable strict mode
+  });
+
   useEffect(() => {
     const setupNotifications = async () => {
       try {
