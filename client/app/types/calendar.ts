@@ -5,11 +5,9 @@ export interface ICalendarEvent {
   location?: string;
   start: {
     dateTime: string;
-    timeZone?: string;
   };
   end: {
     dateTime: string;
-    timeZone?: string;
   };
   attendees?: {
     email: string;
@@ -24,4 +22,41 @@ export interface ICalendarEvent {
       minutes: number;
     }[];
   };
+}
+
+export interface ICalendarListEntry {
+  kind: string;
+  etag: string;
+  id: string;
+  summary: string;
+  description?: string;
+  timeZone: string;
+  summaryOverride?: string;
+  colorId: string;
+  backgroundColor: string;
+  foregroundColor: string;
+  selected?: boolean;
+  accessRole: string;
+  defaultReminders: IDefaultReminder[];
+  notificationSettings?: INotificationSettings;
+  primary?: boolean;
+  conferenceProperties: IConferenceProperties;
+}
+
+export interface IDefaultReminder {
+  method: string;
+  minutes: number;
+}
+
+export interface INotificationSettings {
+  notifications: INotification[];
+}
+
+export interface INotification {
+  type: string;
+  method: string;
+}
+
+export interface IConferenceProperties {
+  allowedConferenceSolutionTypes: string[];
 }
