@@ -15,6 +15,9 @@
     "android": {
       "googleServicesFile": "./config/google-services.json",
       "package": "com.itrado.salamanager",
+      "permissions": [
+        "READ_CONTACTS"
+      ]
     },
     "ios": {
       "googleServicesFile": "./config/GoogleService-Info.plist",
@@ -29,6 +32,12 @@
       "@react-native-firebase/crashlytics",
       "@react-native-firebase/messaging",
       "@react-native-google-signin/google-signin",
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
+        }
+      ],
       [
         "expo-build-properties",
         {
