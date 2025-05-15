@@ -79,10 +79,12 @@ export class CalendarService {
     try {
       const calendar = await this.getCalendarClient(idToken);
 
+      // TODO use parameters correctly
+
       const response = await calendar.events.list({
         calendarId: 'primary',
-        timeMin: new Date().toISOString(),
-        timeMax: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString(),
+        timeMin: new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
+        timeMax: new Date(new Date().setDate(new Date().getDate() + 14)).toISOString(),
         singleEvents: true,
         orderBy: 'startTime',
       });
@@ -98,8 +100,6 @@ export class CalendarService {
     try {
       const calendar = await this.getCalendarClient(idToken);
       const response = await calendar.calendarList.list();
-
-      this.logger.log(response);
 
       return response.data.items as ICalendarEvent[];
     } catch (error) {
