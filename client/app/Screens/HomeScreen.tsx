@@ -35,11 +35,6 @@ export const HomeScreen: FC = () => {
           </Text>
         </View>
       </Pressable>
-      {/*<FullscreenModal*/}
-      {/*  component={ResourceForm}*/}
-      {/*  title={"dupsko gole"}*/}
-      {/*  componentProps={{}}*/}
-      {/*/>*/}
     </View>
   );
 };

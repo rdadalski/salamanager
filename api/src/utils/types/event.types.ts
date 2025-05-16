@@ -7,7 +7,5 @@ interface IInternalEvent {
   displayTitle?: string;
   startTime: string;
   endTime: string;
-  status: string;
-  defaultResourcePrice: number;
   clients: string[];
 }
