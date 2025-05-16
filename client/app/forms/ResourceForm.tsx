@@ -21,9 +21,9 @@ export const ResourceForm: FC = () => {
     defaultValues: {
       name: "",
       defaultPrice: 0,
-      ownerId: "string",
-      minTimeBox: "string",
-      clients: "string[]",
+      ownerId: "string", // picker
+      minTimeBox: "string", // ?
+      clients: "string[]", // multipick
     },
   });
 
@@ -57,10 +57,80 @@ export const ResourceForm: FC = () => {
           name="name"
         />
 
+        <Controller
+          control={control}
+          rules={{ required: "defaultPrice is required" }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <View className="mb-4">
+              <Text className="font-medium mb-1">Default price </Text>
+              <TextInput
+                className="h-10 border border-gray-300 rounded px-3 bg-white"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                keyboardType={"numeric"}
+                value={value}
+                placeholder="Default Price"
+              />
+              {errors.defaultPrice && (
+                <Text className="text-red-500 text-xs mt-1">
+                  {errors.defaultPrice.message}
+                </Text>
+              )}
+            </View>
+          )}
+          name="defaultPrice"
+        />
+
+        <Controller
+          control={control}
+          rules={{ required: "name is required" }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <View className="mb-4">
+              <Text className="font-medium mb-1">Owner ID</Text>
+              <TextInput
+                className="h-10 border border-gray-300 rounded px-3 bg-white"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="owner Id"
+              />
+              {errors.ownerId && (
+                <Text className="text-red-500 text-xs mt-1">
+                  {errors.ownerId.message}
+                </Text>
+              )}
+            </View>
+          )}
+          name="ownerId"
+        />
+
+        <Controller
+          control={control}
+          rules={{ required: "name is required" }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <View className="mb-4">
+              <Text className="font-medium mb-1">Time box </Text>
+              <TextInput
+                className="h-10 border border-gray-300 rounded px-3 bg-white"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="Summary"
+              />
+              {errors.minTimeBox && (
+                <Text className="text-red-500 text-xs mt-1">
+                  {errors.minTimeBox.message}
+                </Text>
+              )}
+            </View>
+          )}
+          name="minTimeBox"
+        />
+
         {/* User Selection */}
         <View className="mb-4">
           <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">
-            Select Users
+            Select Users - multipick in progress
           </Text>
         </View>
 
