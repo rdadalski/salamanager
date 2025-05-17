@@ -33,11 +33,11 @@ const getBaseUrl = () => {
   // For production or staging environments
   // switch (releaseChannel) {
   //   case "production":
-  //     return "https://api.yourapp.com"; //TODO Your production API endpoint
+  //     return "https://api.yourapp.com"; // TODO Your production API endpoint
   //   case "staging":
-  //     return "https://staging-api.yourapp.com"; //TODO Your staging API endpoint
+  //     return "https://staging-api.yourapp.com"; // TODO Your staging API endpoint
   //   default:
-  //     return "https://dev-api.yourapp.com"; //TODO Your development API endpoint
+  //     return "https://dev-api.yourapp.com"; // TODO Your development API endpoint
   // }
 };
 

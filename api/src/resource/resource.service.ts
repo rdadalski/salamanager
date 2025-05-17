@@ -11,7 +11,7 @@ export class ResourceService {
   private readonly logger = new Logger(ResourceService.name);
 
   constructor(@Inject('FIREBASE_ADMIN') firebaseAdmin: admin.app.App) {
-    this.genericService = new GenericFirestoreService<IResource>(firebaseAdmin, 'users');
+    this.genericService = new GenericFirestoreService<IResource>(firebaseAdmin, 'resources');
   }
 
   async create(createResourceDto: CreateResourceDto) {
@@ -21,7 +21,10 @@ export class ResourceService {
   }
 
   async findAll() {
-    return await this.genericService.findAll();
+    const res = await this.genericService.findAll();
+    this.logger.log('findAll resources');
+    this.logger.log(res);
+    return res;
   }
 
   async findOne(id: string) {
