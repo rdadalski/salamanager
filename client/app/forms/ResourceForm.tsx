@@ -10,6 +10,8 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { Controller, useForm } from "react-hook-form";
 import { CustomButton } from "@app/components";
+import { MultiSelectComponent } from "@app/components/CustomMultiselect";
+import { useGetUsersQuery } from "@app/api/users/usersApi";
 
 export const ResourceForm: FC = () => {
   const {
@@ -20,12 +22,16 @@ export const ResourceForm: FC = () => {
   } = useForm({
     defaultValues: {
       name: "",
-      defaultPrice: 0,
+      defaultPrice: "string",
       ownerId: "string", // picker
       minTimeBox: "string", // ?
       clients: "string[]", // multipick
     },
   });
+
+  const { data: userList, isLoading: userListLoading } = useGetUsersQuery();
+
+  console.log(userList);
 
   const onSubmit = () => {
     console.log(getValues);
@@ -128,10 +134,11 @@ export const ResourceForm: FC = () => {
         />
 
         {/* User Selection */}
-        <View className="mb-4">
+        <View className="mb-4 w-full">
           <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">
             Select Users - multipick in progress
           </Text>
+          <MultiSelectComponent data={userList!} />
         </View>
 
         {/* Submit Button */}
