@@ -44,7 +44,13 @@ export class GenericFirestoreService<T> {
   async findAll(): Promise<T[]> {
     try {
       const snapshot = await this.collection.get();
-      return snapshot.docs.map((doc) => doc.data() as T);
+      return snapshot.docs.map((doc) => {
+        // Combine the document data with the id
+        return {
+          ...(doc.data() as T),
+          id: doc.id,
+        };
+      });
     } catch (e) {
       console.log(e);
     }

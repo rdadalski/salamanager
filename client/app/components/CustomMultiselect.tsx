@@ -8,11 +8,12 @@ import { IFirestoreUserData } from "@app/types";
 
 type TMultiSelect = {
   data: IFirestoreUserData[];
+  onChange: (item: any) => void;
 };
 
 // TODO fix any type
 
-export const MultiSelectComponent: FC<TMultiSelect> = ({ data }) => {
+export const MultiSelectComponent: FC<TMultiSelect> = ({ data, onChange }) => {
   const [selected, setSelected] = useState<string[]>([]);
 
   const renderItem = (item: any) => {
@@ -43,6 +44,7 @@ export const MultiSelectComponent: FC<TMultiSelect> = ({ data }) => {
         searchPlaceholder="Search..."
         onChange={(item) => {
           setSelected(item);
+          onChange(item);
         }}
         renderLeftIcon={() => (
           <AntDesign

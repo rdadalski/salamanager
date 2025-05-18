@@ -7,15 +7,20 @@ import { FullscreenModal } from "@app/components/CustomModal";
 import { ResourceForm } from "@app/forms/ResourceForm";
 import { CustomButton } from "@app/components";
 import { useGetAllResourcesQuery } from "@app/api/resource/resource.api";
+import { useCreateInternalEventMutation } from "@app/api/event/events.api";
 
-interface EventFormProps {
+type EventFormProps = {
   googleEventId: string;
   calendarId: string;
   summary: string;
   displayTitle?: string;
   startTime: string;
   endTime: string;
-}
+};
+
+type EventFormValues = EventFormProps & {
+  resourceId: string;
+};
 
 export const EventForm: FC<EventFormProps> = ({
   googleEventId,
@@ -30,7 +35,7 @@ export const EventForm: FC<EventFormProps> = ({
     handleSubmit,
     formState: { errors },
     getValues,
-  } = useForm({
+  } = useForm<EventFormValues>({
     defaultValues: {
       resourceId: "",
       googleEventId,
@@ -47,12 +52,12 @@ export const EventForm: FC<EventFormProps> = ({
   const { data: resourceList, isLoading: loadingResources } =
     useGetAllResourcesQuery();
 
-  const handlePopUp = () => {
-    setModalVisible(true);
-  };
+  const [createEvents] = useCreateInternalEventMutation();
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     console.log(getValues());
+    const response = await createEvents({ values: getValues() });
+    console.log(response);
   };
 
   const handleAddResource = () => {
@@ -122,15 +127,20 @@ export const EventForm: FC<EventFormProps> = ({
                     <View className="w-3/4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
                       <Picker
                         selectedValue={value}
-                        onValueChange={(value) => onChange(value)}
+                        onBlur={onBlur}
+                        onValueChange={(value) => {
+                          console.log(value);
+                          console.log(resourceList);
+                          onChange(value);
+                        }}
                         style={{ color: "#1F2937" }}
                       >
-                        {/*<Picker.Item label="Select a resource..." value="" />*/}
+                        <Picker.Item label="Select a resource..." value="" />
                         {resourceList.map((resource: IResource) => (
                           <Picker.Item
-                            key={resource.id}
-                            label={resource.name}
-                            value={resource.id}
+                            key={String(resource.id)}
+                            label={String(resource.name)}
+                            value={String(resource.id)}
                           />
                         ))}
                       </Picker>

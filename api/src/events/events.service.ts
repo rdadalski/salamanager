@@ -10,11 +10,11 @@ export class EventsService {
   private readonly logger = new Logger(EventsService.name);
 
   constructor(@Inject('FIREBASE_ADMIN') firebaseAdmin: admin.app.App) {
-    this.genericService = new GenericFirestoreService<IInternalEvent>(firebaseAdmin, 'users');
+    this.genericService = new GenericFirestoreService<IInternalEvent>(firebaseAdmin, 'events');
   }
 
   async create(createEventDto: CreateInternalEventDto) {
-    const response = this.genericService.create(createEventDto);
+    const response = await this.genericService.create(createEventDto);
 
     this.logger.log(response);
     // TODO there is always something to do

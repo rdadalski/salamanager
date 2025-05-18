@@ -1,17 +1,18 @@
-import { FC, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import { FC } from "react";
+import { View, Text, TextInput, ScrollView } from "react-native";
 import { Controller, useForm } from "react-hook-form";
 import { CustomButton } from "@app/components";
 import { MultiSelectComponent } from "@app/components/CustomMultiselect";
 import { useGetUsersQuery } from "@app/api/users/usersApi";
+import { useCreateResourceMutation } from "@app/api/resource/resource.api";
+
+type ResourceFormValues = {
+  name: string;
+  defaultPrice: number | string;
+  ownerId: string;
+  minTimeBox: string;
+  clients: string[];
+};
 
 export const ResourceForm: FC = () => {
   const {
@@ -19,22 +20,29 @@ export const ResourceForm: FC = () => {
     handleSubmit,
     formState: { errors, isValid },
     getValues,
-  } = useForm({
+  } = useForm<ResourceFormValues>({
     defaultValues: {
       name: "",
-      defaultPrice: "string",
-      ownerId: "string", // picker
-      minTimeBox: "string", // ?
-      clients: "string[]", // multipick
+      defaultPrice: "0",
+      ownerId: "string",
+      minTimeBox: "string",
+      clients: [],
     },
   });
 
   const { data: userList, isLoading: userListLoading } = useGetUsersQuery();
 
-  console.log(userList);
+  const [createResource] = useCreateResourceMutation();
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     console.log(getValues);
+    const formValues = getValues();
+    const values = { ...formValues, defaultPrice: +formValues.defaultPrice };
+
+    console.log(values);
+    const response = await createResource({ values: values });
+
+    console.log(response.data);
   };
 
   return (
@@ -74,7 +82,7 @@ export const ResourceForm: FC = () => {
                 onBlur={onBlur}
                 onChangeText={onChange}
                 keyboardType={"numeric"}
-                value={value}
+                value={value as string}
                 placeholder="Default Price"
               />
               {errors.defaultPrice && (
@@ -134,12 +142,19 @@ export const ResourceForm: FC = () => {
         />
 
         {/* User Selection */}
-        <View className="mb-4 w-full">
-          <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">
-            Select Users - multipick in progress
-          </Text>
-          <MultiSelectComponent data={userList!} />
-        </View>
+        <Controller
+          control={control}
+          rules={{ required: "name is required" }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <View className="mb-4 w-full">
+              <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">
+                Select Users - multipick in progress
+              </Text>
+              <MultiSelectComponent onChange={onChange} data={userList!} />
+            </View>
+          )}
+          name="clients"
+        />
 
         {/* Submit Button */}
         <CustomButton title={"submit"} onPress={onSubmit} iconName={"plus"} />
