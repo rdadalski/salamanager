@@ -67,6 +67,7 @@ export const usersApi = baseApi.injectEndpoints({
 
 export const {
   useGetUsersQuery,
+  useLazyGetUsersQuery,
   useGetUserByIdQuery,
   useCreateUserMutation,
   useUpdateUserMutation,

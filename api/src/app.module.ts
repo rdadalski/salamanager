@@ -11,6 +11,8 @@ import { AuthModule } from './auth/auth.module';
 import { GoogleAuthModule } from './google-auth/google-auth.module';
 import { UserModule } from './user/user.module';
 import { CalendarModule } from './calendar/calendar.module';
+import { ResourceModule } from './resource/resource.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { CalendarModule } from './calendar/calendar.module';
     GoogleAuthModule,
     UserModule,
     CalendarModule,
+    ResourceModule,
+    EventsModule,
   ],
   controllers: [AppController, FirebaseController],
   providers: [AppService, FirebaseService],

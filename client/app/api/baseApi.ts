@@ -3,6 +3,7 @@ import { Platform } from "react-native";
 import * as Device from "expo-device";
 
 import { getAccessToken } from "@app/services";
+import { getAuth } from "@react-native-firebase/auth";
 
 const getBaseUrl = () => {
   const isDevMode = __DEV__;
@@ -32,11 +33,11 @@ const getBaseUrl = () => {
   // For production or staging environments
   // switch (releaseChannel) {
   //   case "production":
-  //     return "https://api.yourapp.com"; //TODO Your production API endpoint
+  //     return "https://api.yourapp.com"; // TODO Your production API endpoint
   //   case "staging":
-  //     return "https://staging-api.yourapp.com"; //TODO Your staging API endpoint
+  //     return "https://staging-api.yourapp.com"; // TODO Your staging API endpoint
   //   default:
-  //     return "https://dev-api.yourapp.com"; //TODO Your development API endpoint
+  //     return "https://dev-api.yourapp.com"; // TODO Your development API endpoint
   // }
 };
 
@@ -46,8 +47,15 @@ export const baseApi = createApi({
     baseUrl: getBaseUrl(),
     prepareHeaders: async (headers, { getState }) => {
       const token = await getAccessToken();
+      // TODO !!!IMPORTANT!!! - move refresh token to its own place.
+      //  this is just for testing right now
       if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
+        const user = getAuth().currentUser;
+
+        if (user) {
+          const newToken = await user.getIdToken(true);
+          headers.set("Authorization", `Bearer ${newToken}`);
+        }
       }
       return headers;
     },

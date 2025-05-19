@@ -9,4 +9,15 @@ export interface User {
   phoneNumber?: string | null;
   createdAt: Timestamp;
   lastLogin: Timestamp;
+  role: UserRole;
 }
+
+export enum UserRole {
+  SUPER_ADMIN = 'super_admin',
+  ADMIN = 'admin',
+  TRAINER = 'trainer',
+  CLIENT = 'client',
+  GUEST = 'guest',
+}
+
+export type UserRoleType = keyof typeof UserRole;

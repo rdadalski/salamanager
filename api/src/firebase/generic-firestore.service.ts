@@ -7,7 +7,6 @@ export class GenericFirestoreService<T> {
   private readonly collection: CollectionReference;
   private readonly logger = new Logger(GenericFirestoreService.name);
 
-
   constructor(
     @Inject('FIREBASE_ADMIN') private firebaseAdmin: app.App,
     private collectionName: string
@@ -15,17 +14,14 @@ export class GenericFirestoreService<T> {
     this.collection = this.firebaseAdmin.firestore().collection(this.collectionName);
   }
 
-
   async create(data: T, docId?: string): Promise<string> {
     try {
       if (docId) {
-        // Use the provided ID for the document
         const docRef = this.collection.doc(docId);
         await docRef.set(data);
 
         return docId;
       } else {
-        // Auto-generate ID if none provided
         const docRef = await this.collection.add(data);
         return docRef.id;
       }
@@ -33,7 +29,6 @@ export class GenericFirestoreService<T> {
       const error = e as FirebaseError;
       this.logger.error('Error creating document:', error.message);
       throw e;
-
     }
   }
 
@@ -49,7 +44,13 @@ export class GenericFirestoreService<T> {
   async findAll(): Promise<T[]> {
     try {
       const snapshot = await this.collection.get();
-      return snapshot.docs.map((doc) => doc.data() as T);
+      return snapshot.docs.map((doc) => {
+        // Combine the document data with the id
+        return {
+          ...(doc.data() as T),
+          id: doc.id,
+        };
+      });
     } catch (e) {
       console.log(e);
     }

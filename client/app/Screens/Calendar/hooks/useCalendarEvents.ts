@@ -16,10 +16,10 @@ export const useCalendarEvents = (calendarId: string) => {
         "yyyy-MM-dd'T'HH:mm:ss'Z'",
       ),
       timeMax: format(
-        addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), 6),
+        addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), 13),
         "yyyy-MM-dd'T'HH:mm:ss'Z'",
       ),
-      maxResults: 10,
+      maxResults: 100,
     };
   };
 

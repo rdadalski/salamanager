@@ -1,82 +1,67 @@
-import { FC, useState } from "react";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { Alert, Modal, Pressable, View, StyleSheet, Text } from "react-native";
+import { ComponentType, FC, useState } from "react";
+import { Alert, Modal, Pressable, View, Text } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { useColorScheme } from "nativewind";
 
-export const CustomModal: FC = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+interface CustomModalProps<T = {}> {
+  title?: string;
+  component: ComponentType<T>;
+  componentProps?: T;
+  visible: boolean;
+  onClose: () => void;
+}
+
+export const FullscreenModal = <T extends {}>({
+  title,
+  component: Component,
+  componentProps,
+  visible,
+  onClose,
+}: CustomModalProps<T>) => {
+  const { colorScheme } = useColorScheme();
+
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.centeredView}>
-        <Modal
-          animationType="none"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Hello World!</Text>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Hide Modal</Text>
-              </Pressable>
-            </View>
+    <View className="">
+      <StatusBar style="auto" />
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={visible}
+        statusBarTranslucent={true}
+        onRequestClose={() => {
+          onClose();
+        }}
+      >
+        <View className="flex-1 bg-white dark:bg-gray-900">
+          {/* Modal Header */}
+          <View className="pt-12 pb-4 px-4 bg-blue-500 dark:bg-blue-700 flex-row justify-between items-center">
+            <Text className="text-white text-xl font-bold">{title}</Text>
+            <Pressable
+              className="bg-red-500 py-3 px-6 rounded-lg active:bg-red-600 dark:bg-red-600 dark:active:bg-red-700"
+              onPress={onClose}
+            >
+              <Text className="text-white font-bold text-center">
+                Close Modal
+              </Text>
+            </Pressable>
           </View>
-        </Modal>
-        <Pressable
-          style={[styles.button, styles.buttonOpen]}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.textStyle}>Show Modal</Text>
-        </Pressable>
-      </SafeAreaView>
-    </SafeAreaProvider>
+
+          {/* Modal Content */}
+          <View className="flex-1 items-center justify-center p-4">
+            <Component {...(componentProps as T)} />
+          </View>
+        </View>
+      </Modal>
+
+      {/*<Pressable*/}
+      {/*  className="bg-purple-500 py-3 px-6 rounded-lg active:bg-purple-600 dark:bg-purple-600 dark:active:bg-purple-700"*/}
+      {/*  onPress={() => setModalVisible(true)}*/}
+      {/*>*/}
+      {/*  <Text className="text-white font-bold text-center">*/}
+      {/*    Show Fullscreen Modal*/}
+      {/*  </Text>*/}
+      {/*</Pressable>*/}
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "#FFF",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-  },
-});
