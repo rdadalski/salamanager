@@ -4,7 +4,7 @@ export async function storeData(value: any, key: string) {
   try {
     await AsyncStorage.setItem(key, value);
   } catch (e) {
-    //TODO saving error
+    // TODO saving error
   }
 }
 
@@ -15,14 +15,13 @@ export async function getData(key: string) {
       return value;
     }
   } catch (e) {
-    //TODO error reading value
+    // TODO error reading value
   }
 }
 
 export async function storeToken(token: string) {
   await storeData(token, "access_token");
 }
-
 
 export async function storeGoogleAccessToken(token: string) {
   await storeData(token, "google_access_token");

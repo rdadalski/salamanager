@@ -1,13 +1,10 @@
 import { FC } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { HomeStackParamList } from "../navigation";
-import {
-  CalendarBody,
-  CalendarContainer,
-  CalendarHeader,
-} from "@howljs/calendar-kit";
+import { FullscreenModal } from "@app/components/CustomModal";
+import { ResourceForm } from "@app/forms/ResourceForm";
 
 export const HomeScreen: FC = () => {
   const navigation =

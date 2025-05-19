@@ -15,8 +15,13 @@ export const CustomButton: FC<ICustomButton> = ({
 }) => {
   return (
     <TouchableOpacity onPress={onPress}>
-      <View className="px-4 flex-row justify-center items-center bg-blue-700">
-        <Text className="font-bold text-white p-2">{title.toUpperCase()}</Text>
+      <View className="px-2 py-1 flex-row justify-center items-center bg-blue-700">
+        {title !== "" && (
+          <Text className="font-bold text-white p-2">
+            {title.toUpperCase()}
+          </Text>
+        )}
+
         <AntDesign color={"#fff"} size={16} name={iconName} />
       </View>
     </TouchableOpacity>
