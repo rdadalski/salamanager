@@ -35,14 +35,10 @@ export const ResourceForm: FC = () => {
   const [createResource] = useCreateResourceMutation();
 
   const onSubmit = async () => {
-    console.log(getValues);
     const formValues = getValues();
     const values = { ...formValues, defaultPrice: +formValues.defaultPrice };
 
-    console.log(values);
     const response = await createResource({ values: values });
-
-    console.log(response.data);
   };
 
   return (

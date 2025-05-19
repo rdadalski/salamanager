@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { TextInput, View, Text, Button, ActivityIndicator } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { IInternalEvent, IResource } from "@app/types";
+import { IResource } from "@app/types";
 import { FullscreenModal } from "@app/components/CustomModal";
 import { ResourceForm } from "@app/forms/ResourceForm";
 import { CustomButton } from "@app/components";
@@ -49,19 +49,25 @@ export const EventForm: FC<EventFormProps> = ({
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
-  const { data: resourceList, isLoading: loadingResources } =
-    useGetAllResourcesQuery();
+  const {
+    data: resourceList,
+    isLoading: loadingResources,
+    refetch: refetchResourceList,
+  } = useGetAllResourcesQuery();
 
   const [createEvents] = useCreateInternalEventMutation();
 
   const onSubmit = async () => {
-    console.log(getValues());
     const response = await createEvents({ values: getValues() });
-    console.log(response);
   };
 
   const handleAddResource = () => {
     setModalVisible(true);
+  };
+
+  const handleCloseModal = async () => {
+    await refetchResourceList();
+    setModalVisible(false);
   };
 
   return (
@@ -167,7 +173,7 @@ export const EventForm: FC<EventFormProps> = ({
           </View>
           <FullscreenModal
             component={ResourceForm}
-            onClose={() => setModalVisible(false)}
+            onClose={handleCloseModal}
             visible={modalVisible}
           ></FullscreenModal>
         </View>
