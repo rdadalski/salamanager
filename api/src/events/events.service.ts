@@ -3,6 +3,7 @@ import { CreateInternalEventDto } from './dto/create-event.dto';
 import { UpdateInternalEventDto } from './dto/update-event.dto';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import * as admin from 'firebase-admin';
+import { IInternalEvent } from '@app/utils/types/event.types';
 
 @Injectable()
 export class EventsService {
@@ -28,6 +29,12 @@ export class EventsService {
 
   async findOne(id: string) {
     return await this.genericService.findOne(id);
+  }
+
+  async findByGoogleEventId(googleEventId: string) {
+    return await this.genericService.findByQuery([
+      { field: 'googleEventId', operator: '==', value: googleEventId }
+    ]);
   }
 
   async update(id: string, updateEventDto: UpdateInternalEventDto) {

@@ -1,4 +1,4 @@
-interface IInternalEvent {
+export interface IInternalEvent {
   id?: string;
   googleEventId: string;
   calendarId: string;
