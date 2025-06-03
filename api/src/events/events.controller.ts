@@ -12,6 +12,11 @@ export class EventsController {
     return this.eventsService.create(createEventDto);
   }
 
+  @Get('calendar/:id')
+  findEventsByCalendarId(@Param('id') id: string) {
+    return this.eventsService.findByGoogleCalendarId(id);
+  }
+
   @Get()
   findAll() {
     return this.eventsService.findAll();

@@ -32,9 +32,65 @@ export class EventsService {
   }
 
   async findByGoogleEventId(googleEventId: string) {
-    return await this.genericService.findByQuery([
-      { field: 'googleEventId', operator: '==', value: googleEventId }
-    ]);
+    return await this.genericService.findByQuery([{ field: 'googleEventId', operator: '==', value: googleEventId }]);
+  }
+
+  async findByGoogleCalendarId(calendarId: string): Promise<IInternalEvent[]> {
+    // Input validation
+    if (!calendarId || typeof calendarId !== 'string') {
+      this.logger.error('Invalid calendarId provided:', calendarId);
+      throw new Error('Calendar ID is required and must be a valid string');
+    }
+
+    if (calendarId.trim().length === 0) {
+      this.logger.error('Empty calendarId provided');
+      throw new Error('Calendar ID cannot be empty');
+    }
+
+    try {
+      this.logger.log(`Finding events for calendar: ${calendarId}`);
+
+      const events = await this.genericService.findByQuery([
+        { field: 'calendarId', operator: '==', value: calendarId.trim() },
+      ]);
+
+      if (!events) {
+        this.logger.warn(`No events found for calendar: ${calendarId}`);
+        return [];
+      }
+
+      this.logger.log(`Found ${events.length} events for calendar: ${calendarId}`);
+      return events;
+    } catch (error) {
+      // Log the error with context
+      this.logger.error(`Failed to find events for calendar ${calendarId}:`, {
+        error: error.message,
+        stack: error.stack,
+        calendarId,
+      });
+
+      // Re-throw with more context if it's our validation error
+      if (error.message.includes('Calendar ID')) {
+        throw error;
+      }
+
+      // Handle Firestore-specific errors
+      if (error.code) {
+        switch (error.code) {
+          case 'permission-denied':
+            throw new Error('Permission denied accessing calendar events');
+          case 'unavailable':
+            throw new Error('Calendar service temporarily unavailable');
+          case 'deadline-exceeded':
+            throw new Error('Calendar query timed out');
+          default:
+            throw new Error(`Calendar query failed: ${error.message}`);
+        }
+      }
+
+      // Generic fallback
+      throw new Error('Failed to retrieve calendar events');
+    }
   }
 
   async update(id: string, updateEventDto: UpdateInternalEventDto) {
