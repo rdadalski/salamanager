@@ -17,8 +17,6 @@ export const CalendarScreen: FC = () => {
   return (
     <View className="flex w-full">
       <CustomButton title={"Refetch"} iconName={""} onPress={handleRefetch} />
-
-      {/*<TilesList onTilePress={handleTilePress} items={calendarList} />*/}
     </View>
   );
 };

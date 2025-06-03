@@ -11,8 +11,10 @@ import {
 } from "@howljs/calendar-kit";
 import { useCalendarEvents } from "@app/Screens/Calendar/hooks/useCalendarEvents";
 import { FullscreenModal } from "@app/components/CustomModal";
-import { ResourceForm } from "@app/forms/ResourceForm";
 import { EventForm } from "@app/forms/EventForm";
+import { CustomButton } from "@app/components";
+import { useTestSyncMutation } from "@app/api";
+import { getAccessToken } from "@app/services";
 
 export const CalendarEvents: FC = () => {
   const route = useRoute<RouteProp<CalendarStackParamList, "CalendarEvents">>();
@@ -29,6 +31,8 @@ export const CalendarEvents: FC = () => {
     isSuccess,
   } = useCalendarEvents(calendarId);
 
+  const [testSync] = useTestSyncMutation();
+
   const handlePressEvent = (event: OnEventResponse) => {
     console.log(event);
     setModalVisible(true);
@@ -40,6 +44,11 @@ export const CalendarEvents: FC = () => {
     setSelectedEvent(null);
   };
 
+  const handleTest = async () => {
+    const res = await testSync({ calendarId });
+    console.log(res);
+  };
+
   return (
     <>
       <View className="flex h-full">
@@ -47,17 +56,26 @@ export const CalendarEvents: FC = () => {
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
           <View className={"w-full flex h-full"}>
+            <View className={"w-full flex p-2 "}>
+              <CustomButton
+                iconName={""}
+                onPress={handleTest}
+                title={"testSync"}
+              />
+            </View>
             {isSuccess && (
-              <CalendarContainer
-                allowDragToEdit={true}
-                onDragEventStart={handleDragStart}
-                onDragEventEnd={handleDragEnd}
-                onPressEvent={handlePressEvent}
-                events={calendarEvents as EventItem[]}
-              >
-                <CalendarHeader />
-                <CalendarBody />
-              </CalendarContainer>
+              <View>
+                <CalendarContainer
+                  allowDragToEdit={true}
+                  onDragEventStart={handleDragStart}
+                  onDragEventEnd={handleDragEnd}
+                  onPressEvent={handlePressEvent}
+                  events={calendarEvents as EventItem[]}
+                >
+                  <CalendarHeader />
+                  <CalendarBody />
+                </CalendarContainer>
+              </View>
             )}
           </View>
         )}

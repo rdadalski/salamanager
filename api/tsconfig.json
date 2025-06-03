@@ -20,9 +20,9 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "include": ["src/**/*"],
     "paths": {
-      "@app/*": ["src/*"],
+      "@app/*": ["src/*"]
     }
-  }
+  },
+  "include": ["src/**/*"]
 }

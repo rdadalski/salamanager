@@ -10,6 +10,8 @@ type TilesListProps = {
 };
 
 export const TilesList: FC<TilesListProps> = ({ items, onTilePress }) => {
+  console.log(items);
+
   const renderTile = ({ item }: { item: ICalendarListEntry }) => (
     <Pressable
       className="bg-white m-2 p-4 rounded-lg shadow-md active:bg-gray-100"
@@ -22,7 +24,7 @@ export const TilesList: FC<TilesListProps> = ({ items, onTilePress }) => {
           </Text>
         ) : (
           <Text className="text-lg font-medium text-gray-800">
-            {item.description}
+            {item.summary}
           </Text>
         )}
       </View>
