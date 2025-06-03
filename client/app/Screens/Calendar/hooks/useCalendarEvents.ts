@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { EventItem, OnEventResponse } from "@howljs/calendar-kit";
 import { useListEventsQuery, useUpdateEventMutation } from "@app/api";
-import { mapSimplifiedEvents } from "@app/Screens/Calendar/Services/calendarService";
+import {
+  changeEventValues,
+  mapSimplifiedEvents,
+} from "@app/Screens/Calendar/Services/calendarService";
 import { addDays, format, startOfWeek } from "date-fns";
 import { SimplifiedEvent } from "@app/Screens/Calendar/types";
+import { useGetEventByCalendarIdQuery } from "@app/api/event/events.api";
 
 export const useCalendarEvents = (calendarId: string) => {
   const [calendarEvents, setCalendarEvents] = useState<EventItem[]>([]);
@@ -34,12 +38,12 @@ export const useCalendarEvents = (calendarId: string) => {
     isSuccess,
     isError,
     isLoading,
-  } = useListEventsQuery(calendarRequestData());
+  } = useGetEventByCalendarIdQuery({ calendarId });
 
   useEffect(() => {
     if (events) {
       console.log(events);
-      setCalendarEvents(mapSimplifiedEvents(events));
+      setCalendarEvents(changeEventValues(events));
     }
   }, [events]);
 
