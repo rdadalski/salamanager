@@ -126,7 +126,7 @@ export class CalendarService {
     idToken: string,
     eventId: string,
     eventData: calendar_v3.Schema$Event
-  ): Promise<calendar_v3.Schema$Event> {
+  ): Promise<{ success: boolean; data: calendar_v3.Schema$Event }> {
     try {
       const calendar = await this.getCalendarClient(idToken);
       this.logger.log(eventData);
@@ -137,7 +137,7 @@ export class CalendarService {
         requestBody: eventData,
       });
 
-      return response.data;
+      return { success: true, data: response.data };
     } catch (error) {
       this.logger.error(`Failed to update event ${eventId}: ${error.message}`);
       throw error;
