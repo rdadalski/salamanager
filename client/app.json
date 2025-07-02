@@ -24,6 +24,7 @@
         "UIBackgroundModes": ["remote-notification"]
       }
     },
+    "jsEngine": "hermes",
     "plugins": [
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
@@ -37,25 +38,7 @@
             "extraMavenRepos": ["../../node_modules/@notifee/react-native/android/libs"]
           },
           "ios": {
-            "useFrameworks": "static",
-            "extraPods": [
-              {
-                "name": "Firebase/Auth",
-                "source": "https://github.com/CocoaPods/Specs.git"
-              },
-              {
-                "name": "FirebaseCore",
-                "source": "https://github.com/CocoaPods/Specs.git"
-              },
-              {
-                "name": "FirebaseCoreInternal",
-                "source": "https://github.com/CocoaPods/Specs.git"
-              },
-              {
-                "name": "GoogleUtilities",
-                "source": "https://github.com/CocoaPods/Specs.git"
-              }
-            ]
+            "useFrameworks": "static"
           }
         }
       ]
