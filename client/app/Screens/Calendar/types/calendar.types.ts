@@ -161,4 +161,10 @@ export interface SimplifiedEvent {
    * Color associated with the event.
    */
   color: string;
+  status?: string;
+  defaultResourcePrice?: number;
+  clients?: string[];
+  googleEventId: string;
+  calendarId: string;
+  resourceId: string;
 }

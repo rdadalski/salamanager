@@ -151,7 +151,7 @@ export class UserService {
    * @param uid User ID
    * @returns void
    */
-  async updateLoginTimestamp(uid: string): Promise<void> {
+  async updateLoginTimestamp(uid: string): Promise<{ success: boolean; data?: User; error?: string }> {
     return this.genericService.update(uid, {
       lastLogin: Timestamp.now(),
     });
