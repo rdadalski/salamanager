@@ -7,17 +7,15 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "scheme": "your-app-scheme",
+    "scheme": "com.itrado.salamanager",
     "splash": {
       "resizeMode": "contain",
-      "image": "./assets/splash.png",
+      "image": "./assets/splash.png"
     },
     "android": {
       "googleServicesFile": "./config/google-services.json",
-      "package": "com.itrado.salamanager",
-      "permissions": [
-        "READ_CONTACTS"
-      ]
+      "package": "com.itrado.salamanager"
+
     },
     "ios": {
       "googleServicesFile": "./config/GoogleService-Info.plist",
@@ -33,16 +31,31 @@
       "@react-native-firebase/messaging",
       "@react-native-google-signin/google-signin",
       [
-        "expo-contacts",
-        {
-          "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
-        }
-      ],
-      [
         "expo-build-properties",
         {
           "android": {
             "extraMavenRepos": ["../../node_modules/@notifee/react-native/android/libs"]
+          },
+          "ios": {
+            "useFrameworks": "static",
+            "extraPods": [
+              {
+                "name": "Firebase/Auth",
+                "source": "https://github.com/CocoaPods/Specs.git"
+              },
+              {
+                "name": "FirebaseCore",
+                "source": "https://github.com/CocoaPods/Specs.git"
+              },
+              {
+                "name": "FirebaseCoreInternal",
+                "source": "https://github.com/CocoaPods/Specs.git"
+              },
+              {
+                "name": "GoogleUtilities",
+                "source": "https://github.com/CocoaPods/Specs.git"
+              }
+            ]
           }
         }
       ]
