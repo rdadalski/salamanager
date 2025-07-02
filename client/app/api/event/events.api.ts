@@ -25,13 +25,13 @@ export const eventsApi = baseApi.injectEndpoints({
       }),
     }),
     updateInternalEvent: builder.mutation<
-      any,
+      IInternalEvent,
       { id: string; values: IInternalEvent }
     >({
       query: ({ id, values }) => ({
         url: `events/${id}`,
         body: values,
-        method: "PUT",
+        method: "PATCH",
       }),
     }),
     getEventByCalendarId: builder.query<

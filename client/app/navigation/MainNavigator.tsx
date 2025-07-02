@@ -1,5 +1,5 @@
 import { useSignOut } from "@app/Screens/Auth";
-import { HomeScreen, NotificationTestScreen } from "@app/Screens";
+import { ClientHomeScreen, NotificationTestScreen } from "@app/Screens";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FC } from "react";
@@ -7,7 +7,7 @@ import { CustomButton } from "@app/components";
 import { CalendarStackNavigator } from "@app/navigation/CalendarNavigation";
 
 export type HomeStackParamList = {
-  Home: undefined;
+  "Home screen": undefined;
   Notifications: undefined;
   Calendar: undefined;
 };
@@ -20,8 +20,8 @@ export const MainNavigator: FC = () => {
   return (
     <MainTab.Navigator>
       <MainTab.Screen
-        name="Home"
-        component={HomeScreen}
+        name="Home screen"
+        component={ClientHomeScreen}
         options={{
           headerRightContainerStyle: { paddingRight: 8 },
           headerRight: ({ tintColor }) => (

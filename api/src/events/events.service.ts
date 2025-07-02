@@ -94,6 +94,9 @@ export class EventsService {
   }
 
   async update(id: string, updateEventDto: UpdateInternalEventDto) {
+    this.logger.log(id);
+    this.logger.log(updateEventDto);
+
     const response = await this.genericService.update(id, updateEventDto);
 
     this.logger.log(response);

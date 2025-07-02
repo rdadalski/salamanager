@@ -77,11 +77,44 @@ export class GenericFirestoreService<T> {
     }
   }
 
-  async update(id: string, data: Partial<T>): Promise<void> {
+  async update(id: string, data: Partial<T>): Promise<{ success: boolean; data?: T; error?: string }> {
+    // Validate input
+    if (!id || !id.trim()) {
+      throw new Error('Document ID is required');
+    }
+
+    if (!data || Object.keys(data).length === 0) {
+      throw new Error('Update data cannot be empty');
+    }
+
     try {
+      // Perform the update
       await this.collection.doc(id).update(data);
-    } catch (e) {
-      console.log(e);
+
+      // Optionally fetch and return updated document
+      const updatedDoc = await this.collection.doc(id).get();
+
+      if (!updatedDoc.exists) {
+        throw new Error('Document not found after update');
+      }
+
+      return {
+        success: true,
+        data: { id: updatedDoc.id, ...updatedDoc.data() } as T,
+      };
+    } catch (error) {
+      // Log error with context
+      console.error(`Failed to update document ${id}:`, {
+        error: error.message,
+        data,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Return structured error response
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
     }
   }
 

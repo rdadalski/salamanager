@@ -1,36 +1,24 @@
-import { useCallback, useEffect, useState } from "react";
-import { EventItem, OnEventResponse } from "@howljs/calendar-kit";
-import { useListEventsQuery, useUpdateEventMutation } from "@app/api";
-import {
-  changeEventValues,
-  mapSimplifiedEvents,
-} from "@app/Screens/Calendar/Services/calendarService";
-import { addDays, format, startOfWeek } from "date-fns";
-import { SimplifiedEvent } from "@app/Screens/Calendar/types";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { OnEventResponse } from "@howljs/calendar-kit";
+import { useUpdateEventMutation } from "@app/api";
+import { transformToSimplified } from "@app/Screens/Calendar/Services/calendarService";
 import { useGetEventByCalendarIdQuery } from "@app/api/event/events.api";
+import { IInternalEvent } from "@app/types";
 
 export const useCalendarEvents = (calendarId: string) => {
-  const [calendarEvents, setCalendarEvents] = useState<EventItem[]>([]);
-
-  const calendarRequestData = () => {
-    return {
-      id: calendarId,
-      timeMin: format(
-        startOfWeek(new Date(), { weekStartsOn: 1 }),
-        "yyyy-MM-dd'T'HH:mm:ss'Z'",
-      ),
-      timeMax: format(
-        addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), 13),
-        "yyyy-MM-dd'T'HH:mm:ss'Z'",
-      ),
-      maxResults: 100,
-    };
-  };
+  const [calendarInternalEvents, setCalendarEvents] = useState<
+    IInternalEvent[]
+  >([]);
 
   const [
-    updateEvent,
+    updateCalendarEvent,
     { isLoading: updateReqLoading, isSuccess: updateReqSuccess },
   ] = useUpdateEventMutation();
+
+  const libraryEvents = useMemo(
+    () => calendarInternalEvents.map(transformToSimplified),
+    [calendarInternalEvents],
+  );
 
   const {
     data: events,
@@ -38,12 +26,12 @@ export const useCalendarEvents = (calendarId: string) => {
     isSuccess,
     isError,
     isLoading,
+    isFetching,
   } = useGetEventByCalendarIdQuery({ calendarId });
 
   useEffect(() => {
     if (events) {
-      console.log(events);
-      setCalendarEvents(changeEventValues(events));
+      setCalendarEvents(events);
     }
   }, [events]);
 
@@ -52,54 +40,74 @@ export const useCalendarEvents = (calendarId: string) => {
     console.log("Started editing event:", event);
   };
 
-  const sendUpdateRequest = async (event: SimplifiedEvent): Promise<void> => {
-    const res = await updateEvent({ eventId: event.id, data: event });
+  const sendUpdateRequest = async (
+    internalEvent: IInternalEvent,
+  ): Promise<void> => {
+    const calendarEvent = {
+      summary: internalEvent.summary,
+      start: {
+        dateTime: new Date(internalEvent.startTime).toISOString(),
+      },
+      end: {
+        dateTime: new Date(internalEvent.endTime).toISOString(),
+      },
+      // Add other fields that your API expects
+    };
+
+    const res = await updateCalendarEvent({
+      eventId: internalEvent.googleEventId,
+      data: calendarEvent,
+    });
 
     console.log(res);
   };
 
-  const handleDragEnd = useCallback(async (event: OnEventResponse) => {
-    const updatedEvent = {
-      ...(event as EventItem),
-      end: {
-        dateTime: event.end.dateTime as string,
-        timeZone: "Europe/Warsaw",
-      },
-      start: {
-        dateTime: event.start.dateTime as string,
-        timeZone: "Europe/Warsaw",
-      },
-    };
-
-    setCalendarEvents((prevState) => {
-      const eventToChange = prevState.find((el) => el.id === event.id);
-
-      if (!eventToChange) return prevState;
-
-      return prevState.map((e) =>
-        e.id === event.id
-          ? {
-              ...(event as EventItem),
-              end: {
-                dateTime: event.end.dateTime as string,
-                timeZone: "Europe/Warsaw",
-              },
-              start: {
-                dateTime: event.start.dateTime as string,
-                timeZone: "Europe/Warsaw",
-              },
-            }
-          : e,
+  const handleDragEnd = useCallback(
+    async (event: OnEventResponse) => {
+      const eventIndex = calendarInternalEvents.findIndex(
+        (e) => e.id === event.id,
       );
-    });
 
-    await sendUpdateRequest(updatedEvent as any); // TODO FIX TYPE
-  }, []);
+      if (eventIndex === -1) {
+        console.warn("Event not found:", event.id);
+        return;
+      }
+
+      const originalEvent = calendarInternalEvents[eventIndex];
+
+      // Direct update without transformations
+      const updatedEvent: IInternalEvent = {
+        ...originalEvent,
+        startTime: event.start.dateTime as string,
+        endTime: event.end.dateTime as string,
+      };
+
+      // Optimistic update
+      setCalendarEvents((prev) => [
+        ...prev.slice(0, eventIndex),
+        updatedEvent,
+        ...prev.slice(eventIndex + 1),
+      ]);
+
+      try {
+        await sendUpdateRequest(updatedEvent);
+      } catch (error) {
+        // Rollback
+        setCalendarEvents((prev) => [
+          ...prev.slice(0, eventIndex),
+          originalEvent,
+          ...prev.slice(eventIndex + 1),
+        ]);
+        console.error("Update failed:", error);
+      }
+    },
+    [calendarInternalEvents],
+  );
 
   return {
     handleDragEnd,
     handleDragStart,
-    calendarEvents,
+    libraryEvents,
     isLoading,
     isSuccess,
   };

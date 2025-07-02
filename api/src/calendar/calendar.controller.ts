@@ -18,6 +18,7 @@ import { CreateEventDto } from '@app/calendar/dto/create-event.dto';
 import { calendar_v3 } from 'googleapis';
 import { UpdateEventDto } from '@app/calendar/dto/update-event.dto';
 import { SyncService } from '@app/calendar/sync.service';
+import { EventsService } from '@app/events/events.service';
 
 @Controller('calendar')
 export class CalendarController {
@@ -25,7 +26,8 @@ export class CalendarController {
 
   constructor(
     private readonly calendarService: CalendarService,
-    private readonly syncService: SyncService
+    private readonly syncService: SyncService,
+    private readonly eventService: EventsService
   ) {}
 
   @Get('events')
@@ -118,14 +120,25 @@ export class CalendarController {
     @Headers('Authorization') authorization: string,
     @Param('eventId') eventId: string,
     @Body() updateEventDto: UpdateEventDto
-  ): Promise<calendar_v3.Schema$Event> {
+  ): Promise<{ success: boolean; data: calendar_v3.Schema$Event }> {
     if (!authorization) {
       throw new BadRequestException('Authorization header is required');
     }
 
     const idToken = authorization.replace('Bearer ', '');
 
-    return this.calendarService.updateEvent(idToken, eventId, updateEventDto);
+    try {
+      const firebaseUpdateResult = await this.eventService.update(eventId, {
+        startTime: updateEventDto.start.dateTime,
+        endTime: updateEventDto.end.dateTime,
+      });
+
+      this.logger.log(firebaseUpdateResult);
+    } catch (error) {
+      this.logger.warn(`updating firebase doc error: ${error}`);
+    }
+
+    return await this.calendarService.updateEvent(idToken, eventId, updateEventDto);
   }
 
   @Delete('events/:eventId')

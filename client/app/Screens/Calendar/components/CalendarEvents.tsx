@@ -1,6 +1,6 @@
 import { View, ActivityIndicator } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useState } from "react";
 import { CalendarStackParamList } from "@app/navigation/CalendarNavigation";
 import {
   CalendarBody,
@@ -22,7 +22,7 @@ export const CalendarEvents: FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>();
 
   const {
-    calendarEvents,
+    libraryEvents,
     handleDragStart,
     handleDragEnd,
     isLoading,
@@ -64,7 +64,7 @@ export const CalendarEvents: FC = () => {
                 onDragEventStart={handleDragStart}
                 onDragEventEnd={handleDragEnd}
                 onPressEvent={handlePressEvent}
-                events={calendarEvents as EventItem[]}
+                events={libraryEvents as EventItem[]}
               >
                 {calendarLoading ? (
                   <ActivityIndicator size="large" color="#0000ff" />
