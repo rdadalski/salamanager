@@ -59,6 +59,8 @@ export const EventForm: FC<EventFormProps> = ({
 
   const onSubmit = async () => {
     const response = await createEvents({ values: getValues() });
+
+    console.log(response);
   };
 
   const handleAddResource = () => {
