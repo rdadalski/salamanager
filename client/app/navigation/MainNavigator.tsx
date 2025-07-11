@@ -1,5 +1,10 @@
 import { useSignOut } from "@app/Screens/Auth";
-import { ClientHomeScreen, NotificationTestScreen } from "@app/Screens";
+import {
+  HomeScreen,
+  NotificationTestScreen,
+  AccountingScreenTrainer,
+  AccountingScreenUser,
+} from "@app/Screens";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FC } from "react";
@@ -10,6 +15,8 @@ export type HomeStackParamList = {
   "Home screen": undefined;
   Notifications: undefined;
   Calendar: undefined;
+  "Accounting Trainer": undefined;
+  "Accounting User": undefined;
 };
 
 export const MainTab = createBottomTabNavigator<HomeStackParamList>();
@@ -21,7 +28,7 @@ export const MainNavigator: FC = () => {
     <MainTab.Navigator>
       <MainTab.Screen
         name="Home screen"
-        component={ClientHomeScreen}
+        component={HomeScreen}
         options={{
           headerRightContainerStyle: { paddingRight: 8 },
           headerRight: ({ tintColor }) => (
@@ -90,6 +97,24 @@ export const MainNavigator: FC = () => {
           tabBarLabel: "Calendar",
           tabBarIcon: ({ color, size }) => (
             <AntDesign name="calendar" color={color} size={size} />
+          ),
+        }}
+      />
+      <MainTab.Screen
+        name="Accounting Trainer"
+        component={AccountingScreenTrainer}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <AntDesign name="creditcard" color={color} size={size} />
+          ),
+        }}
+      />
+      <MainTab.Screen
+        name="Accounting User"
+        component={AccountingScreenUser}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <AntDesign name="creditcard" color={color} size={size} />
           ),
         }}
       />

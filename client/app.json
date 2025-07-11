@@ -24,7 +24,6 @@
         "UIBackgroundModes": ["remote-notification"]
       }
     },
-    "jsEngine": "hermes",
     "plugins": [
       "@react-native-firebase/app",
       "@react-native-firebase/auth",

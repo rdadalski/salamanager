@@ -11,8 +11,6 @@ type TMultiSelect = {
   onChange: (item: any) => void;
 };
 
-// TODO fix any type
-
 export const MultiSelectComponent: FC<TMultiSelect> = ({ data, onChange }) => {
   const [selected, setSelected] = useState<string[]>([]);
 

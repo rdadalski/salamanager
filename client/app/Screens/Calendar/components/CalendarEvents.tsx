@@ -12,6 +12,8 @@ import {
 import { useCalendarEvents } from "@app/Screens/Calendar/hooks/useCalendarEvents";
 import { FullscreenModal } from "@app/components/CustomModal";
 import { EventForm } from "@app/forms/EventForm";
+import { CustomButton } from "@app/components";
+import { useSyncCalendarEventsMutation } from "@app/api";
 
 export const CalendarEvents: FC = () => {
   const route = useRoute<RouteProp<CalendarStackParamList, "CalendarEvents">>();
@@ -40,6 +42,13 @@ export const CalendarEvents: FC = () => {
     setSelectedEvent(null);
   };
 
+  const [testSync] = useSyncCalendarEventsMutation();
+
+  const handleTest = async () => {
+    const res = await testSync({ calendarId });
+    console.log(res);
+  };
+
   return (
     <>
       <View className="flex h-full">
@@ -47,13 +56,13 @@ export const CalendarEvents: FC = () => {
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
           <View className={"w-full flex h-full"}>
-            {/*<View className={"w-full flex p-2 "}>*/}
-            {/*  <CustomButton*/}
-            {/*    iconName={""}*/}
-            {/*    onPress={handleTest}*/}
-            {/*    title={"testSync"}*/}
-            {/*  />*/}
-            {/*</View>*/}
+            <View className={"w-full flex p-2 "}>
+              <CustomButton
+                iconName={""}
+                onPress={handleTest}
+                title={"testSync"}
+              />
+            </View>
             <View className={"w-full flex h-full"}>
               <CalendarContainer
                 allowDragToEdit={true}

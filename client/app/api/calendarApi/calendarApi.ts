@@ -57,6 +57,16 @@ export const calendarApi = baseApi.injectEndpoints({
         body: _arg,
       }),
     }),
+    syncCalendarEvents: builder.mutation<
+      any,
+      { calendarId: string; forceFullSync?: boolean }
+    >({
+      query: (_arg) => ({
+        url: `/calendar/sync`,
+        method: "POST",
+        body: _arg,
+      }),
+    }),
   }),
 });
 
@@ -68,7 +78,7 @@ export const {
   useAddEventMutation,
   useUpdateEventMutation,
   useDeleteEventMutation,
-
+  useSyncCalendarEventsMutation,
   useTestSyncMutation,
 } = calendarApi;
 
