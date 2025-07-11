@@ -13,7 +13,7 @@ import { useCalendarEvents } from "@app/Screens/Calendar/hooks/useCalendarEvents
 import { FullscreenModal } from "@app/components/CustomModal";
 import { EventForm } from "@app/forms/EventForm";
 import { CustomButton } from "@app/components";
-import { useSyncCalendarEventsMutation, useTestSyncMutation } from "@app/api";
+import { useSyncCalendarEventsMutation } from "@app/api";
 
 export const CalendarEvents: FC = () => {
   const route = useRoute<RouteProp<CalendarStackParamList, "CalendarEvents">>();

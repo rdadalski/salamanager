@@ -1,6 +1,5 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
-import { DeviceTokenDto } from './dto/notifications.dto';
 import { UserTokenService } from '@app/firebase/notifications/userToken.service';
 import { FirebaseAuthGuard } from '@app/utils/guards/firebase-auth.guard';
 import { RolesGuard } from '@app/utils/guards/role.guard';

@@ -6,26 +6,26 @@ import {
   Param,
   Delete,
   Put,
-  UseGuards,
   NotFoundException,
   ConflictException,
   Logger,
   Patch,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserRequestDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
-import { FirebaseAuthGuard } from '../utils/guards/firebase-auth.guard';
-import { RolesGuard } from '@app/utils/guards/role.guard';
 import { Roles } from '@app/utils/decorators/roles.decorator';
 import { UserRole } from '@app/user/models/user.model';
 import { UpdateUserRoleDto } from '@app/user/dto/update-user-role.dto';
+import { FirebaseAuthGuard } from '@app/utils/guards/firebase-auth.guard';
+import { RolesGuard } from '@app/utils/guards/role.guard';
 
 @Controller('users')
-// @UseGuards(FirebaseAuthGuard, RolesGuard)
+@UseGuards(FirebaseAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
