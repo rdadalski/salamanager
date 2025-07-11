@@ -10,14 +10,22 @@ import {
   NotFoundException,
   ConflictException,
   Logger,
+  Patch,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserRequestDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { FirebaseAuthGuard } from '../utils/guards/firebase-auth.guard';
+import { RolesGuard } from '@app/utils/guards/role.guard';
+import { Roles } from '@app/utils/decorators/roles.decorator';
+import { UserRole } from '@app/user/models/user.model';
+import { UpdateUserRoleDto } from '@app/user/dto/update-user-role.dto';
 
 @Controller('users')
+// @UseGuards(FirebaseAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -27,29 +35,28 @@ export class UserController {
   async create(@Body() createUserDto: CreateUserRequestDto) {
     try {
       this.logger.warn(createUserDto);
+
       const user = await this.userService.createUser(createUserDto);
+
       return user;
       // return new UserResponseDto(user);
-
     } catch (error) {
       if (error instanceof ConflictException) {
         throw error;
       }
 
       throw new Error('Error creating user from UserController');
-
     }
   }
 
   @Get()
-  @UseGuards(FirebaseAuthGuard)
+  @Roles(UserRole.TRAINER, UserRole.ADMIN)
   async findAll() {
     const users = await this.userService.getAllUsers();
     return users.map((user) => new UserResponseDto(user));
   }
 
   @Get(':id')
-  @UseGuards(FirebaseAuthGuard)
   async findOne(@Param('id') id: string) {
     try {
       const user = await this.userService.getUserByIdOrFail(id);
@@ -63,7 +70,6 @@ export class UserController {
   }
 
   @Put(':id')
-  @UseGuards(FirebaseAuthGuard)
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     try {
       const updatedUser = await this.userService.updateUser(id, updateUserDto);
@@ -77,7 +83,6 @@ export class UserController {
   }
 
   @Delete(':id')
-  @UseGuards(FirebaseAuthGuard)
   async remove(@Param('id') id: string) {
     try {
       await this.userService.deleteUser(id);
@@ -97,14 +102,12 @@ export class UserController {
   // }
 
   @Get('email/:email')
-  @UseGuards(FirebaseAuthGuard)
   async findByEmail(@Param('email') email: string) {
     const users = await this.userService.getUsersByEmail(email);
     return users.map((user) => new UserResponseDto(user));
   }
 
   @Post(':id/login')
-  @UseGuards(FirebaseAuthGuard)
   async updateLoginTime(@Param('id') id: string) {
     try {
       await this.userService.updateLoginTimestamp(id);
@@ -112,5 +115,12 @@ export class UserController {
     } catch (error) {
       throw new Error('Error updating login timestamp');
     }
+  }
+
+  @Patch(':uid/role')
+  @Roles(UserRole.ADMIN)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateUserRole(@Param('uid') id: string, @Body() updateUserRoleDto: UpdateUserRoleDto) {
+    await this.userService.changeUserRole(id, updateUserRoleDto.role);
   }
 }
