@@ -161,6 +161,8 @@ export class CalendarService {
   }
 
   private convertToInternalEvents(googleEvents: any[], calendarId: string): IInternalEvent[] {
+    console.log('convertToInternalEvents');
+
     return googleEvents
       .filter((event) => event.status !== 'cancelled')
       .map((event) => ({
@@ -207,6 +209,8 @@ export class CalendarService {
 
       // Process events (convert to your internal format)
       const internalEvents = this.convertToInternalEvents(events, calendarId);
+
+      console.log(internalEvents);
 
       // Save events to Firebase
       if (internalEvents.length > 0) {
