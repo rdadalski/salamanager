@@ -6,9 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UpdateTestGenericDto } from './dto/update-test-generic.dto';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
+import { FirebaseAuthGuard } from '@app/utils/guards/firebase-auth.guard';
+import { RolesGuard } from '@app/utils/guards/role.guard';
 
 interface ITestCrudCollection {
   date: string;
@@ -17,6 +20,7 @@ interface ITestCrudCollection {
 }
 
 @Controller('test-generic')
+@UseGuards(FirebaseAuthGuard, RolesGuard)
 export class TestGenericController {
   constructor(
     private readonly genericFirestore: GenericFirestoreService<ITestCrudCollection>,

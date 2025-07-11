@@ -1,30 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { baseApi, calendarApi } from "@app/api/";
-import { notificationsApi } from "@app/api/";
-import { configApi } from "@app/api/";
+import { baseApi } from "@app/api/";
 import configSlice from "@app/store/slices/configSlice";
 import notificationSlice from "@app/store/slices/notificationSlice";
-import { authApi } from "@app/api/auth/auth.api";
+import authSlice from "@app/store/slices/authSlice";
 
 export const store = configureStore({
   reducer: {
     config: configSlice,
     notifications: notificationSlice,
+    auth: authSlice,
     [baseApi.reducerPath]: baseApi.reducer,
-    notificationApi: notificationsApi.reducer,
-    configApi: configApi.reducer,
-    authApi: authApi.reducer,
-    calendarApi: calendarApi.reducer,
-
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(
-      baseApi.middleware,
-      notificationsApi.middleware,
-      calendarApi.middleware,
-      configApi.middleware,
-    ),
+    getDefaultMiddleware().concat(baseApi.middleware),
 });
 
 setupListeners(store.dispatch);

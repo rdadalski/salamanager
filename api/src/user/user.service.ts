@@ -1,10 +1,16 @@
-import { ConflictException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import * as admin from 'firebase-admin';
+import { getAuth } from 'firebase-admin/auth';
 import { Timestamp } from 'firebase-admin/firestore';
 import { User, UserRole } from '@app/user/models/user.model';
-
 import { CreateUserRequestDto } from '@app/user/dto/create-user.dto';
 import { UpdateUserDto } from '@app/user/dto/update-user.dto';
 import { google } from 'googleapis';
@@ -16,7 +22,7 @@ export class UserService {
   private readonly logger = new Logger(UserService.name);
 
   /**
-   * Creates an instance of UserTokenService.
+   * Creates an instance of UserService.
    *
    * @param firebaseAdmin - The Firebase admin app instance.
    */
@@ -37,6 +43,7 @@ export class UserService {
     }
 
     const { email, uid, phoneNumber, photoURL, displayName } = createUserDto;
+    const defaultRole = UserRole.CLIENT;
 
     const userData: User = {
       email,
@@ -46,7 +53,7 @@ export class UserService {
       displayName,
       createdAt: Timestamp.now(),
       lastLogin: Timestamp.now(),
-      role: UserRole.CLIENT,
+      role: defaultRole,
     };
 
     // If serverAuthCode exists, exchange it for a refresh token
@@ -67,12 +74,25 @@ export class UserService {
         }
       } catch (error) {
         this.logger.error('Error exchanging auth code for refresh token:', error);
-        // You may want to handle this error differently
       }
     }
 
-    console.log(userData, uid);
-    await this.genericService.create(userData, uid);
+    try {
+      await getAuth().setCustomUserClaims(uid, { role: defaultRole });
+      this.logger.log(`Successfully set custom claim for user ${uid}`);
+
+      this.logger.log(userData);
+
+      const res = await this.genericService.create(userData, uid);
+
+      this.logger.log(res);
+
+      this.logger.log(`Successfully created Firestore document for user ${uid}`);
+    } catch (error) {
+      this.logger.error(`CRITICAL: Failed to set custom claims or create Firestore user for ${uid}`, error);
+      throw new InternalServerErrorException('Failed to finalize user creation.');
+    }
+
     return userData;
   }
 
@@ -169,6 +189,33 @@ export class UserService {
 
     // Delete the user
     return this.genericService.delete(uid);
+  }
+
+  /**
+   * Changes a user's role and invalidates their session.
+   * @param uid The UID of the user to modify.
+   * @param newRole The new role to assign.
+   */
+  async changeUserRole(uid: string, newRole: UserRole): Promise<void> {
+    this.logger.log(`Attempting to change role for user ${uid} to ${newRole}`);
+    try {
+      // 1. Set the new custom claim in Firebase Auth
+      await getAuth().setCustomUserClaims(uid, { role: newRole });
+
+      // 2. Update the role in the Firestore document for consistency
+      const userRef = this.genericService.update(uid, { role: newRole });
+
+      // 3. CRUCIAL: Invalidate the user's sessions to force re-login
+      await getAuth().revokeRefreshTokens(uid);
+
+      this.logger.log(`Successfully changed role and revoked tokens for ${uid}`);
+    } catch (error) {
+      this.logger.error(`Failed to change role for user ${uid}`, error);
+      if (error.code === 'auth/user-not-found') {
+        throw new NotFoundException(`User with UID ${uid} not found.`);
+      }
+      throw new InternalServerErrorException('An error occurred while changing the user role.');
+    }
   }
 
   // /**

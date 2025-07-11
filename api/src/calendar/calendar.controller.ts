@@ -1,16 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  Headers,
-  Delete,
-  Param,
-  BadRequestException,
-  Post,
-  Body,
-  Patch,
-  Logger,
-} from '@nestjs/common';
+import { Controller, Get, Query, Headers, Delete, Param, Post, Body, Patch, Logger, UseGuards } from '@nestjs/common';
 import { CalendarService } from './calendar.service';
 import { ICalendarEvent } from '@app/calendar/interfaces/calendar-event.interface';
 import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
@@ -19,8 +7,12 @@ import { calendar_v3 } from 'googleapis';
 import { UpdateEventDto } from '@app/calendar/dto/update-event.dto';
 import { SyncService } from '@app/calendar/sync.service';
 import { EventsService } from '@app/events/events.service';
+import { Token } from '@app/utils/decorators/token.decorator';
+import { FirebaseAuthGuard } from '@app/utils/guards/firebase-auth.guard';
+import { RolesGuard } from '@app/utils/guards/role.guard';
 
 @Controller('calendar')
+@UseGuards(FirebaseAuthGuard, RolesGuard)
 export class CalendarController {
   private readonly logger = new Logger(CalendarController.name);
 
@@ -46,14 +38,13 @@ export class CalendarController {
   @ApiQuery({ name: 'timeMax', required: false, description: 'End date-time in ISO format' })
   @ApiQuery({ name: 'maxResults', required: false, description: 'Maximum number of events to return' })
   async listEvents(
-    @Headers('Authorization') authorization: string,
+    @Token() token: string,
     @Query('id') id?: string,
     @Query('timeMin') timeMin?: string,
     @Query('timeMax') timeMax?: string,
     @Query('maxResults') maxResults?: number
   ): Promise<ICalendarEvent[]> {
-    const idToken = authorization.split('Bearer ')[1];
-    return this.calendarService.listEvents(idToken, {
+    return this.calendarService.listEvents(token, {
       id,
       timeMin,
       timeMax,
@@ -72,9 +63,8 @@ export class CalendarController {
     type: [Object], // Ideally, create a response DTO that matches the calendar list structure
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async calendarList(@Headers('Authorization') authorization: string): Promise<calendar_v3.Schema$CalendarListEntry[]> {
-    const idToken = authorization.split('Bearer ')[1];
-    return this.calendarService.getCalendarList(idToken);
+  async calendarList(@Token() token: string): Promise<calendar_v3.Schema$CalendarListEntry[]> {
+    return this.calendarService.getCalendarList(token);
   }
 
   @Post('events')
@@ -90,15 +80,8 @@ export class CalendarController {
   @ApiResponse({ status: 400, description: 'Invalid event data' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiBody({ type: CreateEventDto })
-  async createEvent(
-    @Headers('Authorization') authorization: string,
-    @Body() createEventDto: CreateEventDto
-  ): Promise<calendar_v3.Schema$Event> {
-    if (!authorization) {
-      throw new BadRequestException('Authorization header is required');
-    }
-    const idToken = authorization.replace('Bearer ', '');
-    return this.calendarService.createEvent(idToken, createEventDto);
+  async createEvent(@Token() token: string, @Body() createEventDto: CreateEventDto): Promise<calendar_v3.Schema$Event> {
+    return this.calendarService.createEvent(token, createEventDto);
   }
 
   @Patch('events/:eventId')
@@ -117,16 +100,10 @@ export class CalendarController {
   @ApiParam({ name: 'eventId', description: 'The ID of the event to update' })
   @ApiBody({ type: UpdateEventDto })
   async updateEvent(
-    @Headers('Authorization') authorization: string,
+    @Token() token: string,
     @Param('eventId') eventId: string,
     @Body() updateEventDto: UpdateEventDto
   ): Promise<{ success: boolean; data: calendar_v3.Schema$Event }> {
-    if (!authorization) {
-      throw new BadRequestException('Authorization header is required');
-    }
-
-    const idToken = authorization.replace('Bearer ', '');
-
     try {
       const firebaseUpdateResult = await this.eventService.update(eventId, {
         startTime: updateEventDto.start.dateTime,
@@ -138,7 +115,7 @@ export class CalendarController {
       this.logger.warn(`updating firebase doc error: ${error}`);
     }
 
-    return await this.calendarService.updateEvent(idToken, eventId, updateEventDto);
+    return await this.calendarService.updateEvent(token, eventId, updateEventDto);
   }
 
   @Delete('events/:eventId')
@@ -154,17 +131,8 @@ export class CalendarController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Event not found' })
   @ApiParam({ name: 'eventId', description: 'The ID of the event to delete' })
-  async deleteEvent(
-    @Headers('Authorization') authorization: string,
-    @Param('eventId') eventId: string
-  ): Promise<{ success: boolean }> {
-    if (!authorization) {
-      throw new BadRequestException('Authorization header is required');
-    }
-
-    const idToken = authorization.replace('Bearer ', '');
-
-    const result = await this.calendarService.deleteEvent(idToken, eventId);
+  async deleteEvent(@Token() token: string, @Param('eventId') eventId: string): Promise<{ success: boolean }> {
+    const result = await this.calendarService.deleteEvent(token, eventId);
     return { success: result };
   }
 

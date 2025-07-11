@@ -17,8 +17,3 @@ export class GoogleAuthController {
     return this.googleAuthService.getGoogleConfig();
   }
 }
-
-// TODO
-//  1. google auth controller - send config to front end
-//  2. asyncStorage - store token
-//  3. firebase - app check

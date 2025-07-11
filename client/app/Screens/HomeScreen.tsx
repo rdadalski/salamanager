@@ -17,7 +17,7 @@ interface RecentSession {
   duration: number;
 }
 
-export const ClientHomeScreen: React.FC = () => {
+export const HomeScreen: React.FC = () => {
   // Mock data - replace with your actual data fetching
   const nextSession: NextSession = {
     id: "1",
