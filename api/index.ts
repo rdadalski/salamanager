@@ -1,6 +1,11 @@
 import { onRequest } from 'firebase-functions/https';
+import { initializeApp } from 'firebase-admin/app';
 import express from 'express';
-import { createNestApp } from '@app/main';
+
+import { createNestApp } from './src/main';
+import { onEventUpdate as onEventUpdateFunction } from './src/firebase/triggers/event.triggers';
+
+initializeApp();
 
 const expressServer = express();
 
@@ -45,3 +50,5 @@ export const api = onRequest(
     }
   }
 );
+
+export const onEventUpdate = onEventUpdateFunction;

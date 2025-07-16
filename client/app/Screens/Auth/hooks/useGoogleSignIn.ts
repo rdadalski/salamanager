@@ -10,7 +10,7 @@ import {
   storeToken,
 } from "@app/services";
 import { useCreateUserMutation } from "@app/api/users/usersApi";
-import { IFirestoreUserData } from "@app/types";
+import { IFirestoreUserData, UserRole } from "@app/types";
 
 export const useGoogleSignIn = () => {
   const [createUser] = useCreateUserMutation();
@@ -29,6 +29,7 @@ export const useGoogleSignIn = () => {
         creationTime: user.metadata.creationTime,
         lastSignInTime: user.metadata.lastSignInTime,
       },
+      role: UserRole.CLIENT,
     };
   };
 

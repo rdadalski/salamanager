@@ -7,5 +7,17 @@ export interface IInternalEvent {
   displayTitle?: string;
   startTime: string;
   endTime: string;
-  clients: string[];
+  attendees: IAttendee[];
+}
+
+export interface IAttendee {
+  uid: string;
+  status: AttendanceStatus;
+  attended: boolean;
+}
+
+export enum AttendanceStatus {
+  CONFIRMED = 'confirmed',
+  PENDING_CONFIRMATION = 'pending_confirmation',
+  REJECTED = 'rejected',
 }

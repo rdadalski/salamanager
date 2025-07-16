@@ -173,7 +173,7 @@ export class CalendarService {
         displayTitle: event.summary,
         startTime: event.start?.dateTime || event.start?.date,
         endTime: event.end?.dateTime || event.end?.date,
-        clients: [],
+        attendees: [],
       }));
   }
 
