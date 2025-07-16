@@ -2,14 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Headers, BadRequestE
 import { EventsService } from './events.service';
 import { CreateInternalEventDto } from './dto/create-event.dto';
 import { UpdateInternalEventDto } from './dto/update-event.dto';
-import { CalendarService } from '@app/calendar/calendar.service';
 
 @Controller('events')
 export class EventsController {
-  constructor(
-    private readonly eventsService: EventsService,
-    private readonly calendarService: CalendarService
-  ) {}
+  constructor(private readonly eventsService: EventsService) {}
 
   @Post()
   create(@Body() createEventDto: CreateInternalEventDto) {

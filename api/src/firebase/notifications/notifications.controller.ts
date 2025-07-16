@@ -12,25 +12,6 @@ export class NotificationsController {
     private readonly userTokenService: UserTokenService
   ) {}
 
-  @Get('test-connection')
-  async testConnection() {
-    try {
-      // Test if we can access Firestore
-      const testDoc = await this.notificationsService.testFirebaseConnection();
-      return {
-        success: true,
-        message: 'Firebase connection successful',
-        data: testDoc,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: 'Firebase connection failed',
-        error: error.message,
-      };
-    }
-  }
-
   @Post('send')
   async sendNotification(
     @Body()
