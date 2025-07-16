@@ -16,7 +16,7 @@ export const useSignUp = () => {
         password,
       );
 
-      const firebaseUser = await createUser(userCredentials.user); // TODO fix type
+      const firebaseUser = await createUser(userCredentials.user as any); // TODO fix type
 
       await userCredentials.user.sendEmailVerification();
 

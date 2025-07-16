@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpException, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { UserTokenService } from '@app/firebase/notifications/userToken.service';
 import { FirebaseAuthGuard } from '@app/utils/guards/firebase-auth.guard';
@@ -11,25 +11,6 @@ export class NotificationsController {
     private readonly notificationsService: NotificationsService,
     private readonly userTokenService: UserTokenService
   ) {}
-
-  @Get('test-connection')
-  async testConnection() {
-    try {
-      // Test if we can access Firestore
-      const testDoc = await this.notificationsService.testFirebaseConnection();
-      return {
-        success: true,
-        message: 'Firebase connection successful',
-        data: testDoc,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: 'Firebase connection failed',
-        error: error.message,
-      };
-    }
-  }
 
   @Post('send')
   async sendNotification(
