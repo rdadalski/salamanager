@@ -1,7 +1,6 @@
 import { useSignOut } from "@app/Screens/Auth";
 import {
   HomeScreen,
-  NotificationTestScreen,
   AccountingScreenTrainer,
   AccountingScreenUser,
 } from "@app/Screens";
