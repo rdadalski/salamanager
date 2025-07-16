@@ -3,6 +3,7 @@ import {
   IFirestoreCreateUserRequest,
   IFirestoreUserData,
   UpdateUserRequest,
+  UserRole,
 } from "@app/types/users";
 
 export const usersApi = baseApi.injectEndpoints({
@@ -62,6 +63,15 @@ export const usersApi = baseApi.injectEndpoints({
       }),
       // invalidatesTags: (result, error, id) => [{ type: "Users", id }, "Users"],
     }),
+
+    updateUserRole: builder.mutation<void, { uid: string; role: UserRole }>({
+      query: ({ uid, role }) => ({
+        url: `users/${uid}/role`,
+        method: "PATCH",
+        body: { role },
+      }),
+      invalidatesTags: ["Users"],
+    }),
   }),
 });
 
@@ -70,6 +80,7 @@ export const {
   useLazyGetUsersQuery,
   useGetUserByIdQuery,
   useCreateUserMutation,
+  useUpdateUserRoleMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
 } = usersApi;

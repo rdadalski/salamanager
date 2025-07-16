@@ -39,7 +39,7 @@ export const RootNavigator: FC = () => {
 
   return (
     <NavigationContainer
-      theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+      theme={colorScheme === "light" ? DarkTheme : DefaultTheme}
     >
       <RootStack.Navigator>
         {!isUserSignedIn ? (

@@ -9,6 +9,7 @@ export interface IFirestoreUserData {
     creationTime: string | undefined;
     lastSignInTime: string | undefined;
   };
+  role: UserRole;
 }
 
 export enum UserRole {
@@ -19,7 +20,7 @@ export enum UserRole {
   GUEST = "guest",
 }
 
-export type UserRoleType = keyof typeof UserRole;
+export type UserRoleType = `${UserRole}`;
 
 export interface IFirestoreCreateUserRequest extends IFirestoreUserData {
   serverAuthCode: string;
