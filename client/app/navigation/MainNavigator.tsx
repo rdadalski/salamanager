@@ -1,7 +1,6 @@
 import { useSignOut } from "@app/Screens/Auth";
 import {
   HomeScreen,
-  NotificationTestScreen,
   AccountingScreenTrainer,
   AccountingScreenUser,
 } from "@app/Screens";
@@ -10,6 +9,10 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FC } from "react";
 import { CustomButton } from "@app/components";
 import { CalendarStackNavigator } from "@app/navigation/CalendarNavigation";
+import { useAppSelector } from "@app/hooks/redux";
+import { selectUserRole } from "@app/store/slices";
+import { UserRole } from "@app/types";
+import AdminNavigator from "@app/navigation/AdminNavigation";
 
 export type HomeStackParamList = {
   "Home screen": undefined;
@@ -17,12 +20,15 @@ export type HomeStackParamList = {
   Calendar: undefined;
   "Accounting Trainer": undefined;
   "Accounting User": undefined;
+  Admin: undefined;
 };
 
 export const MainTab = createBottomTabNavigator<HomeStackParamList>();
 
 export const MainNavigator: FC = () => {
   const { signOut } = useSignOut();
+
+  const userRole = useAppSelector(selectUserRole);
 
   return (
     <MainTab.Navigator>
@@ -40,25 +46,6 @@ export const MainNavigator: FC = () => {
           ),
           tabBarIcon: ({ color, size }) => (
             <AntDesign name="home" color={color} size={size} />
-          ),
-        }}
-      />
-
-      <MainTab.Screen
-        name="Notifications"
-        component={NotificationTestScreen}
-        options={{
-          headerRightContainerStyle: { paddingRight: 8 },
-          headerRight: ({ tintColor }) => (
-            <CustomButton
-              title={"Logut"}
-              iconName={"logout"}
-              onPress={signOut}
-            />
-          ),
-          tabBarBadge: 3,
-          tabBarIcon: ({ color, size }) => (
-            <AntDesign name="notification" color={color} size={size} />
           ),
         }}
       />
@@ -100,6 +87,18 @@ export const MainNavigator: FC = () => {
           ),
         }}
       />
+      {(userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) && (
+        <MainTab.Screen
+          name="Admin"
+          component={AdminNavigator} // The component is our entire AdminNavigator stack
+          options={{
+            headerShown: false, // Hide header, as AdminNavigator has its own
+            tabBarIcon: ({ color, size }) => (
+              <AntDesign name="tool" color={color} size={size} />
+            ),
+          }}
+        />
+      )}
       <MainTab.Screen
         name="Accounting Trainer"
         component={AccountingScreenTrainer}

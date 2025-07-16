@@ -50,7 +50,7 @@ export class UserController {
   }
 
   @Get()
-  @Roles(UserRole.TRAINER, UserRole.ADMIN)
+  @Roles(UserRole.TRAINER, UserRole.ADMIN, UserRole.CLIENT)
   async findAll() {
     const users = await this.userService.getAllUsers();
     return users.map((user) => new UserResponseDto(user));

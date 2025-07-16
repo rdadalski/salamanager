@@ -3,13 +3,13 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import { UserToken } from '@app/firebase/notifications/interfaces/user-token.model';
-import { UserService } from '@app/user/user.service';
+import { UserModule } from '@app/user/user.module';
 
 @Module({
   controllers: [AuthController],
+  imports: [UserModule],
   providers: [
     AuthService,
-    UserService,
     {
       provide: 'USER_FIRESTORE_SERVICE',
       useFactory: (firebaseAdmin) => {

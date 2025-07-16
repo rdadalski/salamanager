@@ -15,6 +15,7 @@ import { CreateUserRequestDto } from '@app/user/dto/create-user.dto';
 import { UpdateUserDto } from '@app/user/dto/update-user.dto';
 import { google } from 'googleapis';
 import * as process from 'node:process';
+import { NotificationsService } from '@app/firebase/notifications/notifications.service';
 
 @Injectable()
 export class UserService {
@@ -25,8 +26,12 @@ export class UserService {
    * Creates an instance of UserService.
    *
    * @param firebaseAdmin - The Firebase admin app instance.
+   * @param notificationsService - The Notification service instance.
    */
-  constructor(@Inject('FIREBASE_ADMIN') firebaseAdmin: admin.app.App) {
+  constructor(
+    @Inject('FIREBASE_ADMIN') firebaseAdmin: admin.app.App,
+    private readonly notificationsService: NotificationsService
+  ) {
     this.genericService = new GenericFirestoreService<User>(firebaseAdmin, 'users');
   }
 
@@ -199,16 +204,15 @@ export class UserService {
   async changeUserRole(uid: string, newRole: UserRole): Promise<void> {
     this.logger.log(`Attempting to change role for user ${uid} to ${newRole}`);
     try {
-      // 1. Set the new custom claim in Firebase Auth
       await getAuth().setCustomUserClaims(uid, { role: newRole });
 
-      // 2. Update the role in the Firestore document for consistency
       const userRef = this.genericService.update(uid, { role: newRole });
 
-      // 3. CRUCIAL: Invalidate the user's sessions to force re-login
       await getAuth().revokeRefreshTokens(uid);
 
       this.logger.log(`Successfully changed role and revoked tokens for ${uid}`);
+
+      await this.notificationsService.sendForceReauthNotification(uid);
     } catch (error) {
       this.logger.error(`Failed to change role for user ${uid}`, error);
       if (error.code === 'auth/user-not-found') {
