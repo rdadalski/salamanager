@@ -137,10 +137,10 @@ export class CalendarController {
   }
 
   @Post('sync')
-  async syncCalendar(@Body() body: { calendarId: string; accessToken: string }) {
+  async syncCalendar(@Token() token: string, @Body() body: { calendarId: string; accessToken: string }) {
     try {
       this.logger.log(`Starting sync for calendar: ${body.calendarId}`);
-      const events = await this.calendarService.syncCalendarEvents(body.calendarId, body.accessToken);
+      const events = await this.calendarService.syncCalendarEvents(body.calendarId, token);
 
       return {
         success: true,

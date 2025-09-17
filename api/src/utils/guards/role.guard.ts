@@ -20,9 +20,9 @@ export class RolesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
     const userRole = user?.role;
 
-    if (userRole === UserRole.SUPER_ADMIN) {
-      return true;
-    }
+    // if (userRole === UserRole.SUPER_ADMIN) {
+    //   return true;
+    // }
 
     if (!userRole) {
       throw new ForbiddenException('User role not found in token.');

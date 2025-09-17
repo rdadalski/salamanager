@@ -68,7 +68,6 @@ export const CalendarEvents: FC = () => {
                 allowDragToEdit={true}
                 onLoad={() => {
                   setCalendarLoading(false);
-                  console.log("calendar loaded");
                 }}
                 onDragEventStart={handleDragStart}
                 onDragEventEnd={handleDragEnd}

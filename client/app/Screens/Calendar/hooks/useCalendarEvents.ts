@@ -30,6 +30,8 @@ export const useCalendarEvents = (calendarId: string) => {
   } = useGetEventByCalendarIdQuery({ calendarId });
 
   useEffect(() => {
+    console.log(events);
+    console.log(error);
     if (events) {
       setCalendarEvents(events);
     }
@@ -51,7 +53,6 @@ export const useCalendarEvents = (calendarId: string) => {
       end: {
         dateTime: new Date(internalEvent.endTime).toISOString(),
       },
-      // Add other fields that your API expects
     };
 
     const res = await updateCalendarEvent({
@@ -75,14 +76,12 @@ export const useCalendarEvents = (calendarId: string) => {
 
       const originalEvent = calendarInternalEvents[eventIndex];
 
-      // Direct update without transformations
       const updatedEvent: IInternalEvent = {
         ...originalEvent,
         startTime: event.start.dateTime as string,
         endTime: event.end.dateTime as string,
       };
 
-      // Optimistic update
       setCalendarEvents((prev) => [
         ...prev.slice(0, eventIndex),
         updatedEvent,
@@ -92,7 +91,6 @@ export const useCalendarEvents = (calendarId: string) => {
       try {
         await sendUpdateRequest(updatedEvent);
       } catch (error) {
-        // Rollback
         setCalendarEvents((prev) => [
           ...prev.slice(0, eventIndex),
           originalEvent,

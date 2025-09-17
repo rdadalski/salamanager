@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { FirebaseAuthTypes, getAuth } from "@react-native-firebase/auth";
+import {
+  FirebaseAuthTypes,
+  getAuth,
+  onAuthStateChanged,
+} from "@react-native-firebase/auth";
 import * as Device from "expo-device";
 import { IDeviceInfo } from "@app/api/notifications/models/notification-models";
 import { useAppDispatch, useAppSelector } from "@app/hooks/redux";
@@ -31,14 +35,13 @@ export const useInitializeApp = () => {
   };
 
   useEffect(() => {
-    const onAuthStateChanged = async (user: FirebaseAuthTypes.User | null) => {
+    const onAuthStateChangedCallback = async (
+      user: FirebaseAuthTypes.User | null,
+    ) => {
       if (user && user.emailVerified) {
         const idTokenResult = await user.getIdTokenResult(true);
 
-        console.log(idTokenResult);
-
         const role = (idTokenResult.claims.role as UserRole) || UserRole.GUEST;
-        console.log("VERIFIED USER ROLE:", role);
 
         dispatch(
           setAuth({
@@ -60,9 +63,20 @@ export const useInitializeApp = () => {
       }
     };
 
-    const subscriber = getAuth().onAuthStateChanged(onAuthStateChanged);
+    // if (__DEV__) {
+    //   const host = "192.168.0.5";
+    //
+    //   console.log(`[DEV] Connecting to Firebase emulators on ${host}`);
+    //
+    //   getAuth().useEmulator(`http://${host}:9099`);
+    // }
 
-    return subscriber;
+    const unsubscribe = onAuthStateChanged(
+      getAuth(),
+      onAuthStateChangedCallback,
+    );
+
+    return unsubscribe;
   }, [dispatch, initializing]);
 
   return { isUserSignedIn: isAuthenticated, user, initializing, deviceInfo };

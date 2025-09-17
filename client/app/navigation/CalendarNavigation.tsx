@@ -15,7 +15,7 @@ const CalendarStack = createNativeStackNavigator<CalendarStackParamList>();
 export const CalendarStackNavigator = () => {
   return (
     <CalendarStack.Navigator>
-      <CalendarStack.Screen name="CalendarScreen" component={CalendarScreen} />
+      {/*<CalendarStack.Screen name="CalendarScreen" component={CalendarScreen} />*/}
       <CalendarStack.Screen name="CalendarList" component={CalendarList} />
       <CalendarStack.Screen
         name="CalendarEvents"

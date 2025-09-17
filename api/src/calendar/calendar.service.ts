@@ -35,26 +35,29 @@ export class CalendarService {
         process.env.WEB_CLIENT_REDIRECT_URI
       );
 
+      console.log(idToken);
+      console.log(userData.googleRefreshToken);
+
       oAuth2Client.setCredentials({
         access_token: idToken,
         refresh_token: userData.googleRefreshToken,
       });
 
       // Setup token refresh handler
-      // oAuth2Client.on('tokens', async (tokens) => {
-      //   if (tokens.refresh_token) {
-      //     // Store the new refresh token
-      //     await getFirestore().collection('users').doc(uid).update({
-      //       googleRefreshToken: tokens.refresh_token,
-      //     });
-      //   }
-      //   if (tokens.access_token) {
-      //     // Store the new access token
-      //     await getFirestore().collection('users').doc(uid).update({
-      //       googleAccessToken: tokens.access_token,
-      //     });
-      //   }
-      // });
+      oAuth2Client.on('tokens', async (tokens) => {
+        if (tokens.refresh_token) {
+          // Store the new refresh token
+          await getFirestore().collection('users').doc(uid).update({
+            googleRefreshToken: tokens.refresh_token,
+          });
+        }
+        if (tokens.access_token) {
+          // Store the new access token
+          await getFirestore().collection('users').doc(uid).update({
+            googleAccessToken: tokens.access_token,
+          });
+        }
+      });
 
       // Create the calendar client
       return google.calendar({ version: 'v3', auth: oAuth2Client });
@@ -203,6 +206,8 @@ export class CalendarService {
         singleEvents: true,
         maxResults: 2500,
       });
+
+      console.log(response);
 
       const events = this.filterEventsWithinTwoWeeks(response.data.items) || [];
       const newSyncToken = response.data.nextSyncToken;

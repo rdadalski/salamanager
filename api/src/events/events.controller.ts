@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateInternalEventDto } from './dto/create-event.dto';
 import { UpdateInternalEventDto } from './dto/update-event.dto';
@@ -14,14 +14,17 @@ import { DecodedIdToken } from 'firebase-admin/auth';
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
+  // TODO change roles before shipping
+
   @Post()
-  @Roles(UserRole.TRAINER)
+  @Roles(UserRole.TRAINER, UserRole.CLIENT, UserRole.ADMIN)
   create(@Body() createEventDto: CreateInternalEventDto) {
     return this.eventsService.create(createEventDto);
   }
 
   @Get('calendar/:id')
-  @Roles(UserRole.TRAINER)
+  @UseGuards(RolesGuard, FirebaseAuthGuard)
+  @Roles(UserRole.TRAINER, UserRole.CLIENT, UserRole.ADMIN)
   findEventsByCalendarId(@Param('id') id: string) {
     return this.eventsService.findByGoogleCalendarId(id);
   }
@@ -39,7 +42,7 @@ export class EventsController {
   }
 
   @Patch(':eventId')
-  @Roles(UserRole.TRAINER)
+  @Roles(UserRole.TRAINER, UserRole.CLIENT, UserRole.ADMIN)
   async update(@Param('eventId') eventId: string, @Body() updateEventDto: UpdateInternalEventDto) {
     return await this.eventsService.update(eventId, updateEventDto);
   }

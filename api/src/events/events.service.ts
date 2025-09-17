@@ -3,7 +3,7 @@ import { CreateInternalEventDto } from './dto/create-event.dto';
 import { UpdateInternalEventDto } from './dto/update-event.dto';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import * as admin from 'firebase-admin';
-import { IAttendee, IInternalEvent } from '@app/utils/types/event.types';
+import { AttendanceStatus, IAttendee, IInternalEvent } from '@app/utils/types/event.types';
 import { DecodedIdToken } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 
@@ -98,28 +98,24 @@ export class EventsService {
   }
 
   /**
-   * Updates a user's status to 'confirmed' for a specific event
-   * after they accept a time change.
+   * A private helper method to update an attendee's status for an event.
    * @param eventId The ID of the event.
-   * @param user The authenticated user object from the token.
+   * @param user The authenticated user.
+   * @param newStatus The new status to set for the user.
    */
-  async acceptEventChange(eventId: string, user: DecodedIdToken): Promise<void> {
-    const eventRef = this.eventsCollection.doc(eventId);
-    const eventDoc = await eventRef.get();
-
-    if (!eventDoc.exists) {
-      throw new NotFoundException(`Event with ID ${eventId} not found.`);
-    }
-
-    const eventData = eventDoc.data();
+  private async updateAttendeeStatus(
+    eventId: string,
+    user: DecodedIdToken,
+    newStatus: AttendanceStatus
+  ): Promise<void> {
+    const eventData = await this.genericService.findOne(eventId);
     const attendees = eventData.attendees || [];
-
     let userFound = false;
-    const updatedAttendees = attendees.map((attendee: IAttendee) => {
+
+    const updatedAttendees = attendees.map((attendee) => {
       if (attendee.uid === user.uid) {
         userFound = true;
-        // Update the status for the specific user
-        return { ...attendee, status: 'confirmed' };
+        return { ...attendee, status: newStatus };
       }
       return attendee;
     });
@@ -128,35 +124,21 @@ export class EventsService {
       throw new UnauthorizedException('You are not an attendee of this event.');
     }
 
-    await eventRef.update({ attendees: updatedAttendees });
+    await this.genericService.update(eventId, { attendees: updatedAttendees });
   }
 
   /**
-   * Removes a user from an event's attendee list after they
-   * reject a time change.
-   * @param eventId The ID of the event.
-   * @param user The authenticated user object from the token.
+   * Updates a user's status to 'confirmed' for a specific event.
+   */
+  async acceptEventChange(eventId: string, user: DecodedIdToken): Promise<void> {
+    await this.updateAttendeeStatus(eventId, user, AttendanceStatus.CONFIRMED);
+  }
+
+  /**
+   * Updates a user's status to 'rejected' for a specific event.
    */
   async rejectEventChange(eventId: string, user: DecodedIdToken): Promise<void> {
-    const eventRef = this.eventsCollection.doc(eventId);
-    const eventDoc = await eventRef.get();
-
-    if (!eventDoc.exists) {
-      throw new NotFoundException(`Event with ID ${eventId} not found.`);
-    }
-
-    const eventData = eventDoc.data();
-    const originalAttendees = eventData.attendees || [];
-
-    // Filter out the user who is rejecting the change
-    const updatedAttendees = originalAttendees.filter((attendee: IAttendee) => attendee.uid !== user.uid);
-
-    // Check if the user was actually in the list to begin with
-    if (originalAttendees.length === updatedAttendees.length) {
-      throw new UnauthorizedException('You were not an attendee of this event.');
-    }
-
-    await eventRef.update({ attendees: updatedAttendees });
+    await this.updateAttendeeStatus(eventId, user, AttendanceStatus.REJECTED);
   }
 
   async update(id: string, updateEventDto: UpdateInternalEventDto) {

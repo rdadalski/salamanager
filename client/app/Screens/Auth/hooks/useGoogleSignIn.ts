@@ -33,9 +33,15 @@ export const useGoogleSignIn = () => {
     };
   };
 
-  // Usage in your function
-
   const signInWithGoogle = async (webClientId: string, scopes: string[]) => {
+    // if (__DEV__) {
+    //   const host = "192.168.0.5";
+    //
+    //   console.log(`[DEV] Connecting to Firebase emulators on ${host}`);
+    //
+    //   getAuth().useEmulator(`http://${host}:9099`);
+    // }
+
     try {
       await configureGoogle(webClientId, scopes);
 

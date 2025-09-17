@@ -39,7 +39,6 @@ const configSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Handle initial loading from storage/API
       .addCase(fetchGoogleConfig.pending, (state) => {
         state.status = LoadingStatus.LOADING;
       })
@@ -48,6 +47,7 @@ const configSlice = createSlice({
         state.google = action.payload;
       })
       .addCase(fetchGoogleConfig.rejected, (state, action) => {
+        console.log("rejected");
         state.status = LoadingStatus.FAILED;
         state.error = action.error.message || "Failed to load config";
       });
