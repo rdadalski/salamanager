@@ -69,7 +69,7 @@ export const MultiSelectComponent: FC<TMultiSelect> = ({ data, onChange }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
+  container: { padding: 0 },
   dropdown: {
     height: 50,
     backgroundColor: "white",

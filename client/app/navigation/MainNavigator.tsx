@@ -13,6 +13,7 @@ import { useAppSelector } from "@app/hooks/redux";
 import { selectUserRole } from "@app/store/slices";
 import { UserRole } from "@app/types";
 import AdminNavigator from "@app/navigation/AdminNavigation";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export type HomeStackParamList = {
   "Home screen": undefined;
