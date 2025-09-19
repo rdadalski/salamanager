@@ -23,9 +23,6 @@ const RootStack = createNativeStackNavigator<MainTabParamList>();
 export const RootNavigator: FC = () => {
   const { isUserSignedIn, user, initializing, deviceInfo } = useInitializeApp();
   const dispatch = useAppDispatch();
-  const { colorScheme, setColorScheme, toggleColorScheme } = useColorScheme();
-
-  setColorScheme("dark");
 
   useEffect(() => {
     dispatch(fetchGoogleConfig());
@@ -38,9 +35,7 @@ export const RootNavigator: FC = () => {
   }, [isUserSignedIn, deviceInfo]);
 
   return (
-    <NavigationContainer
-      theme={colorScheme === "light" ? DarkTheme : DefaultTheme}
-    >
+    <NavigationContainer>
       <RootStack.Navigator>
         {!isUserSignedIn ? (
           // Auth flow

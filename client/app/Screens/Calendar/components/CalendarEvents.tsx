@@ -16,7 +16,8 @@ import { CustomButton } from "@app/components";
 import { useSyncCalendarEventsMutation } from "@app/api";
 
 export const CalendarEvents: FC = () => {
-  const route = useRoute<RouteProp<CalendarStackParamList, "CalendarEvents">>();
+  const route =
+    useRoute<RouteProp<CalendarStackParamList, "Calendar Events">>();
   const { calendarId } = route.params;
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -32,7 +33,6 @@ export const CalendarEvents: FC = () => {
   } = useCalendarEvents(calendarId);
 
   const handlePressEvent = (event: OnEventResponse) => {
-    console.log(event);
     setModalVisible(true);
     setSelectedEvent(event);
   };
@@ -96,6 +96,7 @@ export const CalendarEvents: FC = () => {
             startTime: selectedEvent?.start?.dateTime || "",
             endTime: selectedEvent?.end?.dateTime || "",
           }}
+          title={"Dane grupy"}
           visible={modalVisible}
           onClose={handleModalClose}
         ></FullscreenModal>

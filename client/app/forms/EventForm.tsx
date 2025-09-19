@@ -1,6 +1,13 @@
 import { FC, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { TextInput, View, Text, Button, ActivityIndicator } from "react-native";
+import {
+  TextInput,
+  View,
+  Text,
+  Button,
+  ActivityIndicator,
+  Platform,
+} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { IResource } from "@app/types";
 import { FullscreenModal } from "@app/components/CustomModal";
@@ -8,6 +15,8 @@ import { ResourceForm } from "@app/forms/ResourceForm";
 import { CustomButton } from "@app/components";
 import { useGetAllResourcesQuery } from "@app/api/resource/resource.api";
 import { useCreateInternalEventMutation } from "@app/api/event/events.api";
+import { useColorScheme } from "nativewind";
+import { ControlledInput } from "@app/components/ControlledInput";
 
 type EventFormProps = {
   googleEventId: string;
@@ -21,6 +30,8 @@ type EventFormProps = {
 type EventFormValues = EventFormProps & {
   resourceId: string;
 };
+
+// TODO refactor to smaller pieces
 
 export const EventForm: FC<EventFormProps> = ({
   googleEventId,
@@ -46,6 +57,8 @@ export const EventForm: FC<EventFormProps> = ({
       endTime,
     },
   });
+
+  const { colorScheme } = useColorScheme();
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
@@ -78,49 +91,16 @@ export const EventForm: FC<EventFormProps> = ({
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <View className="flex-1 w-full">
-          <Controller
+          <ControlledInput
             control={control}
-            rules={{ required: "Summary is required" }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View className="mb-4">
-                <Text className="font-medium mb-1">Summary</Text>
-                <TextInput
-                  className="h-10 border border-gray-300 rounded px-3 bg-white"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholder="Summary"
-                />
-                {errors.summary && (
-                  <Text className="text-red-500 text-xs mt-1">
-                    {errors.summary.message}
-                  </Text>
-                )}
-              </View>
-            )}
-            name="summary"
+            name={"summary"}
+            label={"Summary"}
           />
-          <Controller
+
+          <ControlledInput
             control={control}
-            rules={{}}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View className="mb-4">
-                <Text className="font-medium mb-1">Display title</Text>
-                <TextInput
-                  className="h-10 border border-gray-300 rounded px-3 bg-white"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholder="Display title"
-                />
-                {errors.displayTitle && (
-                  <Text className="text-red-500 text-xs mt-1">
-                    {errors.displayTitle.message}
-                  </Text>
-                )}
-              </View>
-            )}
-            name="displayTitle"
+            name={"displayTitle"}
+            label={"Display title"}
           />
           <Controller
             name={"resourceId"}
@@ -132,16 +112,21 @@ export const EventForm: FC<EventFormProps> = ({
                 </Text>
                 {resourceList?.length > 0 ? (
                   <View className="flex-row gap-2 justify-between items-center">
-                    <View className="w-3/4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
+                    <View className="w-3/4 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
                       <Picker
                         selectedValue={value}
                         onBlur={onBlur}
                         onValueChange={(value) => {
-                          console.log(value);
-                          console.log(resourceList);
                           onChange(value);
                         }}
-                        style={{ color: "#1F2937" }}
+                        dropdownIconColor={
+                          colorScheme === "dark" ? "#FFF" : "#000"
+                        }
+                        style={{
+                          color: colorScheme === "dark" ? "#FFF" : "#000",
+                          backgroundColor:
+                            colorScheme === "dark" ? "#1F2937" : "#FFF",
+                        }}
                       >
                         <Picker.Item label="Select a resource..." value="" />
                         {resourceList.map((resource: IResource) => (
@@ -171,7 +156,7 @@ export const EventForm: FC<EventFormProps> = ({
           />
 
           <View className="mt-2 gap-1">
-            <Button title="log submit" onPress={onSubmit} color="#3b82f6" />
+            <Button title="log submit" onPress={onSubmit} />
           </View>
           <FullscreenModal
             component={ResourceForm}
