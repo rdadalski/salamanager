@@ -100,7 +100,7 @@ export class CalendarService {
   public async getCalendarList(idToken: string) {
     try {
       const calendar = await this.getCalendarClient(idToken);
-      const response = await calendar.calendarList.list();
+      const response = await calendar.calendarList.list({ minAccessRole: 'owner' });
 
       return response.data.items as ICalendarEvent[];
     } catch (error) {
