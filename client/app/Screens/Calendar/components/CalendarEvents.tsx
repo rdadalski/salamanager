@@ -30,6 +30,7 @@ export const CalendarEvents: FC = () => {
     handleDragEnd,
     isLoading,
     isSuccess,
+    refetchCalendarEvents,
   } = useCalendarEvents(calendarId);
 
   const handlePressEvent = (event: OnEventResponse) => {
@@ -47,6 +48,7 @@ export const CalendarEvents: FC = () => {
   const handleTest = async () => {
     const res = await testSync({ calendarId });
     console.log(res);
+    await refetchCalendarEvents();
   };
 
   return (

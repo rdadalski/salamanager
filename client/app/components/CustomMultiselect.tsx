@@ -15,11 +15,11 @@ export const MultiSelectComponent: FC<TMultiSelect> = ({ data, onChange }) => {
   const [selected, setSelected] = useState<string[]>([]);
 
   const renderItem = (item: any) => {
+    if (!item.displayName) return null;
+
     return (
       <View key={item.uid} style={styles.item}>
-        <Text style={styles.selectedTextStyle}>
-          {item.displayName ? item.displayName : item.title}
-        </Text>
+        <Text style={styles.selectedTextStyle}>{item.displayName}</Text>
         <AntDesign style={styles.icon} color="black" name="Safety" size={20} />
       </View>
     );
@@ -36,10 +36,10 @@ export const MultiSelectComponent: FC<TMultiSelect> = ({ data, onChange }) => {
         data={data}
         labelField="displayName"
         valueField="uid"
-        placeholder="Select item"
+        placeholder="Znajdź ludzi"
         value={selected}
         search
-        searchPlaceholder="Search..."
+        searchPlaceholder="Wyszukaj..."
         onChange={(item) => {
           setSelected(item);
           onChange(item);
@@ -56,9 +56,7 @@ export const MultiSelectComponent: FC<TMultiSelect> = ({ data, onChange }) => {
         renderSelectedItem={(item, unSelect) => (
           <TouchableOpacity onPress={() => unSelect && unSelect(item)}>
             <View style={styles.selectedStyle}>
-              <Text style={styles.textSelectedStyle}>
-                {item.displayName ? item.displayName : item.title}
-              </Text>
+              <Text style={styles.textSelectedStyle}>{item.displayName}</Text>
               <AntDesign color="black" name="delete" size={17} />
             </View>
           </TouchableOpacity>
@@ -123,7 +121,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.6,
     shadowRadius: 1.41,
 
     elevation: 2,

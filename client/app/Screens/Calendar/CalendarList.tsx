@@ -11,6 +11,7 @@ import { useAppDispatch } from "@app/hooks/redux";
 import { setDefaultCalendarId } from "@app/store/slices";
 import { storeData } from "@app/services";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { CustomButton } from "@app/components";
 
 export const CalendarList: FC = () => {
   const dispatch = useAppDispatch();
@@ -32,7 +33,11 @@ export const CalendarList: FC = () => {
 
   return (
     <View className="flex w-full">
-      {/*<CustomButton title={"Refetch"} iconName={""} onPress={handleRefetch} />*/}
+      <CustomButton
+        title={"Refetch"}
+        iconName={"sync"}
+        onPress={handleRefetch}
+      />
       <View className="bg-white rounded-xl p-8 m-4 items-center border border-slate-200">
         <AntDesign
           name="calendar"

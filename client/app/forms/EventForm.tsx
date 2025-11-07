@@ -156,7 +156,7 @@ export const EventForm: FC<EventFormProps> = ({
           />
 
           <View className="mt-2 gap-1">
-            <Button title="log submit" onPress={onSubmit} />
+            <Button title="Zapisz event" onPress={onSubmit} />
           </View>
           <FullscreenModal
             component={ResourceForm}
