@@ -36,7 +36,7 @@ const getBaseUrl = () => {
   /* FOR FIREBASE EMULATOR  */
   if (isDevMode && isRealDevice) {
     // apiUrl = `http://192.168.0.5:5001${functionPath}`; //path for emulator
-    apiUrl = `http://192.168.0.5:3000`; // path for development NestJs server
+    apiUrl = `http://192.168.0.9:3000`; // path for development NestJs server
   }
 
   return apiUrl;
