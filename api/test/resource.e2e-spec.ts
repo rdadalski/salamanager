@@ -33,16 +33,15 @@ describe('ResourceController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [ResourceModule],
     })
-    .overrideProvider('RESOURCE_FIRESTORE_SERVICE')
-    .useValue(mockFirestoreService)
-    .overrideGuard(FirebaseAuthGuard)
-    .useValue(mockAuthGuard)
-    .overrideGuard(RolesGuard)
-    .useValue(mockAuthGuard)
-    .compile();
+      .overrideProvider('RESOURCE_FIRESTORE_SERVICE')
+      .useValue(mockFirestoreService)
+      .overrideGuard(FirebaseAuthGuard)
+      .useValue(mockAuthGuard)
+      .overrideGuard(RolesGuard)
+      .useValue(mockAuthGuard)
+      .compile();
 
     app = moduleFixture.createNestApplication();
-    // Add validation pipe to match main.ts
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
   });
@@ -53,25 +52,15 @@ describe('ResourceController (e2e)', () => {
   });
 
   it('/resource (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/resource')
-      .expect(200)
-      .expect([resource]);
+    return request(app.getHttpServer()).get('/resource').expect(200).expect([resource]);
   });
 
   it('/resource (POST)', () => {
-    return request(app.getHttpServer())
-      .post('/resource')
-      .send(createDto)
-      .expect(201)
-      .expect(resource);
+    return request(app.getHttpServer()).post('/resource').send(createDto).expect(201).expect(resource);
   });
 
   it('/resource/:id (GET)', () => {
-    return request(app.getHttpServer())
-      .get(`/resource/${resourceId}`)
-      .expect(200)
-      .expect(resource);
+    return request(app.getHttpServer()).get(`/resource/${resourceId}`).expect(200).expect(resource);
   });
 
   it('/resource/:id (PATCH)', () => {
@@ -84,8 +73,6 @@ describe('ResourceController (e2e)', () => {
   });
 
   it('/resource/:id (DELETE)', () => {
-    return request(app.getHttpServer())
-      .delete(`/resource/${resourceId}`)
-      .expect(200);
+    return request(app.getHttpServer()).delete(`/resource/${resourceId}`).expect(200);
   });
 });
