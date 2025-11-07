@@ -23,7 +23,7 @@ export enum UserRole {
 export type UserRoleType = `${UserRole}`;
 
 export interface IFirestoreCreateUserRequest extends IFirestoreUserData {
-  serverAuthCode: string;
+  serverAuthCode?: string;
 }
 
 export interface CreateUserRequest {
