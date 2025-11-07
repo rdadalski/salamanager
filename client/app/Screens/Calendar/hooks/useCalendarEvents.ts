@@ -27,18 +27,16 @@ export const useCalendarEvents = (calendarId: string) => {
     isError,
     isLoading,
     isFetching,
+    refetch: refetchCalendarEvents,
   } = useGetEventByCalendarIdQuery({ calendarId });
 
   useEffect(() => {
-    console.log(events);
-    console.log(error);
     if (events) {
       setCalendarEvents(events);
     }
   }, [events]);
 
   const handleDragStart = (event: OnEventResponse) => {
-    // TODO
     console.log("Started editing event:", event);
   };
 
@@ -108,5 +106,6 @@ export const useCalendarEvents = (calendarId: string) => {
     libraryEvents,
     isLoading,
     isSuccess,
+    refetchCalendarEvents,
   };
 };

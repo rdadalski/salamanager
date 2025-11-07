@@ -33,6 +33,8 @@ export const ResourceForm: FC = () => {
 
   const { data: userList, isLoading: userListLoading } = useGetUsersQuery();
 
+  console.log(userList);
+
   const [createResource] = useCreateResourceMutation();
 
   const onSubmit = async () => {
@@ -68,7 +70,7 @@ export const ResourceForm: FC = () => {
           render={({ field: { onChange, onBlur, value } }) => (
             <View className="mb-4 w-full">
               <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">
-                Select Users - multipick in progress
+                Select Users - multipick
               </Text>
               <MultiSelectComponent onChange={onChange} data={userList!} />
             </View>
