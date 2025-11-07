@@ -72,8 +72,6 @@ export class UserService {
 
         const { tokens } = await oauth2Client.getToken(createUserDto.serverAuthCode);
 
-        this.logger.log(tokens);
-
         if (tokens.refresh_token) {
           userData.googleRefreshToken = tokens.refresh_token;
         }

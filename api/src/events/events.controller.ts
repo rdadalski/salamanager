@@ -23,8 +23,6 @@ export class EventsController {
   }
 
   @Get('calendar/:id')
-  @UseGuards(RolesGuard, FirebaseAuthGuard)
-  @Roles(UserRole.TRAINER, UserRole.CLIENT, UserRole.ADMIN)
   findEventsByCalendarId(@Param('id') id: string) {
     return this.eventsService.findByGoogleCalendarId(id);
   }

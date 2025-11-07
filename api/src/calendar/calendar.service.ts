@@ -35,8 +35,8 @@ export class CalendarService {
         process.env.WEB_CLIENT_REDIRECT_URI
       );
 
-      console.log(idToken);
-      console.log(userData.googleRefreshToken);
+      this.logger.log(idToken);
+      this.logger.log(userData.googleRefreshToken);
 
       oAuth2Client.setCredentials({
         access_token: idToken,
@@ -45,6 +45,8 @@ export class CalendarService {
 
       // Setup token refresh handler
       oAuth2Client.on('tokens', async (tokens) => {
+        this.logger.log(tokens);
+
         if (tokens.refresh_token) {
           // Store the new refresh token
           await getFirestore().collection('users').doc(uid).update({
@@ -164,8 +166,6 @@ export class CalendarService {
   }
 
   private convertToInternalEvents(googleEvents: any[], calendarId: string): IInternalEvent[] {
-    console.log('convertToInternalEvents');
-
     return googleEvents
       .filter((event) => event.status !== 'cancelled')
       .map((event) => ({
@@ -180,8 +180,6 @@ export class CalendarService {
       }));
   }
 
-  // async syncCalendarEvents(calendarId: string, accessToken: string): Promise<IInternalEvent[]> {
-  // TODO
   async syncCalendarEvents(calendarId: string, accessToken: string): Promise<any> {
     try {
       const calendar = await this.getCalendarClient(accessToken);
