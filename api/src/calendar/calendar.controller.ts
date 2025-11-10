@@ -137,10 +137,10 @@ export class CalendarController {
   }
 
   @Post('sync')
-  async syncCalendar(@Body() body: { calendarId: string; accessToken: string }) {
+  async syncCalendar(@Token() token: string, @Body() body: { calendarId: string; accessToken: string }) {
     try {
       this.logger.log(`Starting sync for calendar: ${body.calendarId}`);
-      const events = await this.calendarService.syncCalendarEvents(body.calendarId, body.accessToken);
+      const events = await this.calendarService.syncCalendarEvents(body.calendarId, token);
 
       return {
         success: true,
@@ -199,6 +199,18 @@ export class CalendarController {
     }
   }
 
+  @Post('initial-sync/:calendarId')
+  async initialSync(@Token() token: string, @Param('calendarId') calendarId: string, @Body() req: { userId: string }) {
+    try {
+      this.logger.log('start initial sync');
+      this.logger.log(req);
+
+      await this.calendarService.initialTrainerCalendarSync(calendarId, token, req.userId);
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
   @Post('test-sync')
   async testSync(
     @Headers('Authorization') authorization: string,
@@ -207,30 +219,8 @@ export class CalendarController {
     const idToken = authorization.split('Bearer ')[1];
     try {
       this.logger.log('=== SYNC TEST STARTED ===');
-
-      // Optional: Force full sync by clearing metadata
-      // if (body.forceFullSync) {
-      //   await this.syncService.saveSyncMetadata({
-      //     calendarId: body.calendarId,
-      //     lastSyncTime: new Date(),
-      //     isInitialSyncComplete: false,
-      //   });
-      //   this.logger.log('Forced full sync mode');
-      // }
-
-      // Get sync status before
-      const beforeSync = await this.syncService.getSyncMetadata(body.calendarId);
-      this.logger.log('Before sync:', {
-        hasToken: !!beforeSync?.syncToken,
-        lastSync: beforeSync?.lastSyncTime,
-        isComplete: beforeSync?.isInitialSyncComplete,
-      });
-
       // Perform sync
       const events = await this.calendarService.syncCalendarEvents(body.calendarId, idToken);
-
-      // Get sync status after
-      const afterSync = await this.syncService.getSyncMetadata(body.calendarId);
 
       // Get saved events from Firebase
       const savedEvents = await this.syncService.getEventsByCalendar(body.calendarId);
@@ -242,23 +232,7 @@ export class CalendarController {
         testResults: {
           syncedEventsCount: events.length,
           totalEventsInFirebase: savedEvents.length,
-          beforeSync: {
-            hadSyncToken: !!beforeSync?.syncToken,
-            lastSyncTime: beforeSync?.lastSyncTime,
-            wasInitialComplete: beforeSync?.isInitialSyncComplete,
-          },
-          afterSync: {
-            hasSyncToken: !!afterSync?.syncToken,
-            lastSyncTime: afterSync?.lastSyncTime,
-            isInitialComplete: afterSync?.isInitialSyncComplete,
-          },
           fullRes: events,
-          sampleEvents: savedEvents.slice(0, 3).map((event) => ({
-            id: event.googleEventId,
-            title: event.summary,
-            start: event.startTime,
-            end: event.endTime,
-          })),
         },
       };
     } catch (error) {

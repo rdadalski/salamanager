@@ -10,8 +10,6 @@ type TilesListProps = {
 };
 
 export const TilesList: FC<TilesListProps> = ({ items, onTilePress }) => {
-  console.log(items);
-
   const renderTile = ({ item }: { item: ICalendarListEntry }) => (
     <Pressable
       className="bg-white m-2 p-4 rounded-lg shadow-md active:bg-gray-100"
@@ -33,6 +31,12 @@ export const TilesList: FC<TilesListProps> = ({ items, onTilePress }) => {
 
   return (
     <SafeAreaView>
+      <View className="mx-4 mt-2 bg-slate-50 border border-dashed border-slate-300 rounded-lg p-4">
+        <Text className="text-base font-semibold text-slate-600 text-center">
+          Wybierz kalendarz z listy, aby zobaczyć swoje wydarzenia.
+        </Text>
+      </View>
+
       <FlatList
         className="w-full p-2"
         data={items}

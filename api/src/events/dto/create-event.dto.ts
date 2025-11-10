@@ -1,10 +1,30 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsISO8601, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { AttendanceStatus } from '@app/utils/types';
+import { Type } from 'class-transformer';
+
+export class AttendeeDto {
+  @ApiProperty({ description: "The user's unique identifier (UID)" })
+  @IsString()
+  uid: string;
+
+  @ApiProperty({ description: 'The attendance status of the user', enum: AttendanceStatus })
+  @IsEnum(AttendanceStatus)
+  status: AttendanceStatus;
+
+  @ApiProperty({ description: 'Indicates if the user attended the event' })
+  @IsBoolean()
+  attended: boolean;
+}
 
 export class CreateInternalEventDto {
   @ApiProperty({ description: 'Google Calendar event ID' })
   @IsString()
   googleEventId: string;
+
+  @ApiProperty({ description: 'Google Calendar recurring event ID' })
+  @IsString()
+  googleRecurringEventId: string;
 
   @ApiProperty({ description: 'Calendar identifier' })
   @IsString()
@@ -39,8 +59,12 @@ export class CreateInternalEventDto {
   @IsNumber()
   defaultResourcePrice: number;
 
-  @ApiProperty({ description: 'List of client identifiers', type: [String] })
+  @ApiProperty({
+    description: 'List of attendees for the event',
+    type: AttendeeDto,
+  })
   @IsArray()
-  @IsString({ each: true })
-  clients: string[];
+  @ValidateNested({ each: true })
+  @Type(() => AttendeeDto)
+  attendees: AttendeeDto[];
 }

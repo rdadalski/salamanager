@@ -9,7 +9,6 @@ export const SignUpScreen = () => {
   const { signUp, loading } = useSignUp();
 
   const handleSignUp = async () => {
-    // Handle sign up logic here
     const result = await signUp(email, password);
     console.log("Sign Up result: ", result);
   };

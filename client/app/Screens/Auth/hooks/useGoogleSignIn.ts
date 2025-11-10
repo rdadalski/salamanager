@@ -10,7 +10,7 @@ import {
   storeToken,
 } from "@app/services";
 import { useCreateUserMutation } from "@app/api/users/usersApi";
-import { IFirestoreUserData } from "@app/types";
+import { IFirestoreUserData, UserRole } from "@app/types";
 
 export const useGoogleSignIn = () => {
   const [createUser] = useCreateUserMutation();
@@ -29,12 +29,19 @@ export const useGoogleSignIn = () => {
         creationTime: user.metadata.creationTime,
         lastSignInTime: user.metadata.lastSignInTime,
       },
+      role: UserRole.CLIENT,
     };
   };
 
-  // Usage in your function
-
   const signInWithGoogle = async (webClientId: string, scopes: string[]) => {
+    // if (__DEV__) {
+    //   const host = "192.168.0.5";
+    //
+    //   console.log(`[DEV] Connecting to Firebase emulators on ${host}`);
+    //
+    //   getAuth().useEmulator(`http://${host}:9099`);
+    // }
+
     try {
       await configureGoogle(webClientId, scopes);
 

@@ -34,7 +34,6 @@ export const FullscreenModal = <T extends {}>({
         }}
       >
         <View className="flex-1 bg-white dark:bg-gray-900">
-          {/* Modal Header */}
           <View className="pt-12 pb-4 px-4 bg-blue-500 dark:bg-blue-700 flex-row justify-between items-center">
             <Text className="text-white text-xl font-bold">{title}</Text>
             <Pressable
@@ -47,21 +46,11 @@ export const FullscreenModal = <T extends {}>({
             </Pressable>
           </View>
 
-          {/* Modal Content */}
           <View className="flex-1 items-center justify-center p-4">
             <Component {...(componentProps as T)} />
           </View>
         </View>
       </Modal>
-
-      {/*<Pressable*/}
-      {/*  className="bg-purple-500 py-3 px-6 rounded-lg active:bg-purple-600 dark:bg-purple-600 dark:active:bg-purple-700"*/}
-      {/*  onPress={() => setModalVisible(true)}*/}
-      {/*>*/}
-      {/*  <Text className="text-white font-bold text-center">*/}
-      {/*    Show Fullscreen Modal*/}
-      {/*  </Text>*/}
-      {/*</Pressable>*/}
     </View>
   );
 };

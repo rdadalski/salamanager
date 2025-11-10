@@ -1,13 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Headers, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateInternalEventDto } from './dto/create-event.dto';
 import { UpdateInternalEventDto } from './dto/update-event.dto';
+import { FirebaseAuthGuard } from '@app/utils/guards/firebase-auth.guard';
+import { RolesGuard } from '@app/utils/guards/role.guard';
+import { Roles } from '@app/utils/decorators/roles.decorator';
+import { UserRole } from '@app/user/models/user.model';
+import { User } from '@app/utils/decorators/user.decorator';
+import { DecodedIdToken } from 'firebase-admin/auth';
 
 @Controller('events')
+@UseGuards(FirebaseAuthGuard, RolesGuard)
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
+  // TODO change roles before shipping
+
   @Post()
+  @Roles(UserRole.TRAINER, UserRole.CLIENT, UserRole.ADMIN)
   create(@Body() createEventDto: CreateInternalEventDto) {
     return this.eventsService.create(createEventDto);
   }
@@ -18,31 +28,51 @@ export class EventsController {
   }
 
   @Get()
+  @Roles(UserRole.ADMIN)
   findAll() {
     return this.eventsService.findAll();
   }
 
   @Get(':id')
+  @Roles(UserRole.TRAINER)
   findOne(@Param('id') id: string) {
     return this.eventsService.findOne(id);
   }
 
   @Patch(':eventId')
-  async update(
-    @Headers('Authorization') authorization: string,
-    @Param('eventId') eventId: string,
-    @Body() updateEventDto: UpdateInternalEventDto
-  ) {
-    if (!authorization) {
-      throw new BadRequestException('Authorization header is required');
-    }
-
-    const idToken = authorization.replace('Bearer ', '');
-
+  @Roles(UserRole.TRAINER, UserRole.CLIENT, UserRole.ADMIN)
+  async update(@Param('eventId') eventId: string, @Body() updateEventDto: UpdateInternalEventDto) {
     return await this.eventsService.update(eventId, updateEventDto);
   }
 
+  /**
+   * Endpoint for a user to accept a proposed event time change.
+   */
+  @Post(':eventId/accept')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async acceptEventChange(
+    @Param('eventId') eventId: string,
+    @User() user: DecodedIdToken // Injects the authenticated user object
+  ) {
+    await this.eventsService.acceptEventChange(eventId, user);
+  }
+
+  /**
+   * Endpoint for a user to reject a proposed event time change.
+   * This will remove them from the event.
+   */
+  @Post(':eventId/reject')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async rejectEventChange(
+    @Param('eventId') eventId: string,
+    @User() user: DecodedIdToken // Injects the authenticated user object
+  ) {
+    await this.eventsService.rejectEventChange(eventId, user);
+  }
+
   @Delete(':id')
+  @Roles(UserRole.ADMIN)
+  @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) {
     return this.eventsService.remove(id);
   }

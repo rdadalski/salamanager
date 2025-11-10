@@ -1,45 +1,56 @@
-import { IsString, IsNumber, IsArray, IsNotEmpty, Min, IsOptional, ArrayNotEmpty, IsUUID } from 'class-validator';
+import { IsString, IsNumber, IsArray, IsNotEmpty, Min, IsOptional, ArrayNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateResourceDto {
-  @ApiProperty({
-    description: 'Name of the resource',
-    example: 'BOKS-SOBOTA-9:00',
-  })
+  @ApiProperty({ example: '7eof4p73b1p3b2kd459c93sddl' })
+  @IsString()
+  @IsNotEmpty()
+  googleEventId: string;
+
+  @ApiProperty({ example: 'Workout Hyrox' })
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({
-    description: 'Default price of the resource',
-    example: 150,
-  })
+  @ApiProperty({ example: 150 })
   @IsNumber()
   @Min(0)
   defaultPrice: number;
 
-  @ApiProperty({
-    description: 'ID of the resource owner',
-    example: 'owner-1',
-  })
+  @ApiProperty({ example: 'trainer-uuid' })
   @IsString()
   @IsNotEmpty()
-  ownerId: string;
+  trainerId: string;
 
-  @ApiProperty({
-    description: 'Minimum time box for the resource',
-    example: '2h',
-  })
+  @ApiProperty({ example: ['RRULE:FREQ=WEEKLY;BYDAY=TU,TH'] })
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  recurrence: string[];
+
+  @ApiProperty({ example: '2025-11-20T06:00:00+01:00' })
+  @IsString()
+  @IsNotEmpty()
+  startTime: string;
+
+  @ApiProperty({ example: '2025-11-20T07:00:00+01:00' })
+  @IsString()
+  @IsNotEmpty()
+  endTime: string;
+
+  @ApiProperty({ example: '1h' })
   @IsString()
   @IsNotEmpty()
   minTimeBox: string;
 
-  @ApiProperty({
-    description: 'Clients associated with the resource',
-  })
+  @ApiProperty({ example: ['client-uuid-1', 'client-uuid-2'] })
   @IsArray()
   @IsOptional()
-  @ArrayNotEmpty()
-  @IsUUID('all', { each: true })
+  @IsString({ each: true })
   clients?: string[];
+
+  @ApiProperty({ example: 'calendar-id-123' })
+  @IsString()
+  @IsNotEmpty()
+  calendarId: string;
 }

@@ -9,10 +9,20 @@ const getBaseUrl = () => {
   const isDevMode = __DEV__;
   const deviceType = Device.deviceType;
 
-  // Check if this is a real device (not an emulator/simulator)
   const isRealDevice = Device.isDevice;
 
-  let apiUrl = "";
+  let apiUrl = "https://your-production-url.com/api";
+
+  const functionPath = "/salamanager-1fa72/europe-central2/api";
+
+  /* FOR FIREBASE EMULATOR  */
+  // if (isDevMode && !isRealDevice) {
+  //   apiUrl = Platform.select({
+  //     ios: `http://localhost:5001${functionPath}`,
+  //     android: `http://10.0.2.2:5001${functionPath}`,
+  //     default: `http://localhost:5001${functionPath}`,
+  //   });
+  // }
 
   // For simulators/emulators in development
   if (isDevMode && !isRealDevice) {
@@ -23,9 +33,10 @@ const getBaseUrl = () => {
     });
   }
 
-  // For physical devices in development
+  /* FOR FIREBASE EMULATOR  */
   if (isDevMode && isRealDevice) {
-    apiUrl = "http://192.168.0.7:3000"; // Your local network IP
+    // apiUrl = `http://192.168.0.5:5001${functionPath}`; //path for emulator
+    apiUrl = `http://192.168.0.9:3000`; // path for development NestJs server
   }
 
   return apiUrl;
@@ -33,7 +44,7 @@ const getBaseUrl = () => {
   // For production or staging environments
   // switch (releaseChannel) {
   //   case "production":
-  //     return "https://api.yourapp.com"; // TODO Your production API endpoint
+  //     return "https://salamanager-1fa72.web.app/"; // TODO Your production API endpoint
   //   case "staging":
   //     return "https://staging-api.yourapp.com"; // TODO Your staging API endpoint
   //   default:

@@ -16,7 +16,6 @@ export async function requestUserPermission(): Promise<boolean> {
     return enabled;
   }
 
-  // Android doesn't require explicit permission for FCM
   return true;
 }
 

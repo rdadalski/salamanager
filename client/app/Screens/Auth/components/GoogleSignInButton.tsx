@@ -9,9 +9,12 @@ export const GoogleSignInButton: FC = () => {
   const googleConfig = useSelector(selectGoogleConfig);
 
   const handleGoogleSignIn = async () => {
-    if (googleConfig.webclientId !== null) {
-      await signInWithGoogle(googleConfig.webclientId, googleConfig.scopes);
+    if (googleConfig.webclientId === null) {
+      console.error("no webclientId");
+      return;
     }
+
+    await signInWithGoogle(googleConfig.webclientId, googleConfig.scopes);
   };
 
   return (
