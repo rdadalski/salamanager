@@ -3,10 +3,29 @@ import { FirebaseAuthTypes, getAuth } from "@react-native-firebase/auth";
 import { FirebaseErrorHandler } from "@app/services";
 import { defaultError } from "@app/services/firebase/error/errorMap";
 import { useCreateUserMutation } from "@app/api/users/usersApi";
+import { IFirestoreUserData, UserRole } from "@app/types";
 
 export const useSignUp = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [createUser] = useCreateUserMutation();
+
+  const getUserRequestData = (
+    user: FirebaseAuthTypes.User,
+  ): IFirestoreUserData => {
+    return {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      emailVerified: user.emailVerified,
+      phoneNumber: user.phoneNumber,
+      metadata: {
+        creationTime: user.metadata.creationTime,
+        lastSignInTime: user.metadata.lastSignInTime,
+      },
+      role: UserRole.CLIENT,
+    };
+  };
 
   const signUp = async (email: string, password: string) => {
     setLoading(true);
@@ -16,7 +35,11 @@ export const useSignUp = () => {
         password,
       );
 
-      const firebaseUser = await createUser(userCredentials.user as any); // TODO fix type
+      const firebaseUser = await createUser(
+        getUserRequestData(userCredentials.user),
+      );
+
+      console.log(firebaseUser);
 
       await userCredentials.user.sendEmailVerification();
 

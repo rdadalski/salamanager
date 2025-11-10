@@ -16,5 +16,6 @@ import { ResourceService } from '@app/resource/resource.service';
       inject: ['FIREBASE_ADMIN'],
     },
   ],
+  exports: [ResourceService],
 })
 export class ResourceModule {}

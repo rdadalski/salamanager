@@ -7,6 +7,7 @@ export interface IConfigState {
   google: IGoogleWebClient;
   status: LoadingStatus;
   error: string | null;
+  defaultCalendarId: string | null;
 }
 
 export enum LoadingStatus {

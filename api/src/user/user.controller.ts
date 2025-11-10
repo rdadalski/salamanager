@@ -118,7 +118,7 @@ export class UserController {
   }
 
   @Patch(':uid/role')
-  @Roles(UserRole.ADMIN)
+  // @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateUserRole(@Param('uid') id: string, @Body() updateUserRoleDto: UpdateUserRoleDto) {
     await this.userService.changeUserRole(id, updateUserRoleDto.role);

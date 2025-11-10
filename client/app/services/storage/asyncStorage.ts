@@ -20,6 +20,8 @@ export async function getData(key: string) {
 }
 
 export async function storeToken(token: string) {
+  console.log("token", token);
+
   await storeData(token, "access_token");
 }
 

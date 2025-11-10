@@ -2,7 +2,7 @@ import { Module, DynamicModule } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FirebaseService } from './firebase.service';
-import * as credentials from 'config/firebase.json';
+import * as credentials from '../../config/firebase.json';
 
 @Module({
   imports: [ConfigModule],
@@ -32,22 +32,34 @@ export class FirebaseModule {
   }
 
   private static initializeFirebaseAdmin(): admin.app.App {
-    if (!this.firebaseApp) {
-      // Make sure credentials are properly formatted
+    if (admin.apps.length) {
+      return admin.app();
+    }
+
+    if (process.env.FUNCTIONS_EMULATOR === 'true') {
+      console.log('[FirebaseModule] Emulator detected. Initializing without credentials.');
+      // When in the emulator, initialize without any arguments.
+      // The Admin SDK will automatically connect to the local services.
+      return admin.initializeApp();
+    } else {
+      // Production or other deployed environments: Use the service account credentials
+      console.log('[FirebaseModule] Production environment detected. Initializing with credentials.');
+
+      if (!credentials) {
+        throw new Error('Firebase credentials are required for non-emulator environments but were not found.');
+      }
+
       const serviceAccount = {
         projectId: credentials.project_id,
         privateKey: credentials.private_key,
         clientEmail: credentials.client_email,
       };
 
-      this.firebaseApp = admin.initializeApp({
+      return admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
         databaseURL: `https://${serviceAccount.projectId}.firebaseio.com`,
-        storageBucket: `${serviceAccount.projectId}.appspot.com`,
-        projectId: serviceAccount.projectId,
       });
     }
-    return this.firebaseApp;
   }
 
   static getFirebaseApp(): admin.app.App {

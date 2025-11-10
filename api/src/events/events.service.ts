@@ -1,14 +1,18 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateInternalEventDto } from './dto/create-event.dto';
 import { UpdateInternalEventDto } from './dto/update-event.dto';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import * as admin from 'firebase-admin';
-import { IInternalEvent } from '@app/utils/types/event.types';
+import { AttendanceStatus, IAttendee, IInternalEvent } from '@app/utils/types/event.types';
+import { DecodedIdToken } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 
 @Injectable()
 export class EventsService {
   private genericService: GenericFirestoreService<IInternalEvent>;
   private readonly logger = new Logger(EventsService.name);
+  private readonly db = getFirestore();
+  private readonly eventsCollection = this.db.collection('events');
 
   constructor(@Inject('FIREBASE_ADMIN') firebaseAdmin: admin.app.App) {
     this.genericService = new GenericFirestoreService<IInternalEvent>(firebaseAdmin, 'events');
@@ -91,6 +95,50 @@ export class EventsService {
       // Generic fallback
       throw new Error('Failed to retrieve calendar events');
     }
+  }
+
+  /**
+   * A private helper method to update an attendee's status for an event.
+   * @param eventId The ID of the event.
+   * @param user The authenticated user.
+   * @param newStatus The new status to set for the user.
+   */
+  private async updateAttendeeStatus(
+    eventId: string,
+    user: DecodedIdToken,
+    newStatus: AttendanceStatus
+  ): Promise<void> {
+    const eventData = await this.genericService.findOne(eventId);
+    const attendees = eventData.attendees || [];
+    let userFound = false;
+
+    const updatedAttendees = attendees.map((attendee) => {
+      if (attendee.uid === user.uid) {
+        userFound = true;
+        return { ...attendee, status: newStatus };
+      }
+      return attendee;
+    });
+
+    if (!userFound) {
+      throw new UnauthorizedException('You are not an attendee of this event.');
+    }
+
+    await this.genericService.update(eventId, { attendees: updatedAttendees });
+  }
+
+  /**
+   * Updates a user's status to 'confirmed' for a specific event.
+   */
+  async acceptEventChange(eventId: string, user: DecodedIdToken): Promise<void> {
+    await this.updateAttendeeStatus(eventId, user, AttendanceStatus.CONFIRMED);
+  }
+
+  /**
+   * Updates a user's status to 'rejected' for a specific event.
+   */
+  async rejectEventChange(eventId: string, user: DecodedIdToken): Promise<void> {
+    await this.updateAttendeeStatus(eventId, user, AttendanceStatus.REJECTED);
   }
 
   async update(id: string, updateEventDto: UpdateInternalEventDto) {

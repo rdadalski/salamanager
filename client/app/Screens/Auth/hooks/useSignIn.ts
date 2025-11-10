@@ -16,13 +16,19 @@ export const useSignIn = () => {
     setLoading(true);
 
     try {
-      const userCredential = await getAuth().signInWithEmailAndPassword(
+      const userCredentials = await getAuth().signInWithEmailAndPassword(
         email,
         password,
       );
 
-      const user = userCredential.user;
+      const user = userCredentials.user;
       await getTokenId(user);
+
+      console.log(user);
+
+      const firebaseAccessToken = await userCredentials.user.getIdToken();
+
+      await storeToken(firebaseAccessToken);
 
       return {
         success: true,

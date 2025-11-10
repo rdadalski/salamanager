@@ -49,9 +49,7 @@ export class SyncService {
   // Save events to Firebase
   async saveEvents(events: IInternalEvent[]): Promise<void> {
     try {
-      for (const event of events) {
-        await this.eventsService.create(event, event.googleEventId);
-      }
+      await this.eventsService.createBulk(events, (event) => event.googleEventId);
       this.logger.log(`Saved ${events.length} events to Firebase`);
     } catch (error) {
       this.logger.error('Error saving events:', error);
@@ -80,5 +78,26 @@ export class SyncService {
       this.logger.error('Error getting events by calendar:', error);
       throw error;
     }
+  }
+
+  // TODO return type
+  async initialSync(userId: string, calendarId: string): Promise<any> {
+    // events.filter((e) => e.resourceId === null)
+  }
+
+  async getEventInstances(recurringEventId: string): Promise<IInternalEvent[]> {
+    return await this.eventsService.findByQuery([{ field: 'resourceId', operator: '==', value: recurringEventId }]);
+  }
+
+  async assignGroupToInstances(recurringEventId: string, groupId: string): Promise<void> {
+    const instances = await this.getEventInstances(recurringEventId);
+
+    for (const instance of instances) {
+      await this.eventsService.update(instance.googleEventId, {
+        resourceId: groupId, // lub dodaj nowe pole groupId
+      });
+    }
+
+    this.logger.log(`Assigned groupId ${groupId} to ${instances.length} instances`);
   }
 }

@@ -13,6 +13,7 @@ import { useAppSelector } from "@app/hooks/redux";
 import { selectUserRole } from "@app/store/slices";
 import { UserRole } from "@app/types";
 import AdminNavigator from "@app/navigation/AdminNavigation";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export type HomeStackParamList = {
   "Home screen": undefined;
@@ -99,24 +100,24 @@ export const MainNavigator: FC = () => {
           }}
         />
       )}
-      <MainTab.Screen
-        name="Accounting Trainer"
-        component={AccountingScreenTrainer}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <AntDesign name="creditcard" color={color} size={size} />
-          ),
-        }}
-      />
-      <MainTab.Screen
-        name="Accounting User"
-        component={AccountingScreenUser}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <AntDesign name="creditcard" color={color} size={size} />
-          ),
-        }}
-      />
+      {/*<MainTab.Screen*/}
+      {/*  name="Accounting Trainer"*/}
+      {/*  component={AccountingScreenTrainer}*/}
+      {/*  options={{*/}
+      {/*    tabBarIcon: ({ color, size }) => (*/}
+      {/*      <AntDesign name="dollar" color={color} size={size} />*/}
+      {/*    ),*/}
+      {/*  }}*/}
+      {/*/>*/}
+      {/*<MainTab.Screen*/}
+      {/*  name="Accounting User"*/}
+      {/*  component={AccountingScreenUser}*/}
+      {/*  options={{*/}
+      {/*    tabBarIcon: ({ color, size }) => (*/}
+      {/*      <AntDesign name="dollar" color={color} size={size} />*/}
+      {/*    ),*/}
+      {/*  }}*/}
+      {/*/>*/}
     </MainTab.Navigator>
   );
 };

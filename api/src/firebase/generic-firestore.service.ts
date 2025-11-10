@@ -1,17 +1,33 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { CollectionReference } from '@google-cloud/firestore';
 import { app, FirebaseError } from 'firebase-admin';
+import { getFirestore } from 'firebase-admin/firestore';
+import {
+  CollectionReference,
+  DocumentData,
+  FirestoreDataConverter,
+  QueryDocumentSnapshot,
+} from 'firebase-admin/firestore';
+import { batch_v1 } from 'googleapis';
 
 @Injectable()
 export class GenericFirestoreService<T> {
-  private readonly collection: CollectionReference;
+  public readonly collection: CollectionReference;
   private readonly logger = new Logger(GenericFirestoreService.name);
+
+  private readonly converter: FirestoreDataConverter<T> = {
+    toFirestore(data: T): DocumentData {
+      return data as DocumentData;
+    },
+    fromFirestore(snapshot: QueryDocumentSnapshot): T {
+      return snapshot.data() as T;
+    },
+  };
 
   constructor(
     @Inject('FIREBASE_ADMIN') private firebaseAdmin: app.App,
     private collectionName: string
   ) {
-    this.collection = this.firebaseAdmin.firestore().collection(this.collectionName);
+    this.collection = getFirestore().collection(this.collectionName).withConverter(this.converter);
   }
 
   async create(data: T, docId?: string): Promise<string> {
@@ -29,6 +45,27 @@ export class GenericFirestoreService<T> {
       const error = e as FirebaseError;
       this.logger.error('Error creating document:', error.message);
       throw e;
+    }
+  }
+
+  async createBulk<T extends { id?: string; googleEventId?: string }>(
+    data: T[],
+    getDocId?: (item: T) => string
+  ): Promise<void> {
+    const db = getFirestore();
+    const BATCH_SIZE = 500;
+
+    for (let i = 0; i < data.length; i += BATCH_SIZE) {
+      const chunk = data.slice(i, i + BATCH_SIZE);
+      const batch = db.batch();
+
+      chunk.forEach((item) => {
+        const docId = getDocId ? getDocId(item) : item.googleEventId || item.id || this.collection.doc().id;
+        const docRef = this.collection.doc(docId);
+        batch.set(docRef, item);
+      });
+
+      await batch.commit();
     }
   }
 
@@ -78,7 +115,6 @@ export class GenericFirestoreService<T> {
   }
 
   async update(id: string, data: Partial<T>): Promise<{ success: boolean; data?: T; error?: string }> {
-    // Validate input
     if (!id || !id.trim()) {
       throw new Error('Document ID is required');
     }
@@ -88,10 +124,8 @@ export class GenericFirestoreService<T> {
     }
 
     try {
-      // Perform the update
       await this.collection.doc(id).update(data);
 
-      // Optionally fetch and return updated document
       const updatedDoc = await this.collection.doc(id).get();
 
       if (!updatedDoc.exists) {
@@ -103,14 +137,12 @@ export class GenericFirestoreService<T> {
         data: { id: updatedDoc.id, ...updatedDoc.data() } as T,
       };
     } catch (error) {
-      // Log error with context
       console.error(`Failed to update document ${id}:`, {
         error: error.message,
         data,
         timestamp: new Date().toISOString(),
       });
 
-      // Return structured error response
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred',

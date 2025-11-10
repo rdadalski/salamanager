@@ -3,16 +3,15 @@ import { CreateResourceDto } from './dto/create-resource.dto';
 import { UpdateResourceDto } from './dto/update-resource.dto';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import { IResource } from '@app/utils/types/resource.types';
-import * as admin from 'firebase-admin';
 
 @Injectable()
 export class ResourceService {
-  private genericService: GenericFirestoreService<IResource>;
   private readonly logger = new Logger(ResourceService.name);
 
-  constructor(@Inject('FIREBASE_ADMIN') firebaseAdmin: admin.app.App) {
-    this.genericService = new GenericFirestoreService<IResource>(firebaseAdmin, 'resources');
-  }
+  constructor(
+    @Inject('RESOURCE_FIRESTORE_SERVICE')
+    private readonly genericService: GenericFirestoreService<IResource>
+  ) {}
 
   async create(createResourceDto: CreateResourceDto) {
     const response = await this.genericService.create(createResourceDto);
@@ -20,11 +19,12 @@ export class ResourceService {
     return response;
   }
 
+  async createBulk(createResourceDtoBulk: CreateResourceDto[]) {
+    return await this.genericService.createBulk(createResourceDtoBulk, (r) => r.googleEventId);
+  }
+
   async findAll() {
-    const res = await this.genericService.findAll();
-    this.logger.log('findAll resources');
-    this.logger.log(res);
-    return res;
+    return await this.genericService.findAll();
   }
 
   async findOne(id: string) {

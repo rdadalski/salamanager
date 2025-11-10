@@ -1,3 +1,5 @@
+import { IAttendee } from "@app/types";
+
 /**
  * Interface for DateTime information
  */
@@ -163,7 +165,7 @@ export interface SimplifiedEvent {
   color: string;
   status?: string;
   defaultResourcePrice?: number;
-  clients?: string[];
+  attendees?: IAttendee[];
   googleEventId: string;
   calendarId: string;
   resourceId: string;
