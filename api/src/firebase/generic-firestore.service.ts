@@ -7,6 +7,7 @@ import {
   FirestoreDataConverter,
   QueryDocumentSnapshot,
 } from 'firebase-admin/firestore';
+import { batch_v1 } from 'googleapis';
 
 @Injectable()
 export class GenericFirestoreService<T> {
@@ -44,6 +45,27 @@ export class GenericFirestoreService<T> {
       const error = e as FirebaseError;
       this.logger.error('Error creating document:', error.message);
       throw e;
+    }
+  }
+
+  async createBulk<T extends { id?: string; googleEventId?: string }>(
+    data: T[],
+    getDocId?: (item: T) => string
+  ): Promise<void> {
+    const db = getFirestore();
+    const BATCH_SIZE = 500;
+
+    for (let i = 0; i < data.length; i += BATCH_SIZE) {
+      const chunk = data.slice(i, i + BATCH_SIZE);
+      const batch = db.batch();
+
+      chunk.forEach((item) => {
+        const docId = getDocId ? getDocId(item) : item.googleEventId || item.id || this.collection.doc().id;
+        const docRef = this.collection.doc(docId);
+        batch.set(docRef, item);
+      });
+
+      await batch.commit();
     }
   }
 

@@ -10,7 +10,7 @@ export class ResourceService {
 
   constructor(
     @Inject('RESOURCE_FIRESTORE_SERVICE')
-    private readonly genericService: GenericFirestoreService<IResource>,
+    private readonly genericService: GenericFirestoreService<IResource>
   ) {}
 
   async create(createResourceDto: CreateResourceDto) {
@@ -19,11 +19,12 @@ export class ResourceService {
     return response;
   }
 
+  async createBulk(createResourceDtoBulk: CreateResourceDto[]) {
+    return await this.genericService.createBulk(createResourceDtoBulk, (r) => r.googleEventId);
+  }
+
   async findAll() {
-    const res = await this.genericService.findAll();
-    this.logger.log('findAll resources');
-    this.logger.log(res);
-    return res;
+    return await this.genericService.findAll();
   }
 
   async findOne(id: string) {

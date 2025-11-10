@@ -14,7 +14,6 @@ export class GoogleAuthController {
     description: 'Returns the Google Sign-in configuration',
   })
   async getConfig() {
-    console.log('im here');
     return this.googleAuthService.getGoogleConfig();
   }
 }

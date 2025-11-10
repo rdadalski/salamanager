@@ -3,6 +3,7 @@ export interface IInternalEvent {
   googleEventId: string;
   calendarId: string;
   resourceId: string;
+  googleRecurringEventId: string;
   summary: string;
   displayTitle?: string;
   startTime: string;

@@ -22,6 +22,10 @@ export class CreateInternalEventDto {
   @IsString()
   googleEventId: string;
 
+  @ApiProperty({ description: 'Google Calendar recurring event ID' })
+  @IsString()
+  googleRecurringEventId: string;
+
   @ApiProperty({ description: 'Calendar identifier' })
   @IsString()
   calendarId: string;

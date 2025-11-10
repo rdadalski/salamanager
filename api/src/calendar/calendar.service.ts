@@ -6,12 +6,16 @@ import { ICalendarEvent } from '@app/calendar/interfaces/calendar-event.interfac
 import { IInternalEvent } from '@app/utils/types/event.types';
 import { SyncService } from '@app/calendar/sync.service';
 import process from 'node:process';
+import { ResourceService } from '@app/resource/resource.service';
 
 @Injectable()
 export class CalendarService {
   private readonly logger = new Logger(CalendarService.name);
 
-  constructor(private syncService: SyncService) {}
+  constructor(
+    private syncService: SyncService,
+    private resourceService: ResourceService
+  ) {}
 
   private async getCalendarClient(idToken: string) {
     try {
@@ -171,7 +175,8 @@ export class CalendarService {
       .map((event) => ({
         googleEventId: event.id,
         calendarId: calendarId,
-        resourceId: null,
+        googleRecurringEventId: event.recurringEventId || null,
+        resourceId: event.recurringEventId || null,
         summary: event.summary || 'No Title',
         displayTitle: event.summary,
         startTime: event.start?.dateTime || event.start?.date,
@@ -180,6 +185,58 @@ export class CalendarService {
       }));
   }
 
+  async initializeResources(calendarId: string, accessToken: string, userId: string) {
+    const calendar = await this.getCalendarClient(accessToken);
+    const response = await calendar.events.list({
+      calendarId: calendarId,
+      singleEvents: false,
+      maxResults: 2500,
+    });
+
+    console.log(userId);
+
+    const recurringTemplates = response.data.items
+      .filter((event) => event.recurrence && event.recurrence.length > 0)
+      .map((event) => ({
+        googleEventId: event.id,
+        name: event.summary,
+        defaultPrice: 0,
+        trainerId: userId,
+        recurrence: event.recurrence,
+        startTime: event.start.dateTime,
+        endTime: event.end.dateTime,
+        minTimeBox: this.calculateDuration(event.start.dateTime, event.end.dateTime),
+        clients: [],
+        calendarId: calendarId,
+      }));
+
+    this.logger.log('RECURRING TEMPLATES');
+    this.logger.log(recurringTemplates);
+
+    const resourceResponse = await this.resourceService.createBulk(recurringTemplates);
+
+    this.logger.log(resourceResponse);
+  }
+
+  async initialTrainerCalendarSync(calendarId: string, accessToken: string, userId: string) {
+    await this.initializeResources(calendarId, accessToken, userId);
+    await this.syncCalendarEvents(calendarId, accessToken);
+  }
+
+  private calculateDuration(startTime: string, endTime: string): string {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    const diffMs = end.getTime() - start.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (diffMinutes === 0) {
+      return `${diffHours}h`;
+    }
+    return `${diffHours}h${diffMinutes}m`;
+  }
+
+  // Incremental google event sync
   async syncCalendarEvents(calendarId: string, accessToken: string): Promise<any> {
     try {
       const calendar = await this.getCalendarClient(accessToken);
@@ -192,7 +249,7 @@ export class CalendarService {
 
       if (syncMetadata?.isInitialSyncComplete && syncMetadata?.syncToken) {
         syncToken = syncMetadata.syncToken;
-        this.logger.log('✅ Using sync token for incremental sync:', syncToken.substring(0, 20) + '...');
+        this.logger.log('Using sync token for incremental sync:', syncToken.substring(0, 20) + '...');
       } else {
         isInitialSync = true;
       }
