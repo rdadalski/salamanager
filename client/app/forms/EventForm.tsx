@@ -25,6 +25,7 @@ type EventFormProps = {
   displayTitle?: string;
   startTime: string;
   endTime: string;
+  resourceId: string;
 };
 
 type EventFormValues = EventFormProps & {
@@ -40,6 +41,7 @@ export const EventForm: FC<EventFormProps> = ({
   displayTitle,
   startTime,
   endTime,
+  resourceId,
 }) => {
   const {
     control,
@@ -48,7 +50,7 @@ export const EventForm: FC<EventFormProps> = ({
     getValues,
   } = useForm<EventFormValues>({
     defaultValues: {
-      resourceId: "",
+      resourceId,
       googleEventId,
       calendarId,
       summary,

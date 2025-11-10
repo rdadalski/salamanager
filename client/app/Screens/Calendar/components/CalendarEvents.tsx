@@ -13,7 +13,13 @@ import { useCalendarEvents } from "@app/Screens/Calendar/hooks/useCalendarEvents
 import { FullscreenModal } from "@app/components/CustomModal";
 import { EventForm } from "@app/forms/EventForm";
 import { CustomButton } from "@app/components";
-import { useSyncCalendarEventsMutation } from "@app/api";
+import {
+  useInitialCalendarSyncMutation,
+  useSyncCalendarEventsMutation,
+} from "@app/api";
+import { AuthUser, selectUser } from "@app/store/slices";
+import { useAppSelector } from "@app/hooks/redux";
+import EventInfo from "@app/Screens/Calendar/components/EventInfo";
 
 export const CalendarEvents: FC = () => {
   const route =
@@ -23,6 +29,8 @@ export const CalendarEvents: FC = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [calendarLoading, setCalendarLoading] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>();
+
+  const userData = useAppSelector(selectUser);
 
   const {
     libraryEvents,
@@ -44,9 +52,17 @@ export const CalendarEvents: FC = () => {
   };
 
   const [testSync] = useSyncCalendarEventsMutation();
+  const [initialCalendarSync] = useInitialCalendarSyncMutation();
 
   const handleTest = async () => {
-    const res = await testSync({ calendarId });
+    console.log(userData);
+    if (!userData) return;
+
+    const res = await initialCalendarSync({
+      calendarId,
+      userId: userData.uid as string,
+    });
+
     console.log(res);
     await refetchCalendarEvents();
   };
@@ -88,17 +104,27 @@ export const CalendarEvents: FC = () => {
             </View>
           </View>
         )}
+        {/*<FullscreenModal*/}
+        {/*  component={EventForm}*/}
+        {/*  componentProps={{*/}
+        {/*    resourceId: selectedEvent?.resourceId || "",*/}
+        {/*    googleEventId: selectedEvent?.id || "",*/}
+        {/*    calendarId,*/}
+        {/*    summary: selectedEvent?.summary || "",*/}
+        {/*    displayTitle: selectedEvent?.summary || "",*/}
+        {/*    startTime: selectedEvent?.start?.dateTime || "",*/}
+        {/*    endTime: selectedEvent?.end?.dateTime || "",*/}
+        {/*  }}*/}
+        {/*  title={"Dane grupy"}*/}
+        {/*  visible={modalVisible}*/}
+        {/*  onClose={handleModalClose}*/}
+        {/*></FullscreenModal>*/}
         <FullscreenModal
-          component={EventForm}
+          component={EventInfo}
           componentProps={{
-            googleEventId: selectedEvent?.id || "",
-            calendarId,
-            summary: selectedEvent?.summary || "",
-            displayTitle: selectedEvent?.summary || "",
-            startTime: selectedEvent?.start?.dateTime || "",
-            endTime: selectedEvent?.end?.dateTime || "",
+            eventId: selectedEvent?.id as string,
+            resourceId: selectedEvent?.resourceId as string,
           }}
-          title={"Dane grupy"}
           visible={modalVisible}
           onClose={handleModalClose}
         ></FullscreenModal>
