@@ -1,0 +1,23 @@
+{
+  "scripts": {
+    "dev": "concurrently \"pnpm run api\" \"pnpm run client\"",
+    "dev:ios": "concurrently \"pnpm run api\" \"pnpm run client:ios\"",
+    "dev:android": "concurrently \"pnpm run api\" \"pnpm run client:android\"",
+    "api": "cd api && pnpm run start:dev",
+    "client": "cd client && pnpm run start",
+    "client:ios": "cd client && pnpm run ios",
+    "client:ios:device": "cd client && pnpm run ios:device",
+    "client:android": "cd client && pnpm run android",
+    "client:android:device": "cd client && pnpm run android:device",
+    "clean": "pnpm run clean:client && pnpm run clean:api",
+    "clean:client": "cd client && pnpm run clean",
+    "clean:api": "cd api && pnpm run clean",
+    "clean:all": "pnpm run clean && rm -rf node_modules api/node_modules client/node_modules",
+    "rebuild": "pnpm run clean:all && pnpm install:all",
+    "rebuild:client": "pnpm run clean:client && cd client && pnpm install",
+    "install:all": "pnpm install && cd api && pnpm install && cd ../client && pnpm install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

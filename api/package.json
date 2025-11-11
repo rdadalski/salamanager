@@ -25,7 +25,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "emulators": "firebase emulators:start --only functions,firestore",
     "deploy": "firebase deploy",
-    "deploy:functions": "firebase deploy --only functions"
+    "deploy:functions": "firebase deploy --only functions",
+    "clean": "rm -rf dist node_modules/.cache"
   },
   "dependencies": {
     "@google-cloud/functions-framework": "^3.4.5",
