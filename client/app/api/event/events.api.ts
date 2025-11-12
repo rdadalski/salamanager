@@ -17,6 +17,12 @@ export const eventsApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+    getTodayEvents: builder.query<IInternalEvent[], void>({
+      query: () => ({
+        url: `events/today`,
+        method: "GET",
+      }),
+    }),
     createInternalEvent: builder.mutation<any, { values: IInternalEvent }>({
       query: ({ values }) => ({
         url: "events",
@@ -52,6 +58,8 @@ export const eventsApi = baseApi.injectEndpoints({
 export const {
   useCreateInternalEventMutation,
   useGetAllInternalEventsQuery,
+  useGetTodayEventsQuery,
+  useLazyGetTodayEventsQuery,
   useDeleteInternalEventMutation,
   useGetSingleInternalEventQuery,
   useLazyGetEventByCalendarIdQuery,
