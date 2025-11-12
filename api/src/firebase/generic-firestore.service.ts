@@ -7,7 +7,6 @@ import {
   FirestoreDataConverter,
   QueryDocumentSnapshot,
 } from 'firebase-admin/firestore';
-import { batch_v1 } from 'googleapis';
 
 @Injectable()
 export class GenericFirestoreService<T> {

@@ -1,20 +1,13 @@
-import {
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { CreateInternalEventDto } from './dto/create-event.dto';
 import { UpdateInternalEventDto } from './dto/update-event.dto';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import * as admin from 'firebase-admin';
-import { AttendanceStatus, IAttendee, IInternalEvent, IInternalEventFirestore } from '@app/utils/types/event.types';
+import { AttendanceStatus, IInternalEvent, IInternalEventFirestore } from '@app/utils/types/event.types';
 import { DecodedIdToken, getAuth } from 'firebase-admin/auth';
-import { getFirestore, Timestamp } from 'firebase-admin/firestore';
+import { Timestamp } from 'firebase-admin/firestore';
 import { FirestoreDate } from '@app/utils/helper.types';
-import { convertFromFirestore, convertToFirestore } from '@app/utils/services/dateUtils';
+import { convertToFirestore } from '@app/utils/services/dateUtils';
 
 @Injectable()
 export class EventsService {

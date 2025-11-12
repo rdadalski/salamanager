@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Headers, Delete, Param, Post, Body, Patch, Logger, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Delete, Param, Post, Body, Patch, Logger, UseGuards } from '@nestjs/common';
 import { CalendarService } from './calendar.service';
 import { ICalendarEvent } from '@app/calendar/interfaces/calendar-event.interface';
 import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';

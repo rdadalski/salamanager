@@ -10,7 +10,6 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { useAppDispatch } from "@app/hooks/redux";
 import { setDefaultCalendarId } from "@app/store/slices";
 import { storeData } from "@app/services";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { CustomButton } from "@app/components";
 
 export const CalendarList: FC = () => {

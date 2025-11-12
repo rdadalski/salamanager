@@ -7,7 +7,6 @@ import { IInternalEvent, IInternalEventFirestore } from '@app/utils/types/event.
 import { SyncService } from '@app/calendar/sync.service';
 import process from 'node:process';
 import { ResourceService } from '@app/resource/resource.service';
-import { IResource } from '@app/utils/types';
 
 @Injectable()
 export class CalendarService {
