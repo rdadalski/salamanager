@@ -10,7 +10,6 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { useAppDispatch } from "@app/hooks/redux";
 import { setDefaultCalendarId } from "@app/store/slices";
 import { storeData } from "@app/services";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { CustomButton } from "@app/components";
 
 export const CalendarList: FC = () => {
@@ -24,7 +23,7 @@ export const CalendarList: FC = () => {
   const handleCalendarSelect = async (item: ICalendarListEntry) => {
     dispatch(setDefaultCalendarId(item.id));
     await storeData(item.id, "default_user_calendar_id");
-    navigation.navigate("Calendar Events", { calendarId: item.id });
+    navigation.navigate("CalendarEvents", { calendarId: item.id });
   };
 
   const handleRefetch = () => {

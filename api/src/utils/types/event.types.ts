@@ -1,5 +1,8 @@
+import { Timestamp } from 'firebase-admin/firestore';
+
 export interface IInternalEvent {
   id?: string;
+  trainerId: string;
   googleEventId: string;
   calendarId: string;
   resourceId: string;
@@ -9,6 +12,11 @@ export interface IInternalEvent {
   startTime: string;
   endTime: string;
   attendees: IAttendee[];
+}
+
+export interface IInternalEventFirestore extends Omit<IInternalEvent, 'startTime' | 'endTime'> {
+  startTime: Timestamp;
+  endTime: Timestamp;
 }
 
 export interface IAttendee {

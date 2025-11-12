@@ -1,29 +1,36 @@
-import { Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { CreateInternalEventDto } from './dto/create-event.dto';
 import { UpdateInternalEventDto } from './dto/update-event.dto';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import * as admin from 'firebase-admin';
-import { AttendanceStatus, IAttendee, IInternalEvent } from '@app/utils/types/event.types';
-import { DecodedIdToken } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+import { AttendanceStatus, IInternalEvent, IInternalEventFirestore } from '@app/utils/types/event.types';
+import { DecodedIdToken, getAuth } from 'firebase-admin/auth';
+import { Timestamp } from 'firebase-admin/firestore';
+import { FirestoreDate } from '@app/utils/helper.types';
+import { convertToFirestore } from '@app/utils/services/dateUtils';
 
 @Injectable()
 export class EventsService {
-  private genericService: GenericFirestoreService<IInternalEvent>;
+  private genericService: GenericFirestoreService<FirestoreDate<IInternalEvent>>;
   private readonly logger = new Logger(EventsService.name);
-  private readonly db = getFirestore();
-  private readonly eventsCollection = this.db.collection('events');
 
   constructor(@Inject('FIREBASE_ADMIN') firebaseAdmin: admin.app.App) {
-    this.genericService = new GenericFirestoreService<IInternalEvent>(firebaseAdmin, 'events');
+    this.genericService = new GenericFirestoreService<FirestoreDate<IInternalEvent>>(firebaseAdmin, 'events');
   }
 
   async create(createEventDto: CreateInternalEventDto) {
-    const response = await this.genericService.create(createEventDto);
+    this.logger.log('BEFORE CONVERT:', createEventDto);
 
-    this.logger.log(response);
-    // TODO there is always something to do
-    //  like error handling
+    const firestoreData = convertToFirestore(createEventDto);
+    this.logger.log('AFTER CONVERT:', firestoreData);
+
+    const response = await this.genericService.create(firestoreData as any);
+    this.logger.log('FIRESTORE RESPONSE:', response);
+
+    if (!response) {
+      throw new InternalServerErrorException('Failed to create event');
+    }
+
     return response;
   }
 
@@ -35,12 +42,35 @@ export class EventsService {
     return await this.genericService.findOne(id);
   }
 
+  async todayEvents(idToken: string) {
+    try {
+      const decodedToken = await getAuth().verifyIdToken(idToken);
+      const uid = decodedToken.uid;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const events = await this.genericService.findByQuery([
+        { field: 'trainerId', operator: '==', value: uid },
+        { field: 'startTime', operator: '>=', value: Timestamp.fromDate(today) },
+        { field: 'endTime', operator: '<', value: Timestamp.fromDate(tomorrow) },
+      ]);
+
+      this.logger.log('Found events:', events.length);
+      return events;
+    } catch (e) {
+      this.logger.error('Failed to fetch today events', e);
+      throw new InternalServerErrorException('Could not retrieve events');
+    }
+  }
+
   async findByGoogleEventId(googleEventId: string) {
     return await this.genericService.findByQuery([{ field: 'googleEventId', operator: '==', value: googleEventId }]);
   }
 
   async findByGoogleCalendarId(calendarId: string): Promise<IInternalEvent[]> {
-    // Input validation
     if (!calendarId || typeof calendarId !== 'string') {
       this.logger.error('Invalid calendarId provided:', calendarId);
       throw new Error('Calendar ID is required and must be a valid string');
@@ -64,21 +94,29 @@ export class EventsService {
       }
 
       this.logger.log(`Found ${events.length} events for calendar: ${calendarId}`);
-      return events;
+
+      this.logger.log(events[0]);
+
+      const mappedEvents = events.map((event) => ({
+        ...event,
+        startTime: event.startTime.toDate().toISOString(),
+        endTime: event.endTime.toDate().toISOString(),
+      }));
+
+      this.logger.log(mappedEvents[0]);
+
+      return mappedEvents;
     } catch (error) {
-      // Log the error with context
       this.logger.error(`Failed to find events for calendar ${calendarId}:`, {
         error: error.message,
         stack: error.stack,
         calendarId,
       });
 
-      // Re-throw with more context if it's our validation error
       if (error.message.includes('Calendar ID')) {
         throw error;
       }
 
-      // Handle Firestore-specific errors
       if (error.code) {
         switch (error.code) {
           case 'permission-denied':
@@ -92,7 +130,6 @@ export class EventsService {
         }
       }
 
-      // Generic fallback
       throw new Error('Failed to retrieve calendar events');
     }
   }
@@ -142,12 +179,17 @@ export class EventsService {
   }
 
   async update(id: string, updateEventDto: UpdateInternalEventDto) {
-    this.logger.log(id);
-    this.logger.log(updateEventDto);
+    const firestoreData: Partial<IInternalEventFirestore> = {
+      ...updateEventDto,
+      ...(updateEventDto.startTime && {
+        startTime: Timestamp.fromDate(new Date(updateEventDto.startTime)),
+      }),
+      ...(updateEventDto.endTime && {
+        endTime: Timestamp.fromDate(new Date(updateEventDto.endTime)),
+      }),
+    };
 
-    const response = await this.genericService.update(id, updateEventDto);
-
-    this.logger.log(response);
+    const response = await this.genericService.update(id, firestoreData);
 
     return response;
   }

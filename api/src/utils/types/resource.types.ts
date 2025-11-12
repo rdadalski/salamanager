@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase-admin/firestore';
+
 export interface IResource {
   id?: string;
   googleEventId: string;
@@ -5,9 +7,10 @@ export interface IResource {
   defaultPrice: number;
   trainerId: string;
   recurrence: string[];
-  startTime: string;
-  endTime: string;
+  startTime: string | Timestamp;
+  endTime: string | Timestamp;
   minTimeBox: string;
   clients?: string[];
   calendarId: string;
+  configured?: boolean;
 }

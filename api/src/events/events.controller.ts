@@ -8,6 +8,7 @@ import { Roles } from '@app/utils/decorators/roles.decorator';
 import { UserRole } from '@app/user/models/user.model';
 import { User } from '@app/utils/decorators/user.decorator';
 import { DecodedIdToken } from 'firebase-admin/auth';
+import { Token } from '@app/utils/decorators/token.decorator';
 
 @Controller('events')
 @UseGuards(FirebaseAuthGuard, RolesGuard)
@@ -20,6 +21,12 @@ export class EventsController {
   @Roles(UserRole.TRAINER, UserRole.CLIENT, UserRole.ADMIN)
   create(@Body() createEventDto: CreateInternalEventDto) {
     return this.eventsService.create(createEventDto);
+  }
+
+  @Get('today')
+  @Roles()
+  today(@Token() token: string) {
+    return this.eventsService.todayEvents(token);
   }
 
   @Get('calendar/:id')

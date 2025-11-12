@@ -11,19 +11,17 @@ import {
 } from "@howljs/calendar-kit";
 import { useCalendarEvents } from "@app/Screens/Calendar/hooks/useCalendarEvents";
 import { FullscreenModal } from "@app/components/CustomModal";
-import { EventForm } from "@app/forms/EventForm";
 import { CustomButton } from "@app/components";
 import {
   useInitialCalendarSyncMutation,
   useSyncCalendarEventsMutation,
 } from "@app/api";
-import { AuthUser, selectUser } from "@app/store/slices";
+import { selectUser } from "@app/store/slices";
 import { useAppSelector } from "@app/hooks/redux";
 import EventInfo from "@app/Screens/Calendar/components/EventInfo";
 
 export const CalendarEvents: FC = () => {
-  const route =
-    useRoute<RouteProp<CalendarStackParamList, "Calendar Events">>();
+  const route = useRoute<RouteProp<CalendarStackParamList, "CalendarEvents">>();
   const { calendarId } = route.params;
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -51,7 +49,6 @@ export const CalendarEvents: FC = () => {
     setSelectedEvent(null);
   };
 
-  const [testSync] = useSyncCalendarEventsMutation();
   const [initialCalendarSync] = useInitialCalendarSyncMutation();
 
   const handleTest = async () => {
@@ -78,7 +75,7 @@ export const CalendarEvents: FC = () => {
               <CustomButton
                 iconName={""}
                 onPress={handleTest}
-                title={"testSync"}
+                title={"Initial Sync"}
               />
             </View>
             <View className={"w-full flex h-full"}>
