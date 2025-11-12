@@ -1,14 +1,21 @@
 import { CalendarEvents } from "@app/Screens/Calendar/components/CalendarEvents";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationProp,
+} from "@react-navigation/native-stack";
 import { CalendarList } from "@app/Screens/Calendar/CalendarList";
 import { CustomButton } from "@app/components";
-import { CalendarScreen } from "@app/Screens/Calendar/CalendarScreen";
 import { SafeAreaView } from "react-native-safe-area-context";
+import CalendarHomeScreen from "@app/Screens/Calendar/CalendarScreen";
 
 export type CalendarStackParamList = {
-  "Calendar List": undefined;
-  "Calendar Events": { calendarId: string };
+  CalendarList: undefined;
+  CalendarEvents: { calendarId: string };
+  CalendarScreen: undefined;
 };
+
+export type CalendarNavigationProp =
+  NativeStackNavigationProp<CalendarStackParamList>;
 
 const CalendarStack = createNativeStackNavigator<CalendarStackParamList>();
 
@@ -16,17 +23,26 @@ export const CalendarStackNavigator = () => {
   return (
     <SafeAreaView className={"flex-1 bg-white"}>
       <CalendarStack.Navigator>
-        {/*<CalendarStack.Screen name="CalendarScreen" component={CalendarScreen} />*/}
-        <CalendarStack.Screen name="Calendar List" component={CalendarList} />
         <CalendarStack.Screen
-          name="Calendar Events"
+          name="CalendarScreen"
+          component={CalendarHomeScreen}
+          options={{ title: "Calendar home screen" }}
+        />
+        <CalendarStack.Screen
+          name="CalendarList"
+          component={CalendarList}
+          options={{ title: "Calendar List" }}
+        />
+        <CalendarStack.Screen
+          name="CalendarEvents"
           component={CalendarEvents}
           options={({ navigation }) => ({
+            title: "Calendar Events",
             headerLeft: () => (
               <CustomButton
                 title={""}
                 iconName="calendar"
-                onPress={() => navigation.navigate("Calendar List")}
+                onPress={() => navigation.navigate("CalendarList")}
               />
             ),
           })}

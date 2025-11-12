@@ -22,8 +22,7 @@ import { useAppSelector } from "@app/hooks/redux";
 import EventInfo from "@app/Screens/Calendar/components/EventInfo";
 
 export const CalendarEvents: FC = () => {
-  const route =
-    useRoute<RouteProp<CalendarStackParamList, "Calendar Events">>();
+  const route = useRoute<RouteProp<CalendarStackParamList, "CalendarEvents">>();
   const { calendarId } = route.params;
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -78,7 +77,7 @@ export const CalendarEvents: FC = () => {
               <CustomButton
                 iconName={""}
                 onPress={handleTest}
-                title={"testSync"}
+                title={"Initial Sync"}
               />
             </View>
             <View className={"w-full flex h-full"}>

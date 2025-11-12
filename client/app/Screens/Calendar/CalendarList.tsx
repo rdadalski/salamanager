@@ -24,7 +24,7 @@ export const CalendarList: FC = () => {
   const handleCalendarSelect = async (item: ICalendarListEntry) => {
     dispatch(setDefaultCalendarId(item.id));
     await storeData(item.id, "default_user_calendar_id");
-    navigation.navigate("Calendar Events", { calendarId: item.id });
+    navigation.navigate("CalendarEvents", { calendarId: item.id });
   };
 
   const handleRefetch = () => {
