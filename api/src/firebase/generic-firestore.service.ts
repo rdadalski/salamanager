@@ -31,6 +31,9 @@ export class GenericFirestoreService<T> {
   }
 
   async create(data: T, docId?: string): Promise<string> {
+    this.logger.log('create event');
+    this.logger.log(data);
+
     try {
       if (docId) {
         const docRef = this.collection.doc(docId);
@@ -72,9 +75,14 @@ export class GenericFirestoreService<T> {
   async findOne(id: string): Promise<T | null> {
     try {
       const doc = await this.collection.doc(id).get();
-      return doc.exists ? (doc.data() as T) : null;
+      if (!doc.exists) return null;
+
+      const data = this.convertTimestamps(doc.data());
+
+      return data as T;
     } catch (e) {
       console.log(e);
+      return null;
     }
   }
 
@@ -156,5 +164,19 @@ export class GenericFirestoreService<T> {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  private convertTimestamps(data: any): any {
+    if (!data) return data;
+
+    const converted = { ...data };
+
+    Object.keys(converted).forEach((key) => {
+      if (converted[key]?.toDate) {
+        converted[key] = converted[key].toDate();
+      }
+    });
+
+    return converted;
   }
 }
