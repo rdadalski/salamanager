@@ -1,6 +1,6 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { IInternalEvent, ISyncMetadata } from '@app/utils/types';
+import { IInternalEvent, IInternalEventFirestore, ISyncMetadata } from '@app/utils/types';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 
 @Injectable()
@@ -47,7 +47,7 @@ export class SyncService {
   }
 
   // Save events to Firebase
-  async saveEvents(events: IInternalEvent[]): Promise<void> {
+  async saveEvents(events: IInternalEventFirestore[]): Promise<void> {
     try {
       await this.eventsService.createBulk(events, (event) => event.googleEventId);
       this.logger.log(`Saved ${events.length} events to Firebase`);

@@ -26,9 +26,15 @@ export enum AttendanceStatus {
 
 export interface IResource {
   id?: string;
+  googleEventId: string;
   name: string;
   defaultPrice: number;
-  ownerId: string;
+  trainerId: string;
+  recurrence: string[];
+  startTime: string;
+  endTime: string;
   minTimeBox: string;
   clients?: string[];
+  calendarId: string;
+  configured?: boolean;
 }
