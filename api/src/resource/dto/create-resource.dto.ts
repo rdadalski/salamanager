@@ -1,5 +1,6 @@
 import { IsString, IsNumber, IsArray, IsNotEmpty, Min, IsOptional, ArrayNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Timestamp } from 'firebase-admin/firestore';
 
 export class CreateResourceDto {
   @ApiProperty({ example: '7eof4p73b1p3b2kd459c93sddl' })
@@ -31,12 +32,12 @@ export class CreateResourceDto {
   @ApiProperty({ example: '2025-11-20T06:00:00+01:00' })
   @IsString()
   @IsNotEmpty()
-  startTime: string;
+  startTime: Timestamp;
 
   @ApiProperty({ example: '2025-11-20T07:00:00+01:00' })
   @IsString()
   @IsNotEmpty()
-  endTime: string;
+  endTime: Timestamp;
 
   @ApiProperty({ example: '1h' })
   @IsString()
