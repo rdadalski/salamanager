@@ -137,7 +137,7 @@ export class CalendarController {
   }
 
   @Post('sync')
-  async syncCalendar(@Token() token: string, @Body() body: { calendarId: string; accessToken: string }) {
+  async syncCalendar(@Token() token: string, @Body() body: { calendarId: string }) {
     try {
       this.logger.log(`Starting sync for calendar: ${body.calendarId}`);
       const events = await this.calendarService.syncCalendarEvents(body.calendarId, token);
@@ -208,40 +208,6 @@ export class CalendarController {
       await this.calendarService.initialTrainerCalendarSync(calendarId, token, req.userId);
     } catch (e) {
       this.logger.error(e);
-    }
-  }
-
-  @Post('test-sync')
-  async testSync(
-    @Headers('Authorization') authorization: string,
-    @Body() body: { calendarId: string; forceFullSync?: boolean }
-  ) {
-    const idToken = authorization.split('Bearer ')[1];
-    try {
-      this.logger.log('=== SYNC TEST STARTED ===');
-      // Perform sync
-      const events = await this.calendarService.syncCalendarEvents(body.calendarId, idToken);
-
-      // Get saved events from Firebase
-      const savedEvents = await this.syncService.getEventsByCalendar(body.calendarId);
-
-      this.logger.log('=== SYNC TEST COMPLETED ===');
-
-      return {
-        success: true,
-        testResults: {
-          syncedEventsCount: events.length,
-          totalEventsInFirebase: savedEvents.length,
-          fullRes: events,
-        },
-      };
-    } catch (error) {
-      this.logger.error('=== SYNC TEST FAILED ===', error);
-      return {
-        success: false,
-        error: error.message,
-        stack: error.stack,
-      };
     }
   }
 }

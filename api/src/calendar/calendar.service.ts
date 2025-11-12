@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { google, calendar_v3 } from 'googleapis';
 import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { ICalendarEvent } from '@app/calendar/interfaces/calendar-event.interface';
-import { IInternalEvent } from '@app/utils/types/event.types';
+import { IInternalEvent, IInternalEventFirestore } from '@app/utils/types/event.types';
 import { SyncService } from '@app/calendar/sync.service';
 import process from 'node:process';
 import { ResourceService } from '@app/resource/resource.service';
+import { IResource } from '@app/utils/types';
 
 @Injectable()
 export class CalendarService {
@@ -39,9 +40,6 @@ export class CalendarService {
         process.env.WEB_CLIENT_REDIRECT_URI
       );
 
-      this.logger.log(idToken);
-      this.logger.log(userData.googleRefreshToken);
-
       oAuth2Client.setCredentials({
         access_token: idToken,
         refresh_token: userData.googleRefreshToken,
@@ -49,8 +47,6 @@ export class CalendarService {
 
       // Setup token refresh handler
       oAuth2Client.on('tokens', async (tokens) => {
-        this.logger.log(tokens);
-
         if (tokens.refresh_token) {
           // Store the new refresh token
           await getFirestore().collection('users').doc(uid).update({
@@ -138,7 +134,6 @@ export class CalendarService {
   ): Promise<{ success: boolean; data: calendar_v3.Schema$Event }> {
     try {
       const calendar = await this.getCalendarClient(idToken);
-      this.logger.log(eventData);
 
       const response = await calendar.events.update({
         calendarId: 'primary',
@@ -169,18 +164,19 @@ export class CalendarService {
     }
   }
 
-  private convertToInternalEvents(googleEvents: any[], calendarId: string): IInternalEvent[] {
+  private convertToInternalEvents(googleEvents: any[], calendarId: string, userId: string): IInternalEventFirestore[] {
     return googleEvents
       .filter((event) => event.status !== 'cancelled')
       .map((event) => ({
         googleEventId: event.id,
         calendarId: calendarId,
+        trainerId: userId,
         googleRecurringEventId: event.recurringEventId || null,
         resourceId: event.recurringEventId || null,
         summary: event.summary || 'No Title',
         displayTitle: event.summary,
-        startTime: event.start?.dateTime || event.start?.date,
-        endTime: event.end?.dateTime || event.end?.date,
+        startTime: Timestamp.fromDate(new Date(event.start?.dateTime || event.start?.date)),
+        endTime: Timestamp.fromDate(new Date(event.end?.dateTime || event.end?.date)),
         attendees: [],
       }));
   }
@@ -193,8 +189,6 @@ export class CalendarService {
       maxResults: 2500,
     });
 
-    console.log(userId);
-
     const recurringTemplates = response.data.items
       .filter((event) => event.recurrence && event.recurrence.length > 0)
       .map((event) => ({
@@ -202,20 +196,16 @@ export class CalendarService {
         name: event.summary,
         defaultPrice: 0,
         trainerId: userId,
+        configured: false,
         recurrence: event.recurrence,
-        startTime: event.start.dateTime,
-        endTime: event.end.dateTime,
+        startTime: Timestamp.fromDate(new Date(event.start?.dateTime || event.start?.date)),
+        endTime: Timestamp.fromDate(new Date(event.end?.dateTime || event.end?.date)),
         minTimeBox: this.calculateDuration(event.start.dateTime, event.end.dateTime),
         clients: [],
         calendarId: calendarId,
       }));
 
-    this.logger.log('RECURRING TEMPLATES');
-    this.logger.log(recurringTemplates);
-
-    const resourceResponse = await this.resourceService.createBulk(recurringTemplates);
-
-    this.logger.log(resourceResponse);
+    await this.resourceService.createBulk(recurringTemplates);
   }
 
   async initialTrainerCalendarSync(calendarId: string, accessToken: string, userId: string) {
@@ -240,6 +230,8 @@ export class CalendarService {
   async syncCalendarEvents(calendarId: string, accessToken: string): Promise<any> {
     try {
       const calendar = await this.getCalendarClient(accessToken);
+      const decodedToken = await getAuth().verifyIdToken(accessToken);
+      const uid = decodedToken.uid;
 
       // Get existing sync metadata
       const syncMetadata = await this.syncService.getSyncMetadata(calendarId);
@@ -254,30 +246,34 @@ export class CalendarService {
         isInitialSync = true;
       }
 
-      // Call Google Calendar API with or without sync token
+      const today = new Date();
+
+      const twoWeeksBack = new Date(today);
+      twoWeeksBack.setDate(today.getDate() - 14);
+      twoWeeksBack.setHours(0, 0, 0, 0);
+
+      const twoWeeksForward = new Date(today);
+      twoWeeksForward.setDate(today.getDate() + 14);
+      twoWeeksForward.setHours(23, 59, 59, 999);
+
       const response = await calendar.events.list({
         calendarId: calendarId,
         syncToken: syncToken,
+        timeMin: twoWeeksBack.toISOString(),
+        timeMax: twoWeeksForward.toISOString(),
         singleEvents: true,
-        maxResults: 2500,
+        maxResults: 250,
       });
-
-      console.log(response);
 
       const events = this.filterEventsWithinTwoWeeks(response.data.items) || [];
       const newSyncToken = response.data.nextSyncToken;
 
-      // Process events (convert to your internal format)
-      const internalEvents = this.convertToInternalEvents(events, calendarId);
+      const internalEvents = this.convertToInternalEvents(events, calendarId, uid);
 
-      console.log(internalEvents);
-
-      // Save events to Firebase
       if (internalEvents.length > 0) {
         await this.syncService.saveEvents(internalEvents);
       }
 
-      // // Save new sync metadata
       await this.syncService.saveSyncMetadata({
         calendarId,
         syncToken: newSyncToken,
