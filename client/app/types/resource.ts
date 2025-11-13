@@ -38,3 +38,5 @@ export interface IResource {
   calendarId: string;
   configured?: boolean;
 }
+
+export type updateResource = Partial<IResource>;

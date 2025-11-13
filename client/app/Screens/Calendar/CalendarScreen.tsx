@@ -21,9 +21,13 @@ const CalendarHomeScreen = () => {
       0,
     ) || 0;
 
+  const handleCalendarClick = () => {
+    console.log("button clicked");
+    navigation.navigate("CalendarList");
+  };
+
   return (
     <ScrollView className="flex-1 bg-white dark:bg-gray-900">
-      {/* Header */}
       <View className="bg-blue-500 dark:bg-blue-600 p-6 rounded-b-3xl">
         <Text className="text-white text-3xl font-bold">
           {format(new Date(), "EEEE", { locale: pl })}
@@ -33,7 +37,6 @@ const CalendarHomeScreen = () => {
         </Text>
       </View>
 
-      {/* Stats */}
       <View className="flex-row p-4 gap-3">
         <View className="flex-1 p-3 rounded-xl bg-blue-100 dark:bg-blue-900/50">
           <Text className="text-xs text-gray-600 dark:text-gray-400">
@@ -53,11 +56,10 @@ const CalendarHomeScreen = () => {
         </View>
       </View>
 
-      {/* Alert nieskonfigurowane */}
       {unconfigured.length > 0 && (
         <TouchableOpacity
           className="mx-4 p-4 bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 dark:border-yellow-500 rounded flex-row items-center justify-between"
-          onPress={() => navigation.navigate("ConfigureResources")}
+          onPress={() => navigation.navigate("ConfigureResourceScreen")}
         >
           <View className="flex-1 flex-row items-center">
             <Ionicons
@@ -78,14 +80,13 @@ const CalendarHomeScreen = () => {
         </TouchableOpacity>
       )}
 
-      {/* Akcje */}
       <View className="p-4">
         <Text className="font-bold mb-3 dark:text-white">Szybkie akcje</Text>
         <View className="gap-3">
           <CustomButton
             iconName="calendar"
             title="Kalendarz"
-            onPress={() => navigation.navigate("CalendarList")}
+            onPress={() => handleCalendarClick()}
           />
           <CustomButton iconName="team" title="Klienci" />
         </View>

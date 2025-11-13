@@ -7,11 +7,13 @@ import { CalendarList } from "@app/Screens/Calendar/CalendarList";
 import { CustomButton } from "@app/components";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CalendarHomeScreen from "@app/Screens/Calendar/CalendarScreen";
+import ConfigureResourcesScreen from "@app/Screens/Resource/ConfigureResource";
 
 export type CalendarStackParamList = {
   CalendarList: undefined;
   CalendarEvents: { calendarId: string };
   CalendarScreen: undefined;
+  ConfigureResourceScreen: undefined;
 };
 
 export type CalendarNavigationProp =
@@ -21,7 +23,7 @@ const CalendarStack = createNativeStackNavigator<CalendarStackParamList>();
 
 export const CalendarStackNavigator = () => {
   return (
-    <SafeAreaView className={"flex-1 bg-white"}>
+    <SafeAreaView className={"flex-1"}>
       <CalendarStack.Navigator>
         <CalendarStack.Screen
           name="CalendarScreen"
@@ -32,6 +34,11 @@ export const CalendarStackNavigator = () => {
           name="CalendarList"
           component={CalendarList}
           options={{ title: "Calendar List" }}
+        />
+        <CalendarStack.Screen
+          name="ConfigureResourceScreen"
+          component={ConfigureResourcesScreen}
+          options={{ title: "Configure Resource Screen" }}
         />
         <CalendarStack.Screen
           name="CalendarEvents"

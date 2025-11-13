@@ -50,25 +50,6 @@ export const MainNavigator: FC = () => {
           ),
         }}
       />
-
-      {/*<MainTab.Screen*/}
-      {/*  name="Calendar"*/}
-      {/*  component={CalendarScreen}*/}
-      {/*  options={{*/}
-      {/*    headerRightContainerStyle: { paddingRight: 8 },*/}
-      {/*    headerRight: ({ tintColor }) => (*/}
-      {/*      <CustomButton*/}
-      {/*        title={"Logut"}*/}
-      {/*        iconName={"logout"}*/}
-      {/*        onPress={signOut}*/}
-      {/*      />*/}
-      {/*    ),*/}
-      {/*    tabBarBadge: 3,*/}
-      {/*    tabBarIcon: ({ color, size }) => (*/}
-      {/*      <AntDesign name="calendar" color={color} size={size} />*/}
-      {/*    ),*/}
-      {/*  }}*/}
-      {/*/>*/}
       <MainTab.Screen
         name="Calendar"
         component={CalendarStackNavigator}
@@ -100,24 +81,6 @@ export const MainNavigator: FC = () => {
           }}
         />
       )}
-      {/*<MainTab.Screen*/}
-      {/*  name="Accounting Trainer"*/}
-      {/*  component={AccountingScreenTrainer}*/}
-      {/*  options={{*/}
-      {/*    tabBarIcon: ({ color, size }) => (*/}
-      {/*      <AntDesign name="dollar" color={color} size={size} />*/}
-      {/*    ),*/}
-      {/*  }}*/}
-      {/*/>*/}
-      {/*<MainTab.Screen*/}
-      {/*  name="Accounting User"*/}
-      {/*  component={AccountingScreenUser}*/}
-      {/*  options={{*/}
-      {/*    tabBarIcon: ({ color, size }) => (*/}
-      {/*      <AntDesign name="dollar" color={color} size={size} />*/}
-      {/*    ),*/}
-      {/*  }}*/}
-      {/*/>*/}
     </MainTab.Navigator>
   );
 };
