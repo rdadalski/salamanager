@@ -3,13 +3,15 @@ import { CreateResourceDto } from './dto/create-resource.dto';
 import { UpdateResourceDto } from './dto/update-resource.dto';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import { IResource } from '@app/utils/types/resource.types';
+import { getFirestoreToken } from '@app/firebase/utils/firebase.provider';
+import { FIRESTORE_COLLECTIONS } from '@app/firebase/utils/firebase.constants';
 
 @Injectable()
 export class ResourceService {
   private readonly logger = new Logger(ResourceService.name);
 
   constructor(
-    @Inject('RESOURCE_FIRESTORE_SERVICE')
+    @Inject(getFirestoreToken(FIRESTORE_COLLECTIONS.RESOURCES))
     private readonly genericService: GenericFirestoreService<IResource>
   ) {}
 

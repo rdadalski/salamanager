@@ -1,21 +1,13 @@
 import { Module } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { EventsController } from './events.controller';
-import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
 import { IInternalEvent } from '@app/utils/types';
+import { createFirestoreProvider } from '@app/firebase/utils/firebase.provider';
+import { FIRESTORE_COLLECTIONS } from '@app/firebase/utils/firebase.constants';
 
 @Module({
   controllers: [EventsController],
-  providers: [
-    EventsService,
-    {
-      provide: 'EVENTS_FIRESTORE_SERVICE',
-      useFactory: (firebaseAdmin) => {
-        return new GenericFirestoreService<IInternalEvent>(firebaseAdmin, 'events');
-      },
-      inject: ['FIREBASE_ADMIN'],
-    },
-  ],
+  providers: [EventsService, createFirestoreProvider<IInternalEvent>(FIRESTORE_COLLECTIONS.EVENTS)],
   exports: [EventsService],
 })
 export class EventsModule {}
