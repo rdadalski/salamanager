@@ -39,4 +39,4 @@ export interface IResource {
   configured?: boolean;
 }
 
-export type updateResource = Partial<IResource>;
+export type updateResource = Partial<Omit<IResource, "id">>;

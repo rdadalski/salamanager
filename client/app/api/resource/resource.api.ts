@@ -1,14 +1,7 @@
 import { baseApi } from "@app/api";
-// Zakładam, że IResource ma pole 'id'
 import type { IResource, updateResource } from "@app/types";
 
 // TODO fix return types from any
-
-// Ważne: Musisz upewnić się, że w pliku 'baseApi.ts' (gdzie tworzysz createApi)
-// masz zdefiniowany tag 'Resource':
-//
-// tagTypes: ['Resource', ...inneTagi],
-//
 
 export const resourceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

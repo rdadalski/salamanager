@@ -55,7 +55,7 @@ export class EventsService {
         { field: 'endTime', operator: '<', value: Timestamp.fromDate(tomorrow) },
       ]);
 
-      this.logger.log('Found events:', events.length);
+      this.logger.log(`Found events: ${events.length}`);
       return events;
     } catch (e) {
       this.logger.error('Failed to fetch today events', e);
