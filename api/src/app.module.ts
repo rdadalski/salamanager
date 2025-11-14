@@ -12,6 +12,7 @@ import { UserModule } from './user/user.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { ResourceModule } from './resource/resource.module';
 import { EventsModule } from './events/events.module';
+import { ClientModule } from './client/client.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { EventsModule } from './events/events.module';
     CalendarModule,
     ResourceModule,
     EventsModule,
+    ClientModule,
   ],
   controllers: [AppController, FirebaseController],
   providers: [AppService, FirebaseService],
