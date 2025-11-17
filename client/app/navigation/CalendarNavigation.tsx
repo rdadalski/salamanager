@@ -1,32 +1,62 @@
 import { CalendarEvents } from "@app/Screens/Calendar/components/CalendarEvents";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationProp,
+} from "@react-navigation/native-stack";
 import { CalendarList } from "@app/Screens/Calendar/CalendarList";
 import { CustomButton } from "@app/components";
-import { CalendarScreen } from "@app/Screens/Calendar/CalendarScreen";
+import CalendarHomeScreen from "@app/Screens/Calendar/CalendarScreen";
+import ConfigureResourcesScreen from "@app/Screens/Resource/ConfigureResource";
+import ResourceEdit from "@app/Screens/Resource/ResourceEdit";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export type CalendarStackParamList = {
-  "Calendar List": undefined;
-  "Calendar Events": { calendarId: string };
+  CalendarList: undefined;
+  CalendarEvents: { calendarId: string };
+  CalendarScreen: undefined;
+  ConfigureResourceScreen: undefined;
+  ResourceEditScreen: { resourceId: string };
 };
+
+export type CalendarNavigationProp =
+  NativeStackNavigationProp<CalendarStackParamList>;
 
 const CalendarStack = createNativeStackNavigator<CalendarStackParamList>();
 
 export const CalendarStackNavigator = () => {
   return (
-    <SafeAreaView className={"flex-1 bg-white"}>
+    <SafeAreaView className={"flex-1"}>
       <CalendarStack.Navigator>
-        {/*<CalendarStack.Screen name="CalendarScreen" component={CalendarScreen} />*/}
-        <CalendarStack.Screen name="Calendar List" component={CalendarList} />
         <CalendarStack.Screen
-          name="Calendar Events"
+          name="CalendarScreen"
+          component={CalendarHomeScreen}
+          options={{ title: "Calendar home screen" }}
+        />
+        <CalendarStack.Screen
+          name="CalendarList"
+          component={CalendarList}
+          options={{ title: "Calendar List" }}
+        />
+        <CalendarStack.Screen
+          name="ResourceEditScreen"
+          component={ResourceEdit}
+          options={{ title: "Resource edit screen" }}
+        />
+        <CalendarStack.Screen
+          name="ConfigureResourceScreen"
+          component={ConfigureResourcesScreen}
+          options={{ title: "Configure Resource Screen" }}
+        />
+        <CalendarStack.Screen
+          name="CalendarEvents"
           component={CalendarEvents}
           options={({ navigation }) => ({
+            title: "Calendar Events",
             headerLeft: () => (
               <CustomButton
                 title={""}
                 iconName="calendar"
-                onPress={() => navigation.navigate("Calendar List")}
+                onPress={() => navigation.navigate("CalendarList")}
               />
             ),
           })}

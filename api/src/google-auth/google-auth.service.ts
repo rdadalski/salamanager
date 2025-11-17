@@ -1,11 +1,10 @@
-import { Inject, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import { app } from 'firebase-admin';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { webClientId } from '@app/google-auth/google-auth.module';
 
 @Injectable()
 export class GoogleAuthService {
   private readonly logger = new Logger(GoogleAuthService.name);
-  constructor(@Inject('FIREBASE_ADMIN') private firebaseAdmin: app.App) {}
+  constructor() {}
 
   async getGoogleConfig() {
     try {

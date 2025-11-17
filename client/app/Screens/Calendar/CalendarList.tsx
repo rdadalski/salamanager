@@ -10,7 +10,6 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { useAppDispatch } from "@app/hooks/redux";
 import { setDefaultCalendarId } from "@app/store/slices";
 import { storeData } from "@app/services";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { CustomButton } from "@app/components";
 
 export const CalendarList: FC = () => {
@@ -22,9 +21,10 @@ export const CalendarList: FC = () => {
     useNavigation<NativeStackNavigationProp<CalendarStackParamList>>();
 
   const handleCalendarSelect = async (item: ICalendarListEntry) => {
+    console.log("hello");
     dispatch(setDefaultCalendarId(item.id));
     await storeData(item.id, "default_user_calendar_id");
-    navigation.navigate("Calendar Events", { calendarId: item.id });
+    navigation.navigate("CalendarEvents", { calendarId: item.id });
   };
 
   const handleRefetch = () => {
@@ -32,19 +32,23 @@ export const CalendarList: FC = () => {
   };
 
   return (
-    <View className="flex w-full">
-      <CustomButton
-        title={"Refetch"}
-        iconName={"sync"}
-        onPress={handleRefetch}
-      />
-      <View className="bg-white rounded-xl p-8 m-4 items-center border border-slate-200">
+    <View className="flex-1 bg-gray-50 dark:bg-gray-900">
+      <View className="p-4">
+        <CustomButton
+          title={"Refetch"}
+          iconName={"sync"}
+          onPress={handleRefetch}
+        />
+      </View>
+
+      <View className="bg-white dark:bg-gray-800 rounded-xl p-8 m-4 items-center border border-slate-200 dark:border-gray-700">
         <AntDesign
           name="calendar"
           size={40}
-          className="text-slate-500 dark:text-white mb-4"
+          className="text-gray-500 dark:text-gray-400 mb-4"
         />
-        <Text className="text-slate-500 font-semibold text-center">
+
+        <Text className="text-gray-600 dark:text-gray-400 font-semibold text-center">
           Nie masz jeszcze wybranego kalendarza
         </Text>
       </View>

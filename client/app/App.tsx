@@ -22,10 +22,12 @@ export default function App() {
   const deviceColorScheme = useDeviceColorScheme();
 
   useEffect(() => {
-    if (deviceColorScheme) {
-      setColorScheme(deviceColorScheme);
-      colorScheme.set(deviceColorScheme);
-    }
+    setColorScheme("dark");
+
+    // if (deviceColorScheme) {
+    //   setColorScheme(deviceColorScheme);
+    //   colorScheme.set(deviceColorScheme);
+    // }
   }, [deviceColorScheme]);
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function App() {
   return (
     <>
       <Provider store={store}>
-        <StatusBar style={deviceColorScheme!}></StatusBar>
+        <StatusBar style={"light"}></StatusBar>
         <RootNavigator />
       </Provider>
     </>

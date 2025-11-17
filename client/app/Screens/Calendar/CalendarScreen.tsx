@@ -1,223 +1,102 @@
-import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { ScrollView, View, Text, TouchableOpacity } from "react-native";
+import { CustomButton } from "@app/components";
+import { useGetTodayEventsQuery } from "@app/api/event/events.api";
+import { format } from "date-fns";
+import { pl } from "date-fns/locale";
+import { useNavigation } from "@react-navigation/native";
+import { CalendarNavigationProp } from "@app/navigation/CalendarNavigation";
+import Ionicons from "react-native-vector-icons/MaterialIcons";
+import { useGetAllResourcesByTrainerQuery } from "@app/api/resource/resource.api";
 
-interface CalendarEvent {
-  id: string;
-  date: string;
-  time: string;
-  summary: string;
-  location: string;
-  calendar: string;
-}
+const CalendarHomeScreen = () => {
+  const navigation = useNavigation<CalendarNavigationProp>();
+  const { data: resources } = useGetAllResourcesByTrainerQuery();
+  const { data: todayEvents } = useGetTodayEventsQuery();
 
-export const CalendarScreen: React.FC = () => {
-  // Mock data - replace with your actual data fetching
-  const nextEvent: CalendarEvent = {
-    id: "1",
-    date: "2025-07-04",
-    time: "10:00 AM",
-    summary: "Team Standup",
-    location: "Virtual Meeting",
-    calendar: "Work",
-  };
+  const unconfigured = resources?.filter((r) => !r.configured) || [];
 
-  const upcomingEvents: CalendarEvent[] = [
-    {
-      id: "2",
-      date: "2025-07-04",
-      time: "2:00 PM",
-      summary: "Project Sync",
-      location: "Conference Room A",
-      calendar: "Work",
-    },
-    {
-      id: "3",
-      date: "2025-07-05",
-      time: "6:00 PM",
-      summary: "Dinner with Friends",
-      location: "The Italian Place",
-      calendar: "Personal",
-    },
-    {
-      id: "4",
-      date: "2025-07-06",
-      time: "11:00 AM",
-      summary: "Design Review",
-      location: "Virtual Meeting",
-      calendar: "Work",
-    },
-  ];
+  const todayRevenue =
+    todayEvents?.reduce((sum, event) => {
+      const resource = resources?.find((r) => r.id === event.resourceId);
+      if (!resource) return sum;
 
-  const eventsTodayCount = upcomingEvents.filter(
-    (e) => new Date(e.date).toDateString() === new Date().toDateString(),
-  ).length;
-  const eventsThisWeekCount = 12; // Mock data
+      return (
+        sum + (resource.defaultPrice || 0) * (resource.clients?.length || 0)
+      );
+    }, 0) ?? 0;
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    if (date.toDateString() === today.toDateString()) {
-      return "Today";
-    } else if (date.toDateString() === tomorrow.toDateString()) {
-      return "Tomorrow";
-    } else {
-      return date.toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "short",
-        day: "numeric",
-      });
-    }
-  };
-
-  const handleEventPress = (eventId: string) => {
-    // Navigate to event details
-    // navigation.navigate('EventDetails', { eventId });
+  const handleCalendarClick = () => {
+    console.log("button clicked");
+    navigation.navigate("CalendarList");
   };
 
   return (
-    <ScrollView className="flex-1 bg-gray-900">
-      {/* Header */}
-      <View className="bg-slate-800 pt-12 pb-6 px-6">
-        <Text className="text-white text-2xl font-bold">Your Calendar 🗓️</Text>
-        <Text className="text-slate-300 text-base mt-1">
-          Here's what's coming up.
+    <ScrollView className="flex-1 bg-white dark:bg-gray-900">
+      <View className="bg-blue-500 dark:bg-blue-600 p-6 rounded-b-3xl">
+        <Text className="text-white text-3xl font-bold">
+          {format(new Date(), "EEEE", { locale: pl })}
+        </Text>
+        <Text className="text-white/80">
+          {format(new Date(), "d MMMM yyyy", { locale: pl })}
         </Text>
       </View>
 
-      <View className="px-6 -mt-4">
-        {/* Next Event Card */}
-        {nextEvent ? (
-          <TouchableOpacity
-            className="bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-700"
-            onPress={() => handleEventPress(nextEvent.id)}
-          >
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-lg font-semibold text-white">
-                Next Event
-              </Text>
-              <View className="bg-blue-900 px-3 py-1 rounded-full">
-                <Text className="text-blue-300 text-sm font-medium">
-                  Upcoming
-                </Text>
-              </View>
-            </View>
-
-            <View className="space-y-3">
-              <View className="flex-row items-center">
-                <View className="w-10 h-10 bg-green-900 rounded-full items-center justify-center mr-3">
-                  <Text className="text-green-300 font-bold text-lg">📅</Text>
-                </View>
-                <View>
-                  <Text className="text-gray-100 font-semibold text-base">
-                    {formatDate(nextEvent.date)}
-                  </Text>
-                  <Text className="text-gray-400 text-sm">
-                    {nextEvent.time}
-                  </Text>
-                </View>
-              </View>
-
-              <View className="flex-row items-center">
-                <View className="w-10 h-10 bg-purple-900 rounded-full items-center justify-center mr-3">
-                  <Text className="text-purple-300 font-bold text-lg">📌</Text>
-                </View>
-                <View>
-                  <Text className="text-gray-100 font-semibold text-base">
-                    {nextEvent.summary}
-                  </Text>
-                  <Text className="text-gray-400 text-sm">
-                    {nextEvent.location}
-                  </Text>
-                </View>
-              </View>
-
-              <View className="flex-row items-center">
-                <View className="w-10 h-10 bg-orange-900 rounded-full items-center justify-center mr-3">
-                  <Text className="text-orange-300 font-bold text-lg">
-                    📁
-                  </Text>
-                </View>
-                <Text className="text-gray-100 font-semibold text-base">
-                  {nextEvent.calendar}
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ) : (
-          <View className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
-            <Text className="text-gray-300 text-center text-base">
-              No upcoming events
-            </Text>
-            <Text className="text-gray-500 text-center text-sm mt-1">
-              Enjoy your free time!
-            </Text>
-          </View>
-        )}
-
-        {/* Quick Stats */}
-        <View className="mt-6 bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-700">
-          <Text className="text-lg font-semibold text-white mb-4">
-            At a Glance
+      <View className="flex-row p-4 gap-3">
+        <View className="flex-1 p-3 rounded-xl bg-blue-100 dark:bg-blue-900/50">
+          <Text className="text-xs text-gray-600 dark:text-gray-400">
+            Treningi dziś
           </Text>
-
-          <View className="flex-row justify-around items-center">
-            <View className="items-center">
-              <Text className="text-3xl font-bold text-blue-400">
-                {eventsTodayCount}
-              </Text>
-              <Text className="text-gray-400 text-sm mt-1">Today</Text>
-            </View>
-
-            <View className="items-center">
-              <Text className="text-3xl font-bold text-green-400">
-                {eventsThisWeekCount}
-              </Text>
-              <Text className="text-gray-400 text-sm mt-1">This Week</Text>
-            </View>
-          </View>
+          <Text className="font-bold text-lg dark:text-white">
+            {todayEvents?.length || 0}
+          </Text>
         </View>
+        <View className="flex-1 p-3 rounded-xl bg-green-100 dark:bg-green-900/50">
+          <Text className="text-xs text-gray-600 dark:text-gray-400">
+            Przychód dziś
+          </Text>
+          <Text className="font-bold text-lg dark:text-white">
+            {todayRevenue} zł
+          </Text>
+        </View>
+      </View>
 
-        {/* Upcoming Events */}
-        {upcomingEvents.length > 0 && (
-          <View className="mt-6 bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-700 mb-6">
-            <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-lg font-semibold text-white">
-                Upcoming
+      {unconfigured.length > 0 && (
+        <TouchableOpacity
+          className="mx-4 p-4 bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 dark:border-yellow-500 rounded flex-row items-center justify-between"
+          onPress={() => navigation.navigate("ConfigureResourceScreen")}
+        >
+          <View className="flex-1 flex-row items-center">
+            <Ionicons
+              name="warning"
+              size={24}
+              color="#ca8a04"
+              style={{ marginRight: 12 }}
+            />
+            <View className="flex-1">
+              <Text className="font-bold text-yellow-800 dark:text-yellow-400">
+                Nieskonfigurowane treningi ({unconfigured.length})
               </Text>
-              <TouchableOpacity>
-                <Text className="text-blue-400 font-medium">View All</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View className="space-y-3">
-              {upcomingEvents.slice(0, 3).map((event) => (
-                <TouchableOpacity
-                  key={event.id}
-                  className="flex-row justify-between items-center py-2"
-                  onPress={() => handleEventPress(event.id)}
-                >
-                  <View>
-                    <Text className="text-gray-100 font-medium text-base">
-                      {event.summary}
-                    </Text>
-                    <Text className="text-gray-400 text-sm">
-                      {formatDate(event.date)} at {event.time}
-                    </Text>
-                  </View>
-                  <View className="items-end">
-                    <Text className="text-gray-100 font-semibold text-sm">
-                      {event.calendar}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
+              <Text className="text-yellow-600 dark:text-yellow-500 text-sm">
+                Ustaw ceny i limity miejsc
+              </Text>
             </View>
           </View>
-        )}
+        </TouchableOpacity>
+      )}
+
+      <View className="p-4">
+        <Text className="font-bold mb-3 dark:text-white">Szybkie akcje</Text>
+        <View className="gap-3">
+          <CustomButton
+            iconName="calendar"
+            title="Kalendarz"
+            onPress={() => handleCalendarClick()}
+          />
+          <CustomButton iconName="team" title="Klienci" />
+        </View>
       </View>
     </ScrollView>
   );
 };
+
+export default CalendarHomeScreen;

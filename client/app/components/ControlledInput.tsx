@@ -7,6 +7,10 @@ interface ControlledInputProps<T extends FieldValues> extends TextInputProps {
   name: Path<T>;
   label: string;
   rules?: object;
+  transform?: {
+    input?: (value: any) => string; // RHF value → TextInput value
+    output?: (text: string) => any; // TextInput text → RHF value
+  };
 }
 
 export const ControlledInput = <T extends FieldValues>({
@@ -14,6 +18,7 @@ export const ControlledInput = <T extends FieldValues>({
   name,
   label,
   rules = {},
+  transform,
   ...textInputProps
 }: ControlledInputProps<T>) => {
   return (
@@ -30,10 +35,19 @@ export const ControlledInput = <T extends FieldValues>({
             {label}
           </Text>
           <TextInput
-            className="border border-gray-300 rounded px-3 py-2 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 h-11"
+            className="border dark:text-white dark:border-white border-black mb-3 px-2"
             onBlur={onBlur}
-            onChangeText={onChange}
-            value={value as string}
+            onChangeText={(text) => {
+              const transformed = transform?.output
+                ? transform.output(text)
+                : text;
+              onChange(transformed);
+            }}
+            value={
+              transform?.input
+                ? transform.input(value)
+                : (value?.toString() ?? "")
+            }
             {...textInputProps}
           />
           {error && (

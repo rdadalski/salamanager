@@ -73,8 +73,10 @@ const EventInfo: FC<{ eventId: string; resourceId: string }> = ({
     return days || "";
   };
 
+  console.log(eventData);
+
   return (
-    <ScrollView className="flex-1 w-full">
+    <ScrollView className="flex-1 w-full p-4">
       {/* Event Info */}
       <View className="mb-6 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
         <Text className="text-xs text-gray-500 dark:text-gray-400 mb-1">

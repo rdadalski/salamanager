@@ -1,4 +1,4 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { app, FirebaseError } from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
 import {
@@ -7,11 +7,10 @@ import {
   FirestoreDataConverter,
   QueryDocumentSnapshot,
 } from 'firebase-admin/firestore';
-import { batch_v1 } from 'googleapis';
 
 @Injectable()
 export class GenericFirestoreService<T> {
-  public readonly collection: CollectionReference;
+  protected collection: CollectionReference;
   private readonly logger = new Logger(GenericFirestoreService.name);
 
   private readonly converter: FirestoreDataConverter<T> = {
@@ -23,14 +22,13 @@ export class GenericFirestoreService<T> {
     },
   };
 
-  constructor(
-    @Inject('FIREBASE_ADMIN') private firebaseAdmin: app.App,
-    private collectionName: string
-  ) {
-    this.collection = getFirestore().collection(this.collectionName).withConverter(this.converter);
+  constructor(firebaseAdmin: app.App, collectionName: string) {
+    this.collection = getFirestore(firebaseAdmin).collection(collectionName).withConverter(this.converter);
   }
 
   async create(data: T, docId?: string): Promise<string> {
+    this.logger.log(data);
+
     try {
       if (docId) {
         const docRef = this.collection.doc(docId);
@@ -72,9 +70,14 @@ export class GenericFirestoreService<T> {
   async findOne(id: string): Promise<T | null> {
     try {
       const doc = await this.collection.doc(id).get();
-      return doc.exists ? (doc.data() as T) : null;
+      if (!doc.exists) return null;
+
+      const data = this.convertTimestamps(doc.data());
+
+      return data as T;
     } catch (e) {
       console.log(e);
+      return null;
     }
   }
 
@@ -156,5 +159,19 @@ export class GenericFirestoreService<T> {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  private convertTimestamps(data: any): any {
+    if (!data) return data;
+
+    const converted = { ...data };
+
+    Object.keys(converted).forEach((key) => {
+      if (converted[key]?.toDate) {
+        converted[key] = converted[key].toDate();
+      }
+    });
+
+    return converted;
   }
 }
