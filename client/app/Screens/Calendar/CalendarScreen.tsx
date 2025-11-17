@@ -1,29 +1,37 @@
 import { ScrollView, View, Text, TouchableOpacity } from "react-native";
 import { CustomButton } from "@app/components";
-import { useGetAllResourcesQuery } from "@app/api/resource/resource.api";
 import { useGetTodayEventsQuery } from "@app/api/event/events.api";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 import { useNavigation } from "@react-navigation/native";
 import { CalendarNavigationProp } from "@app/navigation/CalendarNavigation";
 import Ionicons from "react-native-vector-icons/MaterialIcons";
+import { useGetAllResourcesByTrainerQuery } from "@app/api/resource/resource.api";
 
 const CalendarHomeScreen = () => {
   const navigation = useNavigation<CalendarNavigationProp>();
-  const { data: resources } = useGetAllResourcesQuery();
+  const { data: resources } = useGetAllResourcesByTrainerQuery();
   const { data: todayEvents } = useGetTodayEventsQuery();
 
   const unconfigured = resources?.filter((r) => !r.configured) || [];
+
   const todayRevenue =
-    todayEvents?.reduce(
-      (sum, e) =>
-        sum + (e.defaultResourcePrice || 0) * (e.attendees?.length || 0),
-      0,
-    ) || 0;
+    todayEvents?.reduce((sum, event) => {
+      const resource = resources?.find((r) => r.id === event.resourceId);
+      if (!resource) return sum;
+
+      return (
+        sum + (resource.defaultPrice || 0) * (resource.clients?.length || 0)
+      );
+    }, 0) ?? 0;
+
+  const handleCalendarClick = () => {
+    console.log("button clicked");
+    navigation.navigate("CalendarList");
+  };
 
   return (
     <ScrollView className="flex-1 bg-white dark:bg-gray-900">
-      {/* Header */}
       <View className="bg-blue-500 dark:bg-blue-600 p-6 rounded-b-3xl">
         <Text className="text-white text-3xl font-bold">
           {format(new Date(), "EEEE", { locale: pl })}
@@ -33,7 +41,6 @@ const CalendarHomeScreen = () => {
         </Text>
       </View>
 
-      {/* Stats */}
       <View className="flex-row p-4 gap-3">
         <View className="flex-1 p-3 rounded-xl bg-blue-100 dark:bg-blue-900/50">
           <Text className="text-xs text-gray-600 dark:text-gray-400">
@@ -53,11 +60,10 @@ const CalendarHomeScreen = () => {
         </View>
       </View>
 
-      {/* Alert nieskonfigurowane */}
       {unconfigured.length > 0 && (
         <TouchableOpacity
           className="mx-4 p-4 bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 dark:border-yellow-500 rounded flex-row items-center justify-between"
-          onPress={() => navigation.navigate("ConfigureResources")}
+          onPress={() => navigation.navigate("ConfigureResourceScreen")}
         >
           <View className="flex-1 flex-row items-center">
             <Ionicons
@@ -78,14 +84,13 @@ const CalendarHomeScreen = () => {
         </TouchableOpacity>
       )}
 
-      {/* Akcje */}
       <View className="p-4">
         <Text className="font-bold mb-3 dark:text-white">Szybkie akcje</Text>
         <View className="gap-3">
           <CustomButton
             iconName="calendar"
             title="Kalendarz"
-            onPress={() => navigation.navigate("CalendarList")}
+            onPress={() => handleCalendarClick()}
           />
           <CustomButton iconName="team" title="Klienci" />
         </View>

@@ -1,5 +1,5 @@
-import { ComponentType, FC, useState } from "react";
-import { Alert, Modal, Pressable, View, Text } from "react-native";
+import { ComponentType, ReactNode } from "react";
+import { Modal, Pressable, View, Text } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
 
@@ -9,6 +9,7 @@ interface CustomModalProps<T = {}> {
   componentProps?: T;
   visible: boolean;
   onClose: () => void;
+  footer?: ReactNode;
 }
 
 export const FullscreenModal = <T extends {}>({
@@ -17,6 +18,7 @@ export const FullscreenModal = <T extends {}>({
   componentProps,
   visible,
   onClose,
+  footer,
 }: CustomModalProps<T>) => {
   const { colorScheme } = useColorScheme();
 
@@ -46,9 +48,15 @@ export const FullscreenModal = <T extends {}>({
             </Pressable>
           </View>
 
-          <View className="flex-1 items-center justify-center p-4">
+          <View className="flex-1 ">
             <Component {...(componentProps as T)} />
           </View>
+
+          {footer && (
+            <View className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+              {footer}
+            </View>
+          )}
         </View>
       </Modal>
     </View>

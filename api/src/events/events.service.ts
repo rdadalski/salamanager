@@ -2,30 +2,27 @@ import { Inject, Injectable, InternalServerErrorException, Logger, UnauthorizedE
 import { CreateInternalEventDto } from './dto/create-event.dto';
 import { UpdateInternalEventDto } from './dto/update-event.dto';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
-import * as admin from 'firebase-admin';
 import { AttendanceStatus, IInternalEvent, IInternalEventFirestore } from '@app/utils/types/event.types';
 import { DecodedIdToken, getAuth } from 'firebase-admin/auth';
 import { Timestamp } from 'firebase-admin/firestore';
 import { FirestoreDate } from '@app/utils/helper.types';
 import { convertToFirestore } from '@app/utils/services/dateUtils';
+import { getFirestoreToken } from '@app/firebase/utils/firebase.provider';
+import { FIRESTORE_COLLECTIONS } from '@app/firebase/utils/firebase.constants';
 
 @Injectable()
 export class EventsService {
-  private genericService: GenericFirestoreService<FirestoreDate<IInternalEvent>>;
   private readonly logger = new Logger(EventsService.name);
 
-  constructor(@Inject('FIREBASE_ADMIN') firebaseAdmin: admin.app.App) {
-    this.genericService = new GenericFirestoreService<FirestoreDate<IInternalEvent>>(firebaseAdmin, 'events');
-  }
+  constructor(
+    @Inject(getFirestoreToken(FIRESTORE_COLLECTIONS.EVENTS))
+    private readonly genericService: GenericFirestoreService<FirestoreDate<IInternalEvent>>
+  ) {}
 
   async create(createEventDto: CreateInternalEventDto) {
-    this.logger.log('BEFORE CONVERT:', createEventDto);
-
     const firestoreData = convertToFirestore(createEventDto);
-    this.logger.log('AFTER CONVERT:', firestoreData);
 
     const response = await this.genericService.create(firestoreData as any);
-    this.logger.log('FIRESTORE RESPONSE:', response);
 
     if (!response) {
       throw new InternalServerErrorException('Failed to create event');
@@ -58,7 +55,7 @@ export class EventsService {
         { field: 'endTime', operator: '<', value: Timestamp.fromDate(tomorrow) },
       ]);
 
-      this.logger.log('Found events:', events.length);
+      this.logger.log(`Found events: ${events.length}`);
       return events;
     } catch (e) {
       this.logger.error('Failed to fetch today events', e);
@@ -189,9 +186,7 @@ export class EventsService {
       }),
     };
 
-    const response = await this.genericService.update(id, firestoreData);
-
-    return response;
+    return await this.genericService.update(id, firestoreData);
   }
 
   async remove(id: string) {

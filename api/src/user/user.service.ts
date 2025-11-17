@@ -7,7 +7,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
-import * as admin from 'firebase-admin';
 import { getAuth } from 'firebase-admin/auth';
 import { Timestamp } from 'firebase-admin/firestore';
 import { User, UserRole } from '@app/user/models/user.model';
@@ -16,24 +15,24 @@ import { UpdateUserDto } from '@app/user/dto/update-user.dto';
 import { google } from 'googleapis';
 import * as process from 'node:process';
 import { NotificationsService } from '@app/firebase/notifications/notifications.service';
+import { FIRESTORE_COLLECTIONS } from '@app/firebase/utils/firebase.constants';
+import { getFirestoreToken } from '@app/firebase/utils/firebase.provider';
 
 @Injectable()
 export class UserService {
-  private genericService: GenericFirestoreService<User>;
   private readonly logger = new Logger(UserService.name);
 
   /**
    * Creates an instance of UserService.
    *
-   * @param firebaseAdmin - The Firebase admin app instance.
    * @param notificationsService - The Notification service instance.
+   * @param genericService - Generic firestore service instance for User
    */
   constructor(
-    @Inject('FIREBASE_ADMIN') firebaseAdmin: admin.app.App,
+    @Inject(getFirestoreToken(FIRESTORE_COLLECTIONS.USERS))
+    private genericService: GenericFirestoreService<User>,
     private readonly notificationsService: NotificationsService
-  ) {
-    this.genericService = new GenericFirestoreService<User>(firebaseAdmin, 'users');
-  }
+  ) {}
 
   /**
    * Create a new user in Firestore

@@ -6,6 +6,7 @@ import {
   DarkTheme,
   DefaultTheme,
   NavigationContainer,
+  Theme,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthNavigator } from "@app/navigation/AuthNavigator";
@@ -18,11 +19,39 @@ export type MainTabParamList = {
   Main: undefined;
 };
 
+const MyDarkTheme: Theme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    primary: "#3B82F6", // Kolor 'blue-500'
+    background: "#111827", // Kolor 'bg-gray-900'
+    card: "#1F2937", // Kolor 'bg-gray-800' (dla nagłówków i tab-barów)
+    text: "#FFFFFF", // Kolor 'text-white'
+    border: "#374151", // Kolor 'border-gray-700'
+    notification: "#EF4444", // Kolor 'red-500'
+  },
+};
+
+const MyDefaultTheme: Theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: "#2563EB", // Kolor 'blue-600'
+    background: "#F9FAFB", // Kolor 'bg-gray-50'
+    card: "#FFFFFF", // Kolor 'bg-white' (dla nagłówków i tab-barów)
+    text: "#1F2937", // Kolor 'text-gray-800'
+    border: "#E5E7EB", // Kolor 'border-gray-200'
+  },
+};
+
 const RootStack = createNativeStackNavigator<MainTabParamList>();
 
 export const RootNavigator: FC = () => {
   const { isUserSignedIn, user, initializing, deviceInfo } = useInitializeApp();
   const dispatch = useAppDispatch();
+
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
 
   useEffect(() => {
     dispatch(fetchGoogleConfig());
@@ -35,7 +64,7 @@ export const RootNavigator: FC = () => {
   }, [isUserSignedIn, deviceInfo]);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={isDarkMode ? MyDarkTheme : MyDefaultTheme}>
       <RootStack.Navigator>
         {!isUserSignedIn ? (
           // Auth flow

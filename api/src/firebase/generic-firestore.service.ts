@@ -1,4 +1,4 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { app, FirebaseError } from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
 import {
@@ -10,7 +10,7 @@ import {
 
 @Injectable()
 export class GenericFirestoreService<T> {
-  public readonly collection: CollectionReference;
+  protected collection: CollectionReference;
   private readonly logger = new Logger(GenericFirestoreService.name);
 
   private readonly converter: FirestoreDataConverter<T> = {
@@ -22,15 +22,11 @@ export class GenericFirestoreService<T> {
     },
   };
 
-  constructor(
-    @Inject('FIREBASE_ADMIN') private firebaseAdmin: app.App,
-    private collectionName: string
-  ) {
-    this.collection = getFirestore().collection(this.collectionName).withConverter(this.converter);
+  constructor(firebaseAdmin: app.App, collectionName: string) {
+    this.collection = getFirestore(firebaseAdmin).collection(collectionName).withConverter(this.converter);
   }
 
   async create(data: T, docId?: string): Promise<string> {
-    this.logger.log('create event');
     this.logger.log(data);
 
     try {
