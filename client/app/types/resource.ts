@@ -39,4 +39,6 @@ export interface IResource {
   configured?: boolean;
 }
 
-export type updateResource = Partial<Omit<IResource, "id">>;
+export type updateResource = Partial<
+  Omit<IResource, "id" | "googleEventId" | "calendarId">
+>;

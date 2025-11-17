@@ -5,12 +5,17 @@ export const clientsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getClients: builder.query<IClient[], void>({
       query: () => "/clients",
-      providesTags: ["Clients"],
+      providesTags: ["AllClients"],
     }),
 
     getMyClients: builder.query<IClient[], void>({
       query: () => "/clients/my-clients",
-      providesTags: ["Clients"],
+      providesTags: ["MyClients"],
+
+      transformErrorResponse: (response) => {
+        console.log("ERROR RESPONSE:", response); // ← DODAJ
+        return response;
+      },
     }),
 
     getMyProfile: builder.query<IClient, void>({
@@ -29,7 +34,7 @@ export const clientsApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Clients"],
+      invalidatesTags: ["AllClients", "MyClients"],
     }),
 
     updateClient: builder.mutation<
@@ -49,7 +54,7 @@ export const clientsApi = baseApi.injectEndpoints({
     }),
 
     linkClientToUser: builder.mutation<
-      any,
+      unknown,
       { clientId: string; userId: string }
     >({
       query: ({ clientId, userId }) => ({

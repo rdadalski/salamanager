@@ -18,6 +18,12 @@ export const resourceApi = baseApi.injectEndpoints({
             ]
           : [{ type: "Resource", id: "LIST" }],
     }),
+    getAllResourcesByTrainer: builder.query<IResource[], void>({
+      query: () => ({
+        url: `resource/trainer`,
+        method: "GET",
+      }),
+    }),
     getResource: builder.query<any, { id: string }>({
       query: ({ id }) => ({
         url: `resource/${id}`,
@@ -35,11 +41,11 @@ export const resourceApi = baseApi.injectEndpoints({
     }),
     updateResource: builder.mutation<
       any,
-      { id: string; values: updateResource } // Typ argumentu
+      { id: string; values: updateResource }
     >({
       query: ({ id, values }) => ({
         url: `resource/${id}`,
-        body: values, // 'values' jest wysyłane jako body
+        body: values,
         method: "PATCH",
       }),
       invalidatesTags: (result, error, { id }) => [
@@ -62,6 +68,7 @@ export const resourceApi = baseApi.injectEndpoints({
 
 export const {
   useCreateResourceMutation,
+  useGetAllResourcesByTrainerQuery,
   useDeleteResourceMutation,
   useGetAllResourcesQuery,
   useGetResourceQuery,

@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException, Logger } from '@nestjs/common';
 import { CreateResourceDto } from './dto/create-resource.dto';
 import { UpdateResourceDto } from './dto/update-resource.dto';
 import { GenericFirestoreService } from '@app/firebase/generic-firestore.service';
@@ -16,28 +16,72 @@ export class ResourceService {
   ) {}
 
   async create(createResourceDto: CreateResourceDto) {
-    const response = await this.genericService.create(createResourceDto);
-    this.logger.log(response);
-    return response;
+    try {
+      return await this.genericService.create({ ...createResourceDto, configured: false });
+    } catch (e) {
+      this.logger.error('Failed to create resource', e);
+      throw new InternalServerErrorException('Failed to create resource');
+    }
   }
 
   async createBulk(createResourceDtoBulk: CreateResourceDto[]) {
-    return await this.genericService.createBulk(createResourceDtoBulk, (r) => r.googleEventId);
+    try {
+      return await this.genericService.createBulk(createResourceDtoBulk, (r) => r.googleEventId);
+    } catch (e) {
+      this.logger.error('Failed to create bulk resources', e);
+      throw new InternalServerErrorException('Failed to create bulk resources');
+    }
   }
 
   async findAll() {
-    return await this.genericService.findAll();
+    try {
+      return await this.genericService.findAll();
+    } catch (e) {
+      this.logger.error('Failed to fetch resources', e);
+      throw new InternalServerErrorException('Failed to fetch resources');
+    }
   }
 
   async findOne(id: string) {
-    return await this.genericService.findOne(id);
+    try {
+      const resource = await this.genericService.findOne(id);
+      if (!resource) {
+        throw new NotFoundException(`Resource with id ${id} not found`);
+      }
+      return resource;
+    } catch (e) {
+      if (e instanceof NotFoundException) throw e;
+      this.logger.error(`Failed to fetch resource ${id}`, e);
+      throw new InternalServerErrorException('Failed to fetch resource');
+    }
+  }
+
+  async findByTrainerId(id: string) {
+    try {
+      return await this.genericService.findByQuery([{ field: 'trainerId', operator: '==', value: id }]);
+    } catch (e) {
+      if (e instanceof NotFoundException) throw e;
+      this.logger.error(`Failed to fetch resource ${id}`, e);
+      throw new InternalServerErrorException('Failed to fetch resource');
+    }
   }
 
   async update(id: string, updateResourceDto: UpdateResourceDto) {
-    return await this.genericService.update(id, updateResourceDto);
+    try {
+      const configured = (updateResourceDto.defaultPrice ?? 0) !== 0 && (updateResourceDto.clients?.length ?? 0) > 0;
+      return await this.genericService.update(id, { ...updateResourceDto, configured: configured });
+    } catch (e) {
+      this.logger.error(`Failed to update resource ${id}`, e);
+      throw new InternalServerErrorException('Failed to update resource');
+    }
   }
 
   async remove(id: string) {
-    return await this.genericService.delete(id);
+    try {
+      return await this.genericService.delete(id);
+    } catch (e) {
+      this.logger.error(`Failed to delete resource ${id}`, e);
+      throw new InternalServerErrorException('Failed to delete resource');
+    }
   }
 }

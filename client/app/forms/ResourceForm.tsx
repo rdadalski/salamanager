@@ -9,7 +9,7 @@ import { ControlledInput } from "@app/components/ControlledInput";
 
 type ResourceFormValues = {
   name: string;
-  defaultPrice: number | string;
+  defaultPrice: number;
   ownerId: string;
   minTimeBox: string;
   clients: string[];
@@ -24,7 +24,7 @@ export const ResourceForm: FC = () => {
   } = useForm<ResourceFormValues>({
     defaultValues: {
       name: "",
-      defaultPrice: "0",
+      defaultPrice: 0,
       ownerId: "string",
       minTimeBox: "string",
       clients: [],
@@ -33,15 +33,13 @@ export const ResourceForm: FC = () => {
 
   const { data: userList, isLoading: userListLoading } = useGetUsersQuery();
 
-  console.log(userList);
-
   const [createResource] = useCreateResourceMutation();
 
   const onSubmit = async () => {
     const formValues = getValues();
     const values = { ...formValues, defaultPrice: +formValues.defaultPrice };
 
-    const response = await createResource({ values: values });
+    // const response = await createResource({ values: values });
   };
 
   return (

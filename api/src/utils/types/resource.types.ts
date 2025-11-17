@@ -12,5 +12,5 @@ export interface IResource {
   minTimeBox: string;
   clients?: string[];
   calendarId: string;
-  configured?: boolean;
+  configured: boolean;
 }

@@ -18,4 +18,5 @@ export type CreateClientDto = Pick<
   IClient,
   "name" | "surname" | "email" | "phone" | "notes" | "status"
 >;
+
 export type UpdateClientDto = Partial<CreateClientDto>;

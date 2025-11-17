@@ -57,6 +57,8 @@ export class ClientService {
   }
 
   async findByTrainerId(trainerId: string): Promise<IClient[]> {
+    this.logger.log(trainerId);
+
     return await this.clientFirestore.findByQuery([{ field: 'trainerId', operator: '==', value: trainerId }]);
   }
 
