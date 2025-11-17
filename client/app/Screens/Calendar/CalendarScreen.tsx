@@ -1,25 +1,29 @@
 import { ScrollView, View, Text, TouchableOpacity } from "react-native";
 import { CustomButton } from "@app/components";
-import { useGetAllResourcesQuery } from "@app/api/resource/resource.api";
 import { useGetTodayEventsQuery } from "@app/api/event/events.api";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 import { useNavigation } from "@react-navigation/native";
 import { CalendarNavigationProp } from "@app/navigation/CalendarNavigation";
 import Ionicons from "react-native-vector-icons/MaterialIcons";
+import { useGetAllResourcesByTrainerQuery } from "@app/api/resource/resource.api";
 
 const CalendarHomeScreen = () => {
   const navigation = useNavigation<CalendarNavigationProp>();
-  const { data: resources } = useGetAllResourcesQuery();
+  const { data: resources } = useGetAllResourcesByTrainerQuery();
   const { data: todayEvents } = useGetTodayEventsQuery();
 
   const unconfigured = resources?.filter((r) => !r.configured) || [];
+
   const todayRevenue =
-    todayEvents?.reduce(
-      (sum, e) =>
-        sum + (e.defaultResourcePrice || 0) * (e.attendees?.length || 0),
-      0,
-    ) || 0;
+    todayEvents?.reduce((sum, event) => {
+      const resource = resources?.find((r) => r.id === event.resourceId);
+      if (!resource) return sum;
+
+      return (
+        sum + (resource.defaultPrice || 0) * (resource.clients?.length || 0)
+      );
+    }, 0) ?? 0;
 
   const handleCalendarClick = () => {
     console.log("button clicked");

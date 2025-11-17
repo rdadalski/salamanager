@@ -27,7 +27,6 @@ export class GenericFirestoreService<T> {
   }
 
   async create(data: T, docId?: string): Promise<string> {
-    this.logger.log('create event');
     this.logger.log(data);
 
     try {

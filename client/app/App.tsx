@@ -45,7 +45,7 @@ export default function App() {
   return (
     <>
       <Provider store={store}>
-        <StatusBar style={"dark"}></StatusBar>
+        <StatusBar style={"light"}></StatusBar>
         <RootNavigator />
       </Provider>
     </>

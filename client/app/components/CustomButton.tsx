@@ -4,44 +4,60 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 
 interface ICustomButton {
   title: string;
-  iconName: string;
+  iconName?: string;
   onPress?: () => void;
   loading?: boolean;
+  variant?: "primary" | "secondary" | "success" | "danger" | "warning";
+  disabled?: boolean;
 }
+
+const VARIANT_STYLES = {
+  primary:
+    "bg-green-900 dark:bg-blue-800 active:bg-blue-700 dark:active:bg-blue-600",
+  secondary:
+    "bg-gray-600 dark:bg-gray-500 active:bg-gray-700 dark:active:bg-gray-600",
+  success:
+    "bg-green-600 dark:bg-green-500 active:bg-green-700 dark:active:bg-green-600",
+  danger: "bg-red-600 dark:bg-red-500 active:bg-red-700 dark:active:bg-red-600",
+  warning:
+    "bg-yellow-600 dark:bg-yellow-500 active:bg-yellow-700 dark:active:bg-yellow-600",
+};
 
 export const CustomButton: FC<ICustomButton> = ({
   title,
   iconName,
   onPress,
-  loading,
+  loading = false,
+  variant = "primary",
+  disabled = false,
 }) => {
+  const isDisabled = disabled || loading;
+
   return (
     <TouchableOpacity
-      onPress={() => {
-        console.log("tap tap tap");
-        if (onPress) {
-          onPress();
-        }
-      }}
-      // disabled={loading}
+      onPress={onPress}
+      disabled={isDisabled}
+      activeOpacity={0.7}
+      className={`
+        ${VARIANT_STYLES[variant]}
+        ${isDisabled && "opacity-50"}
+      `}
     >
       <View
-        className={`
-          flex-row justify-center items-center bg-blue-700 
-          rounded-lg shadow-sm 
-          px-4 py-3 
-        `}
+        className={
+          "flex-row justify-center items-center rounded-lg shadow-sm px-4 py-3"
+        }
       >
         {loading ? (
-          <ActivityIndicator color={"#fff"} size="small" />
+          <ActivityIndicator color="#fff" size="small" />
         ) : (
           <>
-            {title !== "" && (
+            {title && (
               <Text className="font-bold text-white text-base mr-2">
                 {title.toUpperCase()}
               </Text>
             )}
-            <AntDesign color={"#fff"} size={16} name={iconName} />
+            {iconName && <AntDesign color="#fff" size={16} name={iconName} />}
           </>
         )}
       </View>

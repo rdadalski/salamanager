@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsArray, IsNotEmpty, Min, IsOptional, ArrayNotEmpty } from 'class-validator';
+import { IsString, IsNumber, IsArray, IsNotEmpty, Min, IsOptional, ArrayNotEmpty, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Timestamp } from 'firebase-admin/firestore';
 
@@ -54,4 +54,8 @@ export class CreateResourceDto {
   @IsString()
   @IsNotEmpty()
   calendarId: string;
+
+  @ApiProperty({ example: false })
+  @IsBoolean()
+  configured: boolean;
 }
