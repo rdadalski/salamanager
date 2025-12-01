@@ -39,11 +39,8 @@ export class EventsService {
     return await this.genericService.findOne(id);
   }
 
-  async todayEvents(idToken: string) {
+  async todayEvents(uid: string) {
     try {
-      const decodedToken = await getAuth().verifyIdToken(idToken);
-      const uid = decodedToken.uid;
-
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const tomorrow = new Date(today);

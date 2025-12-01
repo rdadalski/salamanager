@@ -129,13 +129,14 @@ export class CalendarService {
   public async updateEvent(
     idToken: string,
     eventId: string,
+    calendarId: string,
     eventData: calendar_v3.Schema$Event
   ): Promise<{ success: boolean; data: calendar_v3.Schema$Event }> {
     try {
       const calendar = await this.getCalendarClient(idToken);
 
       const response = await calendar.events.update({
-        calendarId: 'primary',
+        calendarId: calendarId,
         eventId: eventId,
         requestBody: eventData,
       });
@@ -243,51 +244,76 @@ export class CalendarService {
         this.logger.log('Using sync token for incremental sync:', syncToken.substring(0, 20) + '...');
       } else {
         isInitialSync = true;
+        this.logger.log('Initial sync in progress...');
       }
 
       const today = new Date();
+      const backBuffer = new Date(today);
+      backBuffer.setDate(today.getDate() - 7);
+      backBuffer.setHours(0, 0, 0, 0);
 
-      const twoWeeksBack = new Date(today);
-      twoWeeksBack.setDate(today.getDate() - 14);
-      twoWeeksBack.setHours(0, 0, 0, 0);
-
-      const twoWeeksForward = new Date(today);
-      twoWeeksForward.setDate(today.getDate() + 14);
-      twoWeeksForward.setHours(23, 59, 59, 999);
-
-      const response = await calendar.events.list({
+      const listParams: calendar_v3.Params$Resource$Events$List = {
         calendarId: calendarId,
-        syncToken: syncToken,
-        timeMin: twoWeeksBack.toISOString(),
-        timeMax: twoWeeksForward.toISOString(),
         singleEvents: true,
-        maxResults: 250,
-      });
+        maxResults: 2500,
+      };
 
-      const events = this.filterEventsWithinTwoWeeks(response.data.items) || [];
-      const newSyncToken = response.data.nextSyncToken;
+      if (syncToken) {
+        listParams.syncToken = syncToken;
+      } else {
+        listParams.timeMin = backBuffer.toISOString();
+      }
+
+      let pageToken: string | undefined;
+      let allEvents: calendar_v3.Schema$Event[] = [];
+      let nextSyncToken: string | undefined;
+
+      do {
+        listParams.pageToken = pageToken;
+
+        const response = await calendar.events.list(listParams);
+        const items = response.data.items || [];
+
+        allEvents.push(...items);
+
+        pageToken = response.data.nextPageToken;
+
+        if (response.data.nextSyncToken) {
+          nextSyncToken = response.data.nextSyncToken;
+        }
+
+        this.logger.log(`Fetched page with ${items.length} events. Next page: ${!!pageToken}`);
+      } while (pageToken);
+
+      const events = this.filterEventsWithinTwoWeeks(allEvents) || [];
 
       const internalEvents = this.convertToInternalEvents(events, calendarId, uid);
 
-      if (internalEvents.length > 0) {
+      if (internalEvents.length > 0 && isInitialSync) {
+        this.logger.log('Storing new events');
         await this.syncService.saveEvents(internalEvents);
+      }
+
+      if (!isInitialSync) {
+        this.logger.log('Updating existing events');
+        await this.syncService.updateEvents(internalEvents);
       }
 
       await this.syncService.saveSyncMetadata({
         calendarId,
-        syncToken: newSyncToken,
+        syncToken: nextSyncToken,
         lastSyncTime: new Date(),
         isInitialSyncComplete: true,
       });
 
-      return { internalEvents: internalEvents, fullResponse: response.data };
+      return { success: true, data: internalEvents };
     } catch (error) {
       this.logger.error('Sync failed:', error);
 
       // Handle specific Google API errors
       if (error.response?.status === 410 || error.code === 410) {
         this.logger.warn('Sync token expired (410), performing full sync');
-        return this.performFullSync(calendarId, accessToken);
+        // return this.performFullSync(calendarId, accessToken);
       }
 
       if (error.response?.status === 403) {
@@ -307,33 +333,30 @@ export class CalendarService {
   private filterEventsWithinTwoWeeks(events: calendar_v3.Schema$Event[]): calendar_v3.Schema$Event[] {
     const today = new Date();
 
-    // Calculate 2 weeks back and 2 weeks forward
     const twoWeeksBack = new Date(today);
-    twoWeeksBack.setDate(today.getDate() - 14);
+    twoWeeksBack.setDate(today.getDate() - 7);
     twoWeeksBack.setHours(0, 0, 0, 0);
 
     const twoWeeksForward = new Date(today);
-    twoWeeksForward.setDate(today.getDate() + 14);
+    twoWeeksForward.setDate(today.getDate() + 20);
     twoWeeksForward.setHours(23, 59, 59, 999);
+
+    this.logger.log(twoWeeksForward);
+    this.logger.log(twoWeeksBack);
 
     return events.filter((event) => {
       try {
-        // Get event start time
         let eventStart: Date;
 
         if (event.start?.dateTime) {
-          // Event with specific time
           eventStart = new Date(event.start.dateTime);
         } else if (event.start?.date) {
-          // All-day event
           eventStart = new Date(event.start.date);
         } else {
-          // Skip events without valid start time
           this.logger.warn(`Event ${event.id} has no valid start time`);
           return false;
         }
 
-        // Check if event falls within the 4-week window
         const isWithinRange = eventStart >= twoWeeksBack && eventStart <= twoWeeksForward;
 
         return isWithinRange;

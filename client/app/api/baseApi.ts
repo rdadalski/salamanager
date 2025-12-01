@@ -73,6 +73,9 @@ export const baseApi = createApi({
   }),
   endpoints: () => ({}),
   tagTypes: [
+    "Events",
+    "Calendars",
+    "User",
     "Users",
     "Resource",
     "Clients",

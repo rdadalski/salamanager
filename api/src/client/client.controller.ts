@@ -39,14 +39,14 @@ export class ClientController {
 
   @Get()
   @Roles(UserRole.ADMIN)
-  async findAll(@Token() token: DecodedIdToken) {
+  async findAll() {
     return await this.clientService.findAll();
   }
 
   @Get('me')
   @Roles(UserRole.CLIENT, UserRole.TRAINER, UserRole.ADMIN)
-  async getMyProfile(@Token() token: DecodedIdToken) {
-    return await this.clientService.findByUserId(token.uid);
+  async getMyProfile(@User() user: DecodedIdToken) {
+    return await this.clientService.findByUserId(user.uid);
   }
 
   @Get('my-clients')
@@ -74,15 +74,15 @@ export class ClientController {
   @Patch(':id/link-user/:userId')
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
-  async linkToUser(@Param('id') id: string, @Param('userId') userId: string, @Token() token: DecodedIdToken) {
+  async linkToUser(@Param('id') id: string, @Param('userId') userId: string) {
     return await this.clientService.linkToUser(id, userId);
   }
 
   @Delete(':id')
   @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string, @Token() token: DecodedIdToken) {
-    const userRole = token.role as UserRole;
-    await this.clientService.remove(id, token.uid, userRole);
+  async remove(@Param('id') id: string, @User() user: DecodedIdToken) {
+    const userRole = user.role as UserRole;
+    await this.clientService.remove(id, user.uid, userRole);
   }
 }

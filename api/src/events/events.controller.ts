@@ -25,8 +25,8 @@ export class EventsController {
 
   @Get('today')
   @Roles()
-  today(@Token() token: string) {
-    return this.eventsService.todayEvents(token);
+  today(@User() user: DecodedIdToken) {
+    return this.eventsService.todayEvents(user.uid);
   }
 
   @Get('calendar/:id')

@@ -55,7 +55,7 @@ export const useCalendarEvents = (calendarId: string) => {
 
     const res = await updateCalendarEvent({
       eventId: internalEvent.googleEventId,
-      data: calendarEvent,
+      data: { event: calendarEvent, calendarId: internalEvent.calendarId },
     });
 
     console.log(res);

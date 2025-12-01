@@ -58,7 +58,7 @@ export const CalendarEvents: FC = () => {
 
   const [initialCalendarSync] = useInitialCalendarSyncMutation();
 
-  const handleTest = async () => {
+  const handleInitialSync = async () => {
     console.log(userData);
     if (!userData) return;
 
@@ -91,7 +91,7 @@ export const CalendarEvents: FC = () => {
             <View className={"w-full p-2"}>
               <CustomButton
                 iconName={"sync"}
-                onPress={handleTest}
+                onPress={handleInitialSync}
                 title={"Initial Sync"}
               />
             </View>

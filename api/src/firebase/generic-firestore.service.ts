@@ -27,8 +27,6 @@ export class GenericFirestoreService<T> {
   }
 
   async create(data: T, docId?: string): Promise<string> {
-    this.logger.log(data);
-
     try {
       if (docId) {
         const docRef = this.collection.doc(docId);
@@ -64,6 +62,32 @@ export class GenericFirestoreService<T> {
       });
 
       await batch.commit();
+    }
+  }
+
+  async batchUpsert(items: T[], getId: (item: T) => string): Promise<void> {
+    try {
+      const db = getFirestore();
+      const chunkSize = 500;
+
+      for (let i = 0; i < items.length; i += chunkSize) {
+        const chunk = items.slice(i, i + chunkSize);
+        const batch = db.batch();
+
+        chunk.forEach((item) => {
+          const id = getId(item);
+          const docRef = this.collection.doc(id);
+
+          batch.set(docRef, item, { merge: true });
+        });
+
+        await batch.commit();
+        this.logger.log(`Committed batch of ${chunk.length} `);
+      }
+    } catch (e) {
+      const error = e as FirebaseError;
+      this.logger.error('Error in batch upsert:', error.message);
+      throw e;
     }
   }
 

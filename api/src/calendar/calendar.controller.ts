@@ -98,24 +98,24 @@ export class CalendarController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Event not found' })
   @ApiParam({ name: 'eventId', description: 'The ID of the event to update' })
-  @ApiBody({ type: UpdateEventDto })
+  // @ApiBody({ type: UpdateEventDto })
   async updateEvent(
     @Token() token: string,
     @Param('eventId') eventId: string,
-    @Body() updateEventDto: UpdateEventDto
+    @Body() updateEventDto: { event: UpdateEventDto; calendarId: string }
   ): Promise<{ success: boolean; data: calendar_v3.Schema$Event }> {
     try {
       const firebaseUpdateResult = await this.eventService.update(eventId, {
-        startTime: updateEventDto.start.dateTime,
-        endTime: updateEventDto.end.dateTime,
+        startTime: updateEventDto.event.start.dateTime,
+        endTime: updateEventDto.event.end.dateTime,
       });
 
       this.logger.log(firebaseUpdateResult);
+
+      return await this.calendarService.updateEvent(token, eventId, updateEventDto.calendarId, updateEventDto.event);
     } catch (error) {
       this.logger.warn(`updating firebase doc error: ${error}`);
     }
-
-    return await this.calendarService.updateEvent(token, eventId, updateEventDto);
   }
 
   @Delete('events/:eventId')

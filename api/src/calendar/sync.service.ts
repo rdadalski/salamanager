@@ -6,11 +6,11 @@ import { GenericFirestoreService } from '@app/firebase/generic-firestore.service
 @Injectable()
 export class SyncService {
   private readonly logger = new Logger(SyncService.name);
-  private eventsService: GenericFirestoreService<IInternalEvent>;
+  private eventsService: GenericFirestoreService<IInternalEventFirestore>;
   private syncMetadataService: GenericFirestoreService<ISyncMetadata>;
 
   constructor(@Inject('FIREBASE_ADMIN') private firebaseAdmin: admin.app.App) {
-    this.eventsService = new GenericFirestoreService<IInternalEvent>(firebaseAdmin, 'events');
+    this.eventsService = new GenericFirestoreService<IInternalEventFirestore>(firebaseAdmin, 'events');
     this.syncMetadataService = new GenericFirestoreService<ISyncMetadata>(firebaseAdmin, 'sync_metadata');
   }
 
@@ -46,7 +46,6 @@ export class SyncService {
     }
   }
 
-  // Save events to Firebase
   async saveEvents(events: IInternalEventFirestore[]): Promise<void> {
     try {
       await this.eventsService.createBulk(events, (event) => event.googleEventId);
@@ -57,7 +56,16 @@ export class SyncService {
     }
   }
 
-  // Delete events from Firebase
+  async updateEvents(events: IInternalEventFirestore[]): Promise<void> {
+    try {
+      await this.eventsService.batchUpsert(events, (event) => event.googleEventId);
+      this.logger.log(`Updated ${events.length} events in Firebase`);
+    } catch (error) {
+      this.logger.error('Error saving events:', error);
+      throw error;
+    }
+  }
+
   async deleteEvents(googleEventIds: string[]): Promise<void> {
     try {
       for (const eventId of googleEventIds) {
@@ -70,8 +78,7 @@ export class SyncService {
     }
   }
 
-  // Get all events for a calendar
-  async getEventsByCalendar(calendarId: string): Promise<IInternalEvent[]> {
+  async getEventsByCalendar(calendarId: string): Promise<IInternalEventFirestore[]> {
     try {
       return await this.eventsService.findByQuery([{ field: 'calendarId', operator: '==', value: calendarId }]);
     } catch (error) {
